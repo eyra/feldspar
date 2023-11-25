@@ -11,6 +11,8 @@ from port.api.commands import (CommandSystemDonate, CommandSystemExit, CommandUI
 
 ExtractionResult = namedtuple("ExtractionResult", ["id", "title", "data_frame"])
 
+filter_start_date = datetime(2017, 1, 1)
+
 
 class FileInZipNotFoundError(Exception):
     """Raised when a specific file is not found within the ZIP archive."""
@@ -25,19 +27,13 @@ class InvalidXMLError(Exception):
 class HealthDataHandler(xml.sax.ContentHandler):
     def __init__(self, callback):
         self.callback = callback
-        self.in_step_count = False
 
     def startElement(self, tag, attributes):
         if tag == "Record" and attributes["type"] == "HKQuantityTypeIdentifierStepCount":
-            self.in_step_count = True
             value = int(attributes["value"])
-            startDate = self.parse_naive_datetime(attributes["startDate"])
-            self.callback(value, startDate)
+            start_date = self.parse_naive_datetime(attributes["startDate"])
+            self.callback(value, start_date)
             
-    def endElement(self, tag):
-        if tag == "Record" and self.in_step_count:
-            self.in_step_count = False
-
     def parse_naive_datetime(self, date_str):
         dt = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S %z')
         return dt.replace(tzinfo=None)
@@ -47,9 +43,11 @@ class StepCountCallback:
         self.start_times = []
         self.steps = []
 
-    def __call__(self, value, startDate):
+    def __call__(self, value, start_date):
+        if start_date < filter_start_date:
+            return
         self.steps.append(value)
-        self.start_times.append(startDate)
+        self.start_times.append(start_date)
 
     def to_dataframe(self):
         return pd.DataFrame({'Start Time': self.start_times, 'Steps': self.steps})
