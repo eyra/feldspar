@@ -53,6 +53,20 @@ def test_aggregate_same_day():
     assert df.iloc[0]['Date'] == '2023-06-25'
     assert df.iloc[0]['Steps'] == 40
 
+
+def test_filters_out_data_based_on_date():
+    # see the script for the earliest data which will be included
+    xml_data = """
+    <HealthData locale="en_NL">
+     <Record type="HKQuantityTypeIdentifierStepCount" startDate="2016-06-24 23:10:45 +0100" value="2"/>
+     <Record type="HKQuantityTypeIdentifierStepCount" startDate="2017-01-1 23:10:45 +0100" value="3"/>
+    </HealthData>
+    """
+    df = aggregate_daily_steps(io.StringIO(xml_data))
+    assert len(df) == 1
+    assert df.iloc[0]['Date'] == '2017-01-01'
+    assert df.iloc[0]['Steps'] == 3
+
 def test_no_records():
     xml_data = """
     <HealthData locale="en_NL">
