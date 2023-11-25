@@ -135,7 +135,7 @@ def process(sessionId):
                 break
             else:
                 meta_data.append(("debug", f"prompt confirmation to retry file selection"))
-                retry_result = yield render_donation_page(platform, retry_confirmation(platform), 33)
+                retry_result = yield render_donation_page(retry_confirmation(), 33)
                 if retry_result.__type__ == 'PayloadTrue':
                     meta_data.append(("debug", f"skip due to invalid file"))
                     continue
