@@ -1,15 +1,15 @@
-import React from 'react'
-import useResponsiveScreen from './ui/hooks/useResponsiveScreenSize'
+import * as React from 'react'
 
 interface MainProps {
   elements: JSX.Element[]
 }
 
 export const Main = ({ elements }: MainProps): JSX.Element => {
-  useResponsiveScreen()
-  elements = elements.map((element, index) => {
-    return { ...element, key: `${index}` }
-  })
+  elements = elements.map((element, index) => { return { ...element, key: `${index}` } })
 
-  return <div className='w-full h-full'>{elements}</div>
+  return (
+    <div className='w-full h-full'>
+      {elements}
+    </div>
+  )
 }

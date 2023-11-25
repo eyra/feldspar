@@ -4,28 +4,26 @@ import TextBundle from '../../../../text_bundle'
 import { Translator } from '../../../../translator'
 import { Translatable } from '../../../../types/elements'
 import { PropsUIPageDonation } from '../../../../types/pages'
-import { isPropsUIPromptConfirm, isPropsUIPromptConsentForm, isPropsUIPromptFileInput, isPropsUIPromptRadioInput, isPropsUIPromptQuestionnaire } from '../../../../types/prompts'
+import { isPropsUIPromptConfirm, isPropsUIPromptConsentForm, isPropsUIPromptFileInput, isPropsUIPromptRadioInput } from '../../../../types/prompts'
 import { ReactFactoryContext } from '../../factory'
 import { ForwardButton } from '../elements/button'
 import { Title1 } from '../elements/text'
 import { Confirm } from '../prompts/confirm'
 import { ConsentForm } from '../prompts/consent_form'
 import { FileInput } from '../prompts/file_input'
-import { Questionnaire } from '../prompts/questionnaire'
 import { RadioInput } from '../prompts/radio_input'
 import { Footer } from './templates/footer'
-// import { Sidebar } from './templates/sidebar'
-// import LogoSvg from '../../../../../assets/images/logo.svg'
+import { Sidebar } from './templates/sidebar'
+import LogoSvg from '../../../../../assets/images/logo.svg'
 import { Page } from './templates/page'
 import { Progress } from '../elements/progress'
-// import { Instructions } from '../elements/instructions'
+import { Instructions } from '../elements/instructions'
 
 type Props = Weak<PropsUIPageDonation> & ReactFactoryContext
 
 export const DonationPage = (props: Props): JSX.Element => {
   const { title, forwardButton } = prepareCopy(props)
-  // const { platform, locale, resolve } = props
-  const { locale, resolve } = props
+  const { platform, locale, resolve } = props
 
   function renderBody (props: Props): JSX.Element {
     const context = { locale: locale, resolve: props.resolve }
@@ -41,9 +39,6 @@ export const DonationPage = (props: Props): JSX.Element => {
     }
     if (isPropsUIPromptRadioInput(body)) {
       return <RadioInput {...body} {...context} />
-    }
-    if (isPropsUIPromptQuestionnaire(body)) {
-      return <Questionnaire {...body} {...context} />
     }
     throw new TypeError('Unknown body type')
   }
@@ -64,18 +59,14 @@ export const DonationPage = (props: Props): JSX.Element => {
     />
   )
 
-  // COMMENT BY NIEK: I TURNED OFF THE SIDEBAR (UGLY)
-  // const sidebar: JSX.Element = (
-  //  <Sidebar
-  //    logo={LogoSvg}
-  //    content={
-  //      <Instructions platform={platform} locale={locale} />
-  //    }
-  //  />
-  // )
-  // COMMENT BY KASPER: MADE SIDEBAR OPTIONAL IN <Page /> COMPONENT,
-  // SO THAT IT DOESN'T AFFECT THE LAYOUT OF THE PAGE
-  // const sidebar: JSX.Element = <></>
+  const sidebar: JSX.Element = (
+    <Sidebar
+      logo={LogoSvg}
+      content={
+        <Instructions platform={platform} locale={locale} />
+      }
+    />
+  )
 
   const body: JSX.Element = (
     <>
@@ -84,7 +75,13 @@ export const DonationPage = (props: Props): JSX.Element => {
     </>
   )
 
-  return <Page body={body} footer={footer} />
+  return (
+    <Page
+      body={body}
+      sidebar={sidebar}
+      footer={footer}
+    />
+  )
 }
 
 interface Copy {
@@ -100,5 +97,7 @@ function prepareCopy ({ header: { title }, locale }: Props): Copy {
 }
 
 const forwardButtonLabel = (): Translatable => {
-  return new TextBundle().add('en', 'Skip').add('nl', 'Overslaan')
+  return new TextBundle()
+    .add('en', 'Skip')
+    .add('nl', 'Overslaan')
 }
