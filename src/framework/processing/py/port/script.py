@@ -10,7 +10,6 @@ import pandas as pd
 import zipfile
 
 ExtractionResult = namedtuple("ExtractionResult", ["id", "title", "data_frame"])
-filter_start_date = datetime(2017, 1, 1)
 
 
 def get_in(dct, *key_path):
@@ -30,16 +29,13 @@ def parse_json_to_dataframe(parsed_dict):
         segment = obj["activitySegment"]
         activity_type = segment["activityType"]
 
-        if activity_type not in {"WALKING", "CYCLING", "RUNNING"}:
+        if activity_type not in {"WALKING", "CYCLING","RUNNING"}:
             continue
 
         start_timestamp_str = segment["duration"]["startTimestamp"]
         start_timestamp = datetime.fromisoformat(
             start_timestamp_str[:-1]
         )  # remove the 'Z'
-
-        if start_timestamp < filter_start_date:
-            continue
 
         if meters := get_in(segment, "waypointPath", "distanceMeters"):
             distance_meters = meters
@@ -129,10 +125,8 @@ def process(sessionId):
                 else:
                     meta_data.append(("debug", f"retry prompt file"))
                     break
-            if extractionResult == "no-data":
-                retry_result = yield render_donation_page(
-                    retry_no_data_confirmation(), 33
-                )
+            if extractionResult == 'no-data':
+                retry_result = yield render_donation_page(retry_no_data_confirmation(), 33)
                 if retry_result.__type__ == "PayloadTrue":
                     continue
                 else:
@@ -156,6 +150,9 @@ def process(sessionId):
             meta_data.append(("debug", f"donate consent data"))
             yield donate(f"{sessionId}", consent_result.value)
 
+    yield exit(0, "Success")
+    yield render_end_page()
+
 
 def render_end_page():
     page = props.PropsUIPageEnd()
@@ -163,12 +160,13 @@ def render_end_page():
 
 
 def render_donation_page(body, progress):
-    header = props.PropsUIHeader(
-        props.Translatable({"en": "Google location", "nl": "Google locatie"})
-    )
+    header = props.PropsUIHeader(props.Translatable({
+        "en": "Google activity", 
+        "nl": "Google activity"
+    }))
 
     footer = props.PropsUIFooter(progress)
-    page = props.PropsUIPageDonation("google-location", header, body, footer)
+    page = props.PropsUIPageDonation("google-activity", header, body, footer)
     return CommandUIRender(page)
 
 
@@ -183,12 +181,11 @@ def retry_confirmation():
     cancel = props.Translatable({"en": "Continue", "nl": "Verder"})
     return props.PropsUIPromptConfirm(text, ok, cancel)
 
-
 def retry_no_data_confirmation():
     text = props.Translatable(
         {
-            "en": f"Unfortunately we could not detect any location information in your file. Continue, if you are sure that you selected the right file. Try again to select a different file.",
-            "nl": f"We hebben helaas geen locatie informatie in uw bestand gevonden. Weet u zeker dat u het juiste bestand heeft gekozen? Ga dan verder. Probeer opnieuw als u een ander bestand wilt kiezen.",
+            "en": f"There does not seem to be location information in your file. Continue, if you are sure that you selected the right file. Try again to select a different file.",
+            "nl": f"Helaas, er lijkt geen lokatie informatie in uw bestand te zitten. Weet u zeker dat u het juiste bestand heeft gekozen? Ga dan verder. Probeer opnieuw als u een ander bestand wilt kiezen.",
         }
     )
     ok = props.Translatable({"en": "Try again", "nl": "Probeer opnieuw"})
@@ -196,19 +193,19 @@ def retry_no_data_confirmation():
     return props.PropsUIPromptConfirm(text, ok, cancel)
 
 
+
 def prompt_file():
-    description = props.Translatable(
-        {
-            "en": f"Click 'Choose file' to choose the file that you received from Google. If you click 'Continue', the data that is required for research is extracted from your file.",
-            "nl": f"Klik op ‘Kies bestand’ om het bestand dat u ontvangen hebt van Google te kiezen. Als u op 'Verder' klikt worden de gegevens die nodig zijn voor het onderzoek uit uw bestand gehaald.",
-        }
-    )
+    description = props.Translatable({
+        "en": f"Please follow the download instructions and choose the file that you stored on your device. Click 'Skip' at the right bottom, if you do not have a file. ",
+        "nl": f"Volg de download instructies en kies het bestand dat u opgeslagen heeft op uw apparaat. Als u geen bestand heeft klik dan op 'Overslaan' rechts onder.",
+    })
 
     return props.PropsUIPromptFileInput(description, "application/zip")
 
 
 def prompt_consent(tables, meta_data):
     log_title = props.Translatable({"en": "Log messages", "nl": "Log berichten"})
+
     tables = [
         props.PropsUIPromptConsentFormTable(table.id, table.title, table.data_frame)
         for table in tables
