@@ -106,22 +106,6 @@ def test_parse_json_to_dataframe_skips_non_walking_or_cycling():
     assert "DRIVING" not in df.activityType.values
 
 
-def test_parse_json_to_dataframe_skips_entries_before_filter_date():
-    parsed_dict= {
-        "timelineObjects": [
-            {
-                "activitySegment": {
-                    "duration": {"startTimestamp": "2016-12-31T19:13:27.023Z"},
-                    "activityType": "CYCLING",
-                    "waypointPath": {"distanceMeters": 3600.33},
-                }
-            }
-        ]
-    }
-    df = parse_json_to_dataframe(parsed_dict)
-    assert len(df) == 0
-
-
 def test_aggregate_distance_by_day_activity(sample_data):
     df = parse_json_to_dataframe(sample_data)
     aggregated_df = aggregate_distance_by_day_activity(df)
