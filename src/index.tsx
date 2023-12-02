@@ -7,6 +7,7 @@ import FakeBridge from './fake_bridge'
 
 const rootElement = document.getElementById('root') as HTMLElement
 
+const locale = 'nl'
 const workerFile = new URL('./framework/processing/py_worker.js', import.meta.url)
 const worker = new Worker(workerFile)
 
