@@ -191,8 +191,9 @@ def retry_confirmation():
 
 def prompt_file():
     description = props.Translatable({
-        "en": f"Please follow the download instructions and choose the file that you stored on your device. Click “Skip” at the right bottom, if you do not have a file. ",
-        "nl": f"Volg de download instructies en kies het bestand dat u opgeslagen heeft op uw apparaat. Als u geen bestand heeft klik dan op “Overslaan” rechts onder."
+        "en": f"Click 'Choose file' to choose the file that you received from Apple. If you click 'Continue', the data that is required for research is extracted from your file.",
+        "nl": f"Klik op ‘Kies bestand’ om het bestand dat u ontvangen hebt van Apple te kiezen. Als u op 'Verder' klikt worden de gegevens die nodig zijn voor het onderzoek uit uw bestand gehaald."
+        
     })
 
     return props.PropsUIPromptFileInput(description, "application/zip")
