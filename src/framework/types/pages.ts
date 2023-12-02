@@ -9,7 +9,6 @@ export type PropsUIPage =
 
 export function isPropsUIPage (arg: any): arg is PropsUIPage {
   return (
-    isPropsUIPageSplashScreen(arg) ||
     isPropsUIPageDonation(arg) ||
     isPropsUIPageEnd(arg)
   )
@@ -17,9 +16,6 @@ export function isPropsUIPage (arg: any): arg is PropsUIPage {
 
 export interface PropsUIPageSplashScreen {
   __type__: 'PropsUIPageSplashScreen'
-}
-export function isPropsUIPageSplashScreen (arg: any): arg is PropsUIPageSplashScreen {
-  return isInstanceOf<PropsUIPageSplashScreen>(arg, 'PropsUIPageSplashScreen', [])
 }
 
 export interface PropsUIPageDonation {
