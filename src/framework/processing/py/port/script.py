@@ -25,7 +25,7 @@ def parse_json_to_dataframe(parsed_dict):
         segment = obj["activitySegment"]
         activity_type = segment["activityType"]
 
-        if activity_type not in {"WALKING", "CYCLING","RUNNING"}:
+        if activity_type not in {"WALKING", "CYCLING", "RUNNING"}:
             continue
 
         start_timestamp_str = segment["duration"]["startTimestamp"]
@@ -134,6 +134,12 @@ def process(sessionId):
                 else:
                     meta_data.append(("debug", f"retry prompt file"))
                     break
+            if extractionResult == "no-data":
+                retry_result = yield render_donation_page(
+                    retry_no_data_confirmation(), 33
+                )
+                if retry_result.__type__ == "PayloadTrue":
+                    continue
                 else:
                     meta_data.append(("debug", f"{platform}: prompt confirmation to retry file selection"))
                     retry_result = yield render_donation_page(platform, retry_confirmation(platform), progress)
@@ -172,74 +178,57 @@ def render_end_page():
     return CommandUIRender(page)
 
 
-def render_donation_page(platform, body, progress):
-    header = props.PropsUIHeader(props.Translatable({
-        "en": platform,
-        "nl": platform
-    }))
+def render_donation_page(body, progress):
+    header = props.PropsUIHeader(
+        props.Translatable({"en": "Google location", "nl": "Google locatie"})
+    )
 
     footer = props.PropsUIFooter(progress)
-    page = props.PropsUIPageDonation(platform, header, body, footer)
+    page = props.PropsUIPageDonation("google-location", header, body, footer)
     return CommandUIRender(page)
 
 
-def retry_confirmation(platform):
-    text = props.Translatable({
-        "en": f"Unfortunately, we cannot process your {platform} file. Continue, if you are sure that you selected the right file. Try again to select a different file.",
-        "nl": f"Helaas, kunnen we uw {platform} bestand niet verwerken. Weet u zeker dat u het juiste bestand heeft gekozen? Ga dan verder. Probeer opnieuw als u een ander bestand wilt kiezen."
-    })
-    ok = props.Translatable({
-        "en": "Try again",
-        "nl": "Probeer opnieuw"
-    })
-    cancel = props.Translatable({
-        "en": "Continue",
-        "nl": "Verder"
-    })
+def retry_confirmation():
+    text = props.Translatable(
+        {
+            "en": f"Unfortunately, we cannot process your file. Continue, if you are sure that you selected the right file. Try again to select a different file.",
+            "nl": f"Helaas, kunnen we uw bestand niet verwerken. Weet u zeker dat u het juiste bestand heeft gekozen? Ga dan verder. Probeer opnieuw als u een ander bestand wilt kiezen.",
+        }
+    )
+    ok = props.Translatable({"en": "Try again", "nl": "Probeer opnieuw"})
+    cancel = props.Translatable({"en": "Continue", "nl": "Verder"})
     return props.PropsUIPromptConfirm(text, ok, cancel)
 
 
-def prompt_file(platform, extensions):
-    description = props.Translatable({
-        "en": f"Please follow the download instructions and choose the file that you stored on your device. Click “Skip” at the right bottom, if you do not have a {platform} file. ",
-        "nl": f"Volg de download instructies en kies het bestand dat u opgeslagen heeft op uw apparaat. Als u geen {platform} bestand heeft klik dan op “Overslaan” rechts onder."
-    })
+def retry_no_data_confirmation():
+    text = props.Translatable(
+        {
+            "en": f"Unfortunately we could not detect any location information in your file. Continue, if you are sure that you selected the right file. Try again to select a different file.",
+            "nl": f"We hebben helaas geen locatie informatie in uw bestand gevonden. Weet u zeker dat u het juiste bestand heeft gekozen? Ga dan verder. Probeer opnieuw als u een ander bestand wilt kiezen.",
+        }
+    )
+    ok = props.Translatable({"en": "Try again", "nl": "Probeer opnieuw"})
+    cancel = props.Translatable({"en": "Continue", "nl": "Verder"})
+    return props.PropsUIPromptConfirm(text, ok, cancel)
+
+
+def prompt_file():
+    description = props.Translatable(
+        {
+            "en": f"Click 'Choose file' to choose the file that you received from Google. If you click 'Continue', the data that is required for research is extracted from your file.",
+            "nl": f"Klik op ‘Kies bestand’ om het bestand dat u ontvangen hebt van Google te kiezen. Als u op 'Verder' klikt worden de gegevens die nodig zijn voor het onderzoek uit uw bestand gehaald.",
+        }
+    )
 
     return props.PropsUIPromptFileInput(description, extensions)
 
 
-def doSomethingWithTheFile(platform, filename):
-    return extract_zip_contents(filename)
-
-
-def extract_zip_contents(filename):
-    names = []
-    try:
-        file = zipfile.ZipFile(filename)
-        data = []
-        for name in file.namelist():
-            names.append(name)
-            info = file.getinfo(name)
-            data.append((name, info.compress_size, info.file_size))
-        return data
-    except zipfile.error:
-        return "invalid"
-
-
-def prompt_consent(id, data, meta_data):
-
-    table_title = props.Translatable({
-        "en": "Zip file contents",
-        "nl": "Inhoud zip bestand"
-    })
-
-    log_title = props.Translatable({
-        "en": "Log messages",
-        "nl": "Log berichten"
-    })
-
-    data_frame = pd.DataFrame(data, columns=["filename", "compressed size", "size"])
-    table = props.PropsUIPromptConsentFormTable("zip_content", table_title, data_frame)
+def prompt_consent(tables, meta_data):
+    log_title = props.Translatable({"en": "Log messages", "nl": "Log berichten"})
+    tables = [
+        props.PropsUIPromptConsentFormTable(table.id, table.title, table.data_frame)
+        for table in tables
+    ]
     meta_frame = pd.DataFrame(meta_data, columns=["type", "message"])
     meta_table = props.PropsUIPromptConsentFormTable("log_messages", log_title, meta_frame)
     return props.PropsUIPromptConsentForm([table], [meta_table])
