@@ -1,7 +1,7 @@
 import fnmatch
 import csv
 import io
-from datetime import datetime
+from datetime import datetime, timedelta
 from collections import namedtuple
 
 import port.api.props as props
@@ -12,6 +12,7 @@ import zipfile
 
 ExtractionResult = namedtuple("ExtractionResult", ["id", "title", "data_frame"])
 filter_start_date = datetime(2017, 1, 1)
+unix_epoch = datetime(1970, 1, 1)
 
 
 def get_in(dct, *key_path):
@@ -25,30 +26,32 @@ def get_in(dct, *key_path):
 def parse_csv_to_dataframe(records):
     data = []
     for record in records:
-        timestamp = datetime.fromisoformat(
-            record["com.samsung.health.step_count.create_time"]
-        )
+        unix_time = int(record["day_time"]) / 1000
+        timestamp = unix_epoch + timedelta(days=unix_time / 86400)
 
         if timestamp < filter_start_date:
             continue
 
-        steps = int(record["com.samsung.health.step_count.count"])
-        data.append([timestamp, steps])
+        device = record["deviceuuid"]
+        steps = int(record["count"])
+        data.append([device, timestamp, steps])
 
-    return pd.DataFrame(data, columns=["timestamp", "stepCount"])
+    return pd.DataFrame(data, columns=["device", "timestamp", "stepCount"])
 
 
 def aggregate_steps_by_day(df):
     if df.empty:
-        return pd.DataFrame(columns=["date", "stepCount"])
+        return pd.DataFrame(columns=["date", "device", "stepCount"])
     df["date"] = df["timestamp"].dt.strftime("%Y-%m-%d")
-    aggregated_df = df.groupby(["date"])["stepCount"].sum().reset_index()
+    aggregated_df = df.groupby(["date", "device"])["stepCount"].sum().reset_index()
     return aggregated_df
 
 
 def extract(df):
     df = aggregate_steps_by_day(df)
-    df = df.rename(columns={"date": "Datum", "stepCount": "Aantal"})
+    df = df.rename(
+        columns={"date": "Datum", "stepCount": "Aantal", "device": "Apparaat ID"}
+    )
     return [
         ExtractionResult(
             id="step_count",
@@ -179,7 +182,7 @@ def prompt_consent(tables, meta_data):
 
 
 def filter_files(file_list):
-    pattern = "*com.samsung.shealth.tracker.pedometer_step_count.*.csv"
+    pattern = "*com.samsung.shealth.step_daily_trend.*.csv"
     return [f for f in file_list if fnmatch.fnmatch(f, pattern)]
 
 
