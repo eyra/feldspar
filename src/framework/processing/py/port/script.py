@@ -10,6 +10,7 @@ import pandas as pd
 import zipfile
 
 ExtractionResult = namedtuple("ExtractionResult", ["id", "title", "data_frame"])
+filter_start_date = datetime(2017, 1, 1)
 
 
 def get_in(dct, *key_path):
@@ -36,6 +37,9 @@ def parse_json_to_dataframe(parsed_dict):
         start_timestamp = datetime.fromisoformat(
             start_timestamp_str[:-1]
         )  # remove the 'Z'
+
+        if start_timestamp < filter_start_date:
+            continue
 
         if meters := get_in(segment, "waypointPath", "distanceMeters"):
             distance_meters = meters
