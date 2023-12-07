@@ -82,10 +82,20 @@ export function isCommand (arg: any): arg is Command {
 }
 
 export type CommandSystem =
-  CommandSystemDonate
+  CommandSystemDonate |
+  CommandSystemExit
 
 export function isCommandSystem (arg: any): arg is CommandSystem {
   return isCommandSystemDonate(arg)
+}
+
+export interface CommandSystemExit {
+  __type__: 'CommandSystemExit'
+  code: number
+  info: string
+}
+export function isCommandSystemExit (arg: any): arg is CommandSystemExit {
+  return isInstanceOf<CommandSystemExit>(arg, 'CommandSystemExit', ['code', 'info'])
 }
 
 export type CommandUI =
