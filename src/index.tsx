@@ -28,3 +28,11 @@ if (process.env.REACT_APP_BUILD!=='standalone' && process.env.NODE_ENV === 'prod
   console.log('Running with fake storage')
   run(new FakeStorage())
 }
+
+const observer = new ResizeObserver(() => {
+  const height = window.document.body.scrollHeight;
+  const action = "resize"
+  window.parent.postMessage({action, height}, "*")
+});
+
+observer.observe(window.document.body);
