@@ -1,5 +1,5 @@
 import { CommandHandler, ProcessingEngine } from '../types/modules'
-import {isCommand, Response } from '../types/commands'
+import {CommandSystemEvent, isCommand, Response } from '../types/commands'
 
 export default class WorkerProcessingEngine implements ProcessingEngine {
   sessionId: String
@@ -21,6 +21,14 @@ export default class WorkerProcessingEngine implements ProcessingEngine {
       )
       this.handleEvent(event)
     }
+  }
+
+  sendSystemEvent(name: string): void {
+    const command: CommandSystemEvent = { __type__: 'CommandSystemEvent', name}
+    this.commandHandler.onCommand(command).then(
+      () => {},
+      () => {}
+    )
   }
 
   handleEvent (event: any): void {
@@ -50,7 +58,10 @@ export default class WorkerProcessingEngine implements ProcessingEngine {
     const waitForInitialization: Promise<void> = this.waitForInitialization()
 
     waitForInitialization.then(
-      () => { this.firstRunCycle() },
+      () => { 
+        this.sendSystemEvent("initialized") 
+        this.firstRunCycle() 
+      },
       () => {}
     )
   }
