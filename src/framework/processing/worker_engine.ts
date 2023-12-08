@@ -1,5 +1,5 @@
 import { CommandHandler, ProcessingEngine } from '../types/modules'
-import { CommandSystemDonate, isCommand, Response } from '../types/commands'
+import {isCommand, Response } from '../types/commands'
 
 export default class WorkerProcessingEngine implements ProcessingEngine {
   sessionId: String
@@ -21,18 +21,6 @@ export default class WorkerProcessingEngine implements ProcessingEngine {
       )
       this.handleEvent(event)
     }
-
-    this.trackUserStart(sessionId)
-  }
-
-  trackUserStart (sessionId: string): void {
-    const key = `${sessionId}-tracking`
-    const jsonString = JSON.stringify({ message: 'user started' })
-    const command: CommandSystemDonate = { __type__: 'CommandSystemDonate', key, json_string: jsonString }
-    this.commandHandler.onCommand(command).then(
-      () => {},
-      () => {}
-    )
   }
 
   handleEvent (event: any): void {
