@@ -21,6 +21,7 @@ export const ConsentForm = (props: Props): JSX.Element => {
   const tablesIn = React.useRef<Array<PropsUITable & TableContext>>(parseTables(props.tables))
   const metaTables = React.useRef<Array<PropsUITable & TableContext>>(parseTables(props.metaTables))
   const tablesOut = React.useRef<Array<PropsUITable & TableContext>>(tablesIn.current)
+  const [waiting, setWaiting] = React.useState<boolean>(false)
 
   const { locale, resolve } = props
   const { description, donateQuestion, donateButton, cancelButton } = prepareCopy(props)
@@ -101,6 +102,7 @@ export const ConsentForm = (props: Props): JSX.Element => {
   }
 
   function handleDonate (): void {
+    setWaiting(true)
     const value = serializeConsentData()
     resolve?.({ __type__: 'PayloadJSON', value })
   }
@@ -155,7 +157,7 @@ export const ConsentForm = (props: Props): JSX.Element => {
         <div>
           <BodyLarge margin='' text={donateQuestion} />
           <div className='flex flex-row gap-4 mt-4 mb-4'>
-            <PrimaryButton label={donateButton} onClick={handleDonate} color='bg-success text-white' />
+            <PrimaryButton label={donateButton} onClick={handleDonate} color='bg-success text-white' spinning={waiting} />
             <LabelButton label={cancelButton} onClick={handleCancel} color='text-grey1' />
           </div>
         </div>
