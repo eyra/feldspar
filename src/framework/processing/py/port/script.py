@@ -169,9 +169,6 @@ def process(sessionId):
                 meta_data.append(("debug", f"{platform}: donate consent data"))
                 yield donate(f"{sessionId}-{platform}", consent_result.value)
 
-    yield exit(0, "Success")
-    yield render_end_page()
-
 
 def render_end_page():
     page = props.PropsUIPageEnd()
