@@ -122,8 +122,6 @@ def extract_daily_steps_from_zip(zip_path):
 
 
 def process(sessionId):
-    yield donate(f"{sessionId}-tracking", '[{ "message": "user entered script" }]')
-
     meta_data = []
     meta_data.append(("debug", f"start"))
 
@@ -157,18 +155,12 @@ def process(sessionId):
             break
 
     # STEP 2: ask for consent
-    if data is not None:
-        meta_data.append(("debug", f"prompt consent"))
-        prompt = prompt_consent(data, meta_data)
-        consent_result = yield render_donation_page(prompt, 67)
-        if consent_result.__type__ == "PayloadJSON":
-            meta_data.append(("debug", f"donate consent data"))
-            yield donate(f"{sessionId}", consent_result.value)
-
-
-def render_end_page():
-    page = props.PropsUIPageEnd()
-    return CommandUIRender(page)
+    meta_data.append(("debug", f"prompt consent"))
+    prompt = prompt_consent(data, meta_data)
+    consent_result = yield render_donation_page(prompt, 67)
+    if consent_result.__type__ == "PayloadJSON":
+        meta_data.append(("debug", f"donate consent data"))
+        yield donate(f"{sessionId}", consent_result.value)
 
 
 def render_donation_page(body, progress):
@@ -176,8 +168,7 @@ def render_donation_page(body, progress):
         props.Translatable({"en": "Apple Health", "nl": "Apple Health"})
     )
 
-    footer = props.PropsUIFooter(progress)
-    page = props.PropsUIPageDonation("ihealth", header, body, footer)
+    page = props.PropsUIPageDonation("ihealth", header, body)
     return CommandUIRender(page)
 
 
@@ -207,9 +198,10 @@ def prompt_file():
 def prompt_consent(table, meta_data):
     log_title = props.Translatable({"en": "Log messages", "nl": "Log berichten"})
 
-    tables = [
-        props.PropsUIPromptConsentFormTable(table.id, table.title, table.data_frame)
-    ]
+    tables = []
+    if table is not None:
+        tables = [props.PropsUIPromptConsentFormTable(table.id, table.title, table.data_frame)]
+        
     meta_frame = pd.DataFrame(meta_data, columns=["type", "message"])
     meta_table = props.PropsUIPromptConsentFormTable(
         "log_messages", log_title, meta_frame
@@ -219,7 +211,3 @@ def prompt_consent(table, meta_data):
 
 def donate(key, json_string):
     return CommandSystemDonate(key, json_string)
-
-
-def exit(code, info):
-    return CommandSystemExit(code, info)
