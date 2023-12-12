@@ -41,22 +41,6 @@ class PropsUIHeader:
 
 
 @dataclass
-class PropsUIFooter:
-    """Page footer
-
-    Attributes:
-        progressPercentage: float indicating the progress in the flow
-    """
-    progressPercentage: float
-
-    def toDict(self):
-        dict = {}
-        dict["__type__"] = "PropsUIFooter"
-        dict["progressPercentage"] = self.progressPercentage
-        return dict
-
-
-@dataclass
 class PropsUIPromptConfirm:
     """Retry submitting a file page
 
@@ -195,12 +179,10 @@ class PropsUIPageDonation:
         platform: the platform name the user is curently in the process of donating data from
         header: page header
         body: main body of the page, see the individual classes for an explanation
-        footer: page footer
     """
     platform: str
     header: PropsUIHeader
     body: PropsUIPromptRadioInput | PropsUIPromptConsentForm | PropsUIPromptFileInput | PropsUIPromptConfirm
-    footer: PropsUIFooter
 
     def toDict(self):
         dict = {}
@@ -208,7 +190,6 @@ class PropsUIPageDonation:
         dict["platform"] = self.platform
         dict["header"] = self.header.toDict()
         dict["body"] = self.body.toDict()
-        dict["footer"] = self.footer.toDict()
         return dict
 
 
