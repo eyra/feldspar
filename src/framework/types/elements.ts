@@ -330,16 +330,6 @@ export function isPropsUIHeader (arg: any): arg is PropsUIHeader {
   return isInstanceOf<PropsUIHeader>(arg, 'PropsUIHeader', ['title'])
 }
 
-// Footer
-
-export interface PropsUIFooter {
-  __type__: 'PropsUIFooter'
-  progressPercentage: number
-}
-export function isPropsUIFooter (arg: any): arg is PropsUIFooter {
-  return isInstanceOf<PropsUIFooter>(arg, 'PropsUIFooter', ['progressPercentage'])
-}
-
 // TABLE
 
 export interface PropsUITable {
