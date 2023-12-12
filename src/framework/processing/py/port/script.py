@@ -112,9 +112,7 @@ def process(sessionId):
         fileResult = yield render_donation_page(promptFile)
         if fileResult.__type__ == "PayloadString":
             meta_data.append(("debug", f"extracting file"))
-            print("A")
             extractionResult = extract_data_from_zip(fileResult.value)
-            print("B")
             if extractionResult == "invalid":
                 meta_data.append(
                     ("debug", f"prompt confirmation to retry file selection")
