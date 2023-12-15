@@ -3,6 +3,7 @@ from port.api.commands import (CommandSystemDonate, CommandSystemExit, CommandUI
 
 import pandas as pd
 import zipfile
+import json
 
 
 def process(sessionId):
@@ -40,6 +41,9 @@ def process(sessionId):
     if consent_result.__type__ == "PayloadJSON":
         meta_data.append(("debug", f"{key}: donate consent data"))
         yield donate(f"{sessionId}-{key}", consent_result.value)
+    if consent_result.__type__ == "PayloadFalse":   
+        value = json.dumps('{"status" : "donation declined"}')
+        yield donate(f"{sessionId}-{key}", value)
 
 
 def render_donation_page(body):
