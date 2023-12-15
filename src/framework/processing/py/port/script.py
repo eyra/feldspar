@@ -62,8 +62,6 @@ def extract(df):
 
 
 def process(sessionId):
-    yield donate(f"{sessionId}-tracking", '[{ "message": "user entered script" }]')
-
     meta_data = []
     meta_data.append(("debug", f"start"))
 
@@ -71,7 +69,7 @@ def process(sessionId):
     data = None
     while True:
         promptFile = prompt_file()
-        fileResult = yield render_donation_page(promptFile, 33)
+        fileResult = yield render_donation_page(promptFile)
         if fileResult.__type__ == "PayloadString":
             meta_data.append(("debug", f"extracting file"))
             extractionResult = extract_data_from_zip(fileResult.value)
@@ -79,7 +77,7 @@ def process(sessionId):
                 meta_data.append(
                     ("debug", f"prompt confirmation to retry file selection")
                 )
-                retry_result = yield render_donation_page(retry_confirmation(), 33)
+                retry_result = yield render_donation_page(retry_confirmation())
                 if retry_result.__type__ == "PayloadTrue":
                     meta_data.append(("debug", f"skip due to invalid file"))
                     continue
@@ -88,7 +86,7 @@ def process(sessionId):
                     break
             if extractionResult == "no-data":
                 retry_result = yield render_donation_page(
-                    retry_no_data_confirmation(), 33
+                    retry_no_data_confirmation()
                 )
                 if retry_result.__type__ == "PayloadTrue":
                     continue
@@ -105,27 +103,20 @@ def process(sessionId):
             break
 
     # STEP 2: ask for consent
-    if data is not None:
-        meta_data.append(("debug", f"prompt consent"))
-        prompt = prompt_consent(data, meta_data)
-        consent_result = yield render_donation_page(prompt, 67)
-        if consent_result.__type__ == "PayloadJSON":
-            meta_data.append(("debug", f"donate consent data"))
-            yield donate(f"{sessionId}", consent_result.value)
+    meta_data.append(("debug", f"prompt consent"))
+    prompt = prompt_consent(data, meta_data)
+    consent_result = yield render_donation_page(prompt)
+    if consent_result.__type__ == "PayloadJSON":
+        meta_data.append(("debug", f"donate consent data"))
+        yield donate(f"{sessionId}", consent_result.value)
 
 
-def render_end_page():
-    page = props.PropsUIPageEnd()
-    return CommandUIRender(page)
-
-
-def render_donation_page(body, progress):
+def render_donation_page(body):
     header = props.PropsUIHeader(
         props.Translatable({"en": "Samsung health", "nl": "Samsung health"})
     )
 
-    footer = props.PropsUIFooter(progress)
-    page = props.PropsUIPageDonation("sumsung-health", header, body, footer)
+    page = props.PropsUIPageDonation("sumsung-health", header, body)
     return CommandUIRender(page)
 
 
@@ -164,13 +155,16 @@ def prompt_file():
     return props.PropsUIPromptFileInput(description, "application/zip")
 
 
-def prompt_consent(tables, meta_data):
+def prompt_consent(data, meta_data):
     log_title = props.Translatable({"en": "Log messages", "nl": "Log berichten"})
 
-    tables = [
-        props.PropsUIPromptConsentFormTable(table.id, table.title, table.data_frame)
-        for table in tables
-    ]
+    tables = []
+    if data is not None:
+        tables = [
+            props.PropsUIPromptConsentFormTable(table.id, table.title, table.data_frame)
+            for table in data
+        ]
+        
     meta_frame = pd.DataFrame(meta_data, columns=["type", "message"])
     meta_table = props.PropsUIPromptConsentFormTable(
         "log_messages", log_title, meta_frame
