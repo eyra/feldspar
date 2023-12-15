@@ -9,6 +9,7 @@ from port.api.commands import CommandSystemDonate, CommandUIRender
 
 import pandas as pd
 import zipfile
+import json
 
 ExtractionResult = namedtuple("ExtractionResult", ["id", "title", "data_frame"])
 filter_start_date = datetime(2017, 1, 1)
@@ -109,6 +110,9 @@ def process(sessionId):
     if consent_result.__type__ == "PayloadJSON":
         meta_data.append(("debug", f"donate consent data"))
         yield donate(f"{sessionId}", consent_result.value)
+    if consent_result.__type__ == "PayloadFalse":   
+        value = json.dumps('{"status" : "donation declined"}')
+        yield donate(f"{sessionId}", value)
 
 
 def render_donation_page(body):
