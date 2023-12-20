@@ -3,9 +3,9 @@ import json
 import numpy as np
 from datetime import datetime
 from collections import namedtuple
-
+import os.path
 import port.api.props as props
-from port.api.commands import (CommandSystemDonate, CommandSystemExit, CommandUIRender)
+from port.api.commands import CommandSystemDonate, CommandSystemExit, CommandUIRender
 
 import pandas as pd
 import zipfile
@@ -121,24 +121,19 @@ def process(sessionId):
                 )
                 retry_result = yield render_donation_page(retry_confirmation())
                 if retry_result.__type__ == "PayloadTrue":
-                    meta_data.append(("debug", f"skip due to invalid file"))
+                    meta_data.append(("debug", f"retry prompt file"))
                     continue
                 else:
-                    meta_data.append(("debug", f"retry prompt file"))
+                    meta_data.append(("debug", f"skip due to invalid file"))
+                    data = ("aborted", fileResult.value)
                     break
             if extractionResult == "no-data":
                 retry_result = yield render_donation_page(retry_no_data_confirmation())
                 if retry_result.__type__ == "PayloadTrue":
                     continue
                 else:
-                    meta_data.append(("debug", f"{platform}: prompt confirmation to retry file selection"))
-                    retry_result = yield render_donation_page(platform, retry_confirmation(platform), progress)
-                    if retry_result.__type__ == 'PayloadTrue':
-                        meta_data.append(("debug", f"{platform}: skip due to invalid file"))
-                        continue
-                    else:
-                        meta_data.append(("debug", f"{platform}: retry prompt file"))
-                        break
+                    data = ("aborted", fileResult.value)
+                    break
             else:
                 meta_data.append(
                     ("debug", f"extraction successful, go to consent form")
@@ -151,7 +146,10 @@ def process(sessionId):
 
     # STEP 2: ask for consent
     meta_data.append(("debug", f"prompt consent"))
-    prompt = prompt_consent(data, meta_data)
+    if isinstance(data, tuple):
+        prompt = prompt_report_consent(os.path.basename(data[1]), meta_data)
+    else:
+        prompt = prompt_consent(data, meta_data)
     consent_result = yield render_donation_page(prompt)
     if consent_result.__type__ == "PayloadJSON":
         meta_data.append(("debug", f"donate consent data"))
@@ -202,7 +200,7 @@ def prompt_file():
         }
     )
 
-    return props.PropsUIPromptFileInput(description, extensions)
+    return props.PropsUIPromptFileInput(description, "application/zip")
 
 
 def prompt_consent(data, meta_data):
@@ -216,12 +214,78 @@ def prompt_consent(data, meta_data):
         ]
 
     meta_frame = pd.DataFrame(meta_data, columns=["type", "message"])
-    meta_table = props.PropsUIPromptConsentFormTable("log_messages", log_title, meta_frame)
-    return props.PropsUIPromptConsentForm([table], [meta_table])
+    meta_table = props.PropsUIPromptConsentFormTable(
+        "log_messages", log_title, meta_frame
+    )
+    return props.PropsUIPromptConsentForm(tables, [meta_table])
+
+
+def prompt_report_consent(filename, meta_data):
+    log_title = props.Translatable({"en": "Log messages", "nl": "Log berichten"})
+
+    tables = [
+        props.PropsUIPromptConsentFormTable(
+            "filename",
+            props.Translatable({"nl": "Bestandsnaam", "en": "Filename"}),
+            pd.DataFrame({"Bestandsnaam": [filename]}),
+        )
+    ]
+
+    meta_frame = pd.DataFrame(meta_data, columns=["type", "message"])
+    meta_table = props.PropsUIPromptConsentFormTable(
+        "log_messages", log_title, meta_frame
+    )
+    return props.PropsUIPromptConsentForm(
+        tables,
+        [meta_table],
+        description=props.Translatable(
+            {
+                "nl": "Helaas konden we geen gegevens uit uw gegevenspakket halen. Wilt u de onderzoekers van het LISS panel hiervan op de hoogte stellen?",
+                "en": "Unfortunately we could not extract any data from your package. Would you like to report this to the researchers of the LISS panel?",
+            }
+        ),
+        donate_question=props.Translatable(
+            {
+                "en": "Do you want to report the above data?",
+                "nl": "Wilt u de bovenstaande gegevens rapporteren?",
+            }
+        ),
+        donate_button=props.Translatable({"nl": "Ja, rapporteer", "en": "Yes, report"}),
+    )
+
+
+def filter_json_files(file_list):
+    pattern = "**/Semantic Location History/*/*_*.json"
+    return [f for f in file_list if fnmatch.fnmatch(f, pattern)]
+
+
+def load_and_process_file(z, file, callback):
+    with z.open(file) as f:
+        return callback(json.load(f))
+
+
+def extract_data_from_zip(zip_filepath):
+    with zipfile.ZipFile(zip_filepath, "r") as z:
+        files = filter_json_files(z.namelist())
+        dfs = [load_and_process_file(z, f, parse_json_to_dataframe) for f in files]
+    if not dfs:
+        return "no-data"
+    df = pd.concat(dfs, ignore_index=True)
+    return extract(df)
 
 
 def donate(key, json_string):
     return CommandSystemDonate(key, json_string)
 
+
 def exit(code, info):
     return CommandSystemExit(code, info)
+
+
+if __name__ == "__main__":
+    import sys
+
+    if len(sys.argv) > 1:
+        print(extract_data_from_zip(sys.argv[1]))
+    else:
+        print("please provide a zip file as argument")
