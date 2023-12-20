@@ -1,3 +1,9 @@
+import fnmatch
+import json
+import numpy as np
+from datetime import datetime
+from collections import namedtuple
+
 import port.api.props as props
 from port.api.commands import (CommandSystemDonate, CommandSystemExit, CommandUIRender)
 
@@ -69,7 +75,7 @@ def aggregate_distance_by_day_activity(df):
 
 def extract(df):
     aggregated_df = aggregate_distance_by_day_activity(df)
-    aggregated_df["Afstand in km"] = aggregated_df["distanceMeters"] / 1000
+    aggregated_df["Afstand in m"] = aggregated_df["distanceMeters"].apply(np.ceil)
 
     results = []
     for activity_type, title in [
@@ -85,7 +91,7 @@ def extract(df):
         df = (
             df.drop(columns=["distanceMeters", "activityType", "startTimestamp"])
             .reset_index(drop=True)
-            .reindex(columns=["Datum", "Afstand in km"])
+            .reindex(columns=["Datum", "Afstand in m"])
         )
         results.append(
             ExtractionResult(
@@ -121,9 +127,7 @@ def process(sessionId):
                     meta_data.append(("debug", f"retry prompt file"))
                     break
             if extractionResult == "no-data":
-                retry_result = yield render_donation_page(
-                    retry_no_data_confirmation()
-                )
+                retry_result = yield render_donation_page(retry_no_data_confirmation())
                 if retry_result.__type__ == "PayloadTrue":
                     continue
                 else:
@@ -152,7 +156,7 @@ def process(sessionId):
     if consent_result.__type__ == "PayloadJSON":
         meta_data.append(("debug", f"donate consent data"))
         yield donate(f"{sessionId}", consent_result.value)
-    if consent_result.__type__ == "PayloadFalse":   
+    if consent_result.__type__ == "PayloadFalse":
         value = json.dumps('{"status" : "donation declined"}')
         yield donate(f"{sessionId}", value)
 
