@@ -24,7 +24,7 @@ export const ConsentForm = (props: Props): JSX.Element => {
   const [waiting, setWaiting] = React.useState<boolean>(false)
 
   const { locale, resolve } = props
-  const { description, donateQuestion, donateButton, cancelButton } = prepareCopy(props)
+  const cancelButton  = Translator.translate(cancelButtonLabel, props.locale)
 
   function rowCell (dataFrame: any, column: string, row: number): PropsUITableCell {
     const text = String(dataFrame[column][`${row}`])
@@ -151,35 +151,20 @@ export const ConsentForm = (props: Props): JSX.Element => {
 
   return (
     <>
-      <BodyLarge text={description} />
+      <BodyLarge text={Translator.translate(props.description ?? description, locale)} />
       <div className='flex flex-col gap-8'>
         {tablesIn.current.map((table) => renderTable(table))}
         <div>
-          <BodyLarge margin='' text={donateQuestion} />
+          <BodyLarge margin='' text={Translator.translate(props.donateQuestion ?? donateQuestionLabel, locale)} />
           <div className='flex flex-row gap-4 mt-4 mb-4'>
-            <PrimaryButton label={donateButton} onClick={handleDonate} color='bg-success text-white' spinning={waiting} />
+            <PrimaryButton label={Translator.translate(props.donateButton ?? donateButtonLabel, locale)} 
+                          onClick={handleDonate} color='bg-success text-white' spinning={waiting} />
             <LabelButton label={cancelButton} onClick={handleCancel} color='text-grey1' />
           </div>
         </div>
       </div>
     </>
   )
-}
-
-interface Copy {
-  description: string
-  donateQuestion: string
-  donateButton: string
-  cancelButton: string
-}
-
-function prepareCopy ({ locale }: Props): Copy {
-  return {
-    description: Translator.translate(description, locale),
-    donateQuestion: Translator.translate(donateQuestionLabel, locale),
-    donateButton: Translator.translate(donateButtonLabel, locale),
-    cancelButton: Translator.translate(cancelButtonLabel, locale)
-  }
 }
 
 const donateQuestionLabel = new TextBundle()

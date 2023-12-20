@@ -43,6 +43,9 @@ export function isPropsUIPromptRadioInput (arg: any): arg is PropsUIPromptRadioI
 }
 export interface PropsUIPromptConsentForm {
   __type__: 'PropsUIPromptConsentForm'
+  description?: Text
+  donateQuestion?: Text
+  donateButton?: Text
   tables: PropsUIPromptConsentFormTable[]
   metaTables: PropsUIPromptConsentFormTable[]
 }
