@@ -163,7 +163,7 @@ def test_extract_sample_data(sample_data):
     assert results[0].title.translations["nl"] == "Gefietst"
     for result in results:
         assert "distanceMeters" not in result.data_frame.columns
-        assert "Afstand in meter" in result.data_frame.columns
+        assert "Afstand in m" in result.data_frame.columns
 
 
 def test_empty_zip(tmp_path):
