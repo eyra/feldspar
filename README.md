@@ -5,7 +5,7 @@ Integration mechanism for developers to build an extension (flow application) th
 ## Digital Trace Data Donation (Port)
 More information about the Port program can be found [here](https://eyra.notion.site/Port-Program-4bbf0bbc466547af95f05c609405c4b2?pvs=4). 
 
-Data donation allows researchers to invite participants to share their data download packages (DDPs). However, DDPs potentially contain very sensitive data and often not all data is needed to answer the specific research question under investigation. Feldspar enables researchers to extract only the data of interest through local processing (on the participants device). Participants can then inspect the extracted data after which they can consent (or decline) to donate. Feldspar creates a frontend that guides participants through the data donation steps.
+Data donation allows researchers to invite participants to share their data download packages (DDPs). However, DDPs potentially contain very sensitive data and often not all data is needed to answer a specific research question. Feldspar enables researchers to extract only the data of interest through local processing (on the participants device). Participants can then inspect the extracted data after which they can consent (or decline) to donate. Feldspar creates a frontend that guides participants through the data donation steps.
 
 Feldspar is open-source under the AGPL license and allows researchers to configure their own data donation study.
 
