@@ -1,27 +1,15 @@
 # Feldspar
 
-Integration mechanism for developers to build an extension that can be hosted on the Next platform. An example of this is Port, a software service program that enables individuals to donate their digital trace data. See documentation below.
+Integration mechanism for developers to build an extension (flow application) that can be hosted on the Next platform. This is for example used in the Port program for data donation, as described below. 
 
-# Port: A frontend for data donation
+## Digital Trace Data Donation (Port)
+More information about the Port program can be found [here](https://eyra.notion.site/Port-Program-4bbf0bbc466547af95f05c609405c4b2?pvs=4). 
 
-Port is a research tool that enables individuals to donate their digital trace data for academic research in a secure, transparent, and privacy-preserving way.
+Data donation allows researchers to invite participants to share their data download packages (DDPs). However, DDPs potentially contain very sensitive data and often not all data is needed to answer the specific research question under investigation. Feldspar enables researchers to extract only the data of interest through local processing (on the participants device). Participants can then inspect the extracted data after which they can consent (or decline) to donate. Feldspar creates a frontend that guides participants through the data donation steps.
 
-Data donation allows researchers to invite participants to share their data download packages (DDPs).
-A major challenge is however that DDPs potentially contain very sensitive data, and often not all data is needed to answer the specific research question under investigation.
-To circumvent these challenges, an alternative framework was developed:
+Feldspar is open-source under the AGPL license and allows researchers to configure their own data donation study.
 
-1. The research participant requests their personal DDP at the platform of interest.
-2. They download it onto their own personal device.
-3. By means of local processing, only the features of interest to the researcher are extracted from that DDP.
-4. The participant inspects the extracted features after which they can consent (or decline) to donate.
-
-To allow for the local processing (step 3) to take place, we developed the software Port.
-Port creates a frontend that guides participants through the data donation steps.
-
-Port is open-source and allows for researchers to fully configure their own data donation study.
-
-_Note_: Port is only a frontend. In order for it to be used in a live study, it needs to be hosted with a server and integrate with a solution to store and retrieve the donated data.
-This repository will discuss a some readily available options.
+_Note_: Feldspar is only a frontend. In order for it to be used in a live study, it needs to be hosted on a server and connected to a storage to retrieve the donated data.
 
 ## Installation
 
