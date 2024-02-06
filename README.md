@@ -48,6 +48,19 @@ In order to start a local instance of Port go through the following steps:
 
 If the installation went correctly you should be greeted with a mock data donation study.
 
+## Release
+
+1. Create release file:
+
+  ```sh
+   npm run release
+   ```
+
+2. Use release file:
+
+The generated release.zip file can be installed on the Next platform. [screenshot Next of verwijzen naar andere file op mono]
+
+
 ## How to use Port
 
 A researcher can implement their own data donation flow by altering the Python script.
