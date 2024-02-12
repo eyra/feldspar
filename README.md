@@ -16,11 +16,11 @@ Feldspar enables researchers to:
 
 Feldspar is open-source under the AGPL license and allows researchers to configure the frontend that guides participants through the data donation steps. 
 
-_Note_: Feldspar is only a frontend. In order for it to be used in a live study, it needs to be hosted on a server and connected to a storage to retrieve the donated data.
+_Note_: Feldspar is only a frontend. In order for it to be used in a live study, it needs to be hosted on a server and connected to a storage to retrieve the donated data. To run a local instance see [installation](https://github.com/eyra/feldspar/tree/master?tab=readme-ov-file#installation). To create a release for the Next platform or the self hosted version, see [release](https://github.com/eyra/feldspar/tree/master?tab=readme-ov-file#release)
 
 ## Installation
 
-In order to start a local instance of Port go through the following steps:
+In order to start a local instance of Feldspar go through the following steps:
 
 0. Pre-requisites
 
@@ -33,7 +33,7 @@ In order to start a local instance of Port go through the following steps:
 1. Install dependencies & tools:
 
    ```sh
-   cd ./port
+   cd ./feldspar
    npm install
    npm run prepare
    ```
