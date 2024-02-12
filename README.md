@@ -22,7 +22,7 @@ _Note_: Feldspar is only a frontend. In order for it to be used in a live study,
 
 In order to start a local instance of Feldspar go through the following steps:
 
-0. Pre-requisites
+0. Prerequisites
 
    - Fork or clone this repo
    - Install [Node.js](https://nodejs.org/en)
@@ -58,26 +58,25 @@ If the installation went correctly you should be greeted with a mock data donati
 
 2. Use release file:
 
-The generated release.zip file can be installed on the Next platform. [screenshot Next of verwijzen naar andere file op mono]
+The generated release.zip file can be installed on the Next platform or the self-hosted version, by adding a "Donate task" and at "Flow application" select the generated zip-file.
 
 
-## How to use Port
+## How to use Feldspar?
 
-A researcher can implement their own data donation flow by altering the Python script.
-The Python scripts has 2 main functions:
+You can implement your own data donation flow by altering the Python script, which can be used to:
 
-1. It determines the data donation flow. i.e. what screens (for example a file prompt) does the participant gets to see and when. You can use the Port API ([`props.py`](src/framework/processing/py/port/api/props.py)) for this.
-2. It determines what data gets extract from the participants submission. Here is were Python really shines, you can use most data extraction methods you are familiar with! (As long as it's available in [Pyodide](https://pyodide.org/en/stable/))
+1. customize the participant data donation flow in terms of screen content, type of screen (e.g. a file prompt) and screen order. You can use the Port API ([`props.py`](src/framework/processing/py/port/api/props.py)) for this.
+2. extract specific data from the participant DDP that is required for the research question. You can use the data extraction methods that are available in [Pyodide](https://pyodide.org/en/stable/)
 
 A typical script includes the following steps:
 
-1. Prompt the participant to submit a file
-2. Handling the submission from step 1. This is the step where you can extract the data you are interested in.
-3. The extracted data is presented on screen accompanied with a consent button. After consent is given, the data is sent to a storage location of the researcher.
+1. Prompt the participant to select the DDP file
+2. Extract the data of interest from the selected DDP file. Try to aggregate and anonymize as much as possible.
+3. Present the extracted data on screen in clear tables to allow the participant to investigate the data that they are about to donate and buttons to choose to either donate or not. If a data storage is connected, the extracted data is stored only when participants agree to donate.
 
-A example such a script is included in this repo: [`script.py`](src/framework/processing/py/port/script.py).
-We recommend you use that script as starting point for your own data donation study.
-You can find another example of such a script in this [repository](https://github.com/d3i-infra/port-d3i-pilot).
+Example script: [`script.py`](src/framework/processing/py/port/script.py).
+
+We recommend to use the example script as starting point for your own data donation study.
 
 ### Port API examples
 
