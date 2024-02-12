@@ -267,20 +267,18 @@ iframe.contentWindow.postMessage("init", "*", [this.channel.port2]);
 
 Would you like to get support with setting up your data donation study or host your data donation study on the Next platform? Reach out to Eyra for custom pricing: [connect@eyra.co](mailto:connect@eyra.co?subject='Data donation pricing request'). 
 
-### Previous studies done with Port
+### Example studies
 
-Here you can find a [list](https://github.com/eyra/port/wiki/Previous-data-donation-studies) of previous studies that were completed using Port. These studies can serve as inspiration or example for your own data donation study!
+The feldspar repository was previously named port. This repository is now depricated. However, you can check out the [list](https://github.com/eyra/port/wiki/Previous-data-donation-studies) of example studies that were performed using various versions of the port repository as inspiration for your data donation study.
 
-# Technical specifications of Port
+# Technical specifications of Feldspar
 
-Port is ready for use out of the box (just update the Python script). However,
-if your study requires specific adjustments (new interactive elements etc.), you
-have the flexibility to modify Port's functionalities. If customization is what
-you're after, leverage the following technical insights to suit your needs.
+If your study requires specific adjustments (new interactive elements etc.), you
+have the flexibility to modify the Feldspar functionalities. Leverage the following technical insights to suit your needs.
 
 ## Data model
 
-Port uses the following data model (also see: [src/framework/types](src/framework/types))
+Feldspar uses the following data model (also see: [src/framework/types](src/framework/types))
 
 - [Modules](src/framework/types/modules.ts)
 
@@ -356,7 +354,7 @@ See: [src/framework/processing/py/port](src/framework/processing/py/port)
 
 ## Code instructions
 
-These instructions give you some pointers on things you might like to change or add to Port.
+These instructions give you some pointers on things you might like to change or add to Feldspar.
 
 <details>
 <summary>Change copy (texts shown on the web pages)</summary>
@@ -670,22 +668,9 @@ The project uses [ts-standard](https://github.com/standard/ts-standard) for mana
 
 Before committing to github [Husky](https://github.com/typicode/husky) runs all the necessary scripts to make sure the code conforms to `ts-standard`, all the tests run green, and the `dist` folder is up-to-date.
 
-## Digital Data Donation Infrastructure (D3I)
+## Funding
 
-Port is funded by the PDI-SSH and is a collaboration between six Dutch universities and Eyra.
-
-The consortium is composed of researchers from:
-
-- University of Amsterdam
-- Radboud University Nijmegen
-- VU Amsterdam
-- Utrecht University
-- Tilburg University
-- Erasmus University Rotterdam
-
-### D3I Pilot
-
-The first phase of the project ended in December 2022 and resulted in an MVP solution to run one Port app on top of a Next bundle. This Next + Port combi can be released as a Docker image and deployed on [Azure Web App Service](https://azure.microsoft.com/en-us/products/app-service/web).
+Feldspar is part of the Port program for data donation and has been funded by the UU, PDI-SSH ([D3i project](https://datadonation.eu/)), and Eyra.
 
 # Contributing
 
@@ -696,5 +681,5 @@ We want to make contributing to this project as easy and transparent as possible
 - Submitting a fix
 - Proposing new features
 
-If you have any questions, find any bugs, or have any ideas, read how to contribute [here](https://github.com/eyra/port/blob/master/CONTRIBUTING.md).
+If you have any questions, find any bugs, or have any ideas, read how to contribute [here](https://github.com/eyra/feldspar/blob/master/CONTRIBUTING.md).
 
