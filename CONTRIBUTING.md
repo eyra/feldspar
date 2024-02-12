@@ -1,6 +1,6 @@
-# Contributing to Port
+# Contributing
 
-Thank you for your interest in contributing to Port. When contributing to Port, make sure that the changes you wish to make are in line with the project direction. 
+Thank you for your interest in contributing. When contributing, make sure that the changes you wish to make are in line with the project direction. 
 If you are not sure about this, open an issue first, so we can discuss it.
 
 We use github to host code, to track issues and feature requests, as well as to accept pull requests.
