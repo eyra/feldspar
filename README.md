@@ -16,7 +16,7 @@ Feldspar enables researchers to:
 
 Feldspar is open-source under the AGPL license and allows researchers to configure the frontend that guides participants through the data donation steps. 
 
-_Note_: Feldspar is only a frontend. In order for it to be used in a live study, it needs to be hosted on a server and connected to a storage to retrieve the donated data. To run a local instance see [installation](https://github.com/eyra/feldspar/tree/master?tab=readme-ov-file#installation). To create a release for the Next platform or the self hosted version, see [release](https://github.com/eyra/feldspar/tree/master?tab=readme-ov-file#release)
+_Note_: Feldspar is only a frontend. In order for it to be used in a live study, it needs to be hosted on a server and connected to a storage to retrieve the donated data. To run a local instance see [installation](https://github.com/eyra/feldspar/tree/master?tab=readme-ov-file#installation). To create a release for the Next platform or the self hosted version, see [release](https://github.com/eyra/feldspar/tree/master?tab=readme-ov-file#release).
 
 ## Installation
 
@@ -238,16 +238,18 @@ yield CommandSystemDonate(tracking_key, data)
 
 </details>
 
-## Use Port in a data donation study
+## Use Feldspar in a data donation study
 
-Port serves as the frontend, providing the application with which participants
-engage. It defines the flow and logic for data donation. To utilize Port in a
+Feldspar serves as the frontend, providing the application with which participants
+engage. It facilitates the flow and logic for data donation. To utilize Feldspar in a
 data donation study, it must be hosted on a server capable of storing the
-donated data.
+donated data. 
 
-You can host Port by embedding it in an
+You can host Feldspar on the Next platform or the self-hosted version as explained [here](https://github.com/eyra/feldspar/tree/master?tab=readme-ov-file#release).
+
+Alternatively, you can host Feldspar by embedding it in an
 [iframe](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe).
-After the iframe loads, send a message that includes a channel. The Port
+After the iframe loads, send a message that includes a channel. The Feldspar
 application will use this channel to relay messages with data ready for storage.
 Here's a JavaScript example:
 
@@ -255,7 +257,7 @@ Here's a JavaScript example:
 // ... wait until the iframe is loaded
 const channel = new MessageChannel();
 channel.port1.onmessage = (e) => {
-  console.log("Message receive from Port app", e);
+  console.log("Message receive from Feldspar app", e);
 };
 // get the iframe via querySelector or another method
 iframe.contentWindow.postMessage("init", "*", [this.channel.port2]);
@@ -263,8 +265,7 @@ iframe.contentWindow.postMessage("init", "*", [this.channel.port2]);
 
 ### Data donation as a service
 
-Data donation sounds intriguing but seems like a lot to handle? Don't hesitate
-to reach out to [Eyra](https://eyra.co/).
+Would you like to get support with setting up your data donation study or host your data donation study on the Next platform? Reach out to Eyra for custom pricing: [connect@eyra.co](mailto:connect@eyra.co?subject='Data donation pricing request'). 
 
 ### Previous studies done with Port
 
