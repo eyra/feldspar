@@ -20,7 +20,7 @@ _Note_: Feldspar is only a frontend. In order for it to be used in a live study,
 
 ## Installation
 
-In order to start a local instance of Feldspar go through the following steps:
+In order to start a local instance of Feldspar follow these steps:
 
 0. Prerequisites
 
@@ -72,7 +72,7 @@ A typical script includes the following steps:
 
 1. Prompt the participant to select the DDP file
 2. Extract the data of interest from the selected DDP file. Try to aggregate and anonymize as much as possible.
-3. Present the extracted data on screen in clear tables to allow the participant to investigate the data that they are about to donate and buttons to choose to either donate or not. If a data storage is connected, the extracted data is stored only when participants agree to donate.
+3. Present the extracted data on screen in clear tables to allow the participant to investigate the data that they are about to donate and buttons to choose to either donate or not (consent screen). If a data storage is connected, the extracted data is stored only when participants agree to donate.
 
 Example script: [`script.py`](src/framework/processing/py/port/script.py).
 
@@ -80,7 +80,7 @@ We recommend to use the example script as starting point for your own data donat
 
 ### Port API examples
 
-Below you can find examples on how to use the Port API in your `script.py`
+Below some examples on how to use the Port API in your `script.py`
 
 <details>
     <summary>Main function</summary>
@@ -100,7 +100,7 @@ def process(sessionId):
     yield CommandUIRender(page3)
 ```
 
-[`ScriptWrapper`](src/framework/processing/py/port/main.py) and [py_worker](src/framework/processing/py_worker.js) using `send` to iterate over the commands one by one. For more information on yield and Generators: https://realpython.com/introduction-to-python-generators
+[`ScriptWrapper`](src/framework/processing/py/port/main.py) and [py_worker](src/framework/processing/py_worker.js) using `send` to iterate over the commands one by one. For more information on yield and Generators visit https://realpython.com/introduction-to-python-generators.
 
 </details>
 
@@ -122,8 +122,8 @@ platform = "Twitter"
 progress = 25
 
 file_input_description = props.Translatable({
-    "en": f"Please follow the download instructions and choose the file that you stored on your device. Click “Skip” at the right bottom, if you do not have a {platform} file. ",
-    "nl": f"Volg de download instructies en kies het bestand dat u opgeslagen heeft op uw apparaat. Als u geen {platform} bestand heeft klik dan op “Overslaan” rechts onder."
+    "en": f"Please follow the download instructions and choose the file that you stored on your device.",
+    "nl": f"Volg de download instructies en kies het bestand dat u opgeslagen heeft op uw apparaat."
 })
 allowed_extensions = "application/zip, text/plain"
 file_input = props.PropsUIPromptFileInput(file_input_description, allowed_extensions)
@@ -132,7 +132,7 @@ file_input = props.PropsUIPromptFileInput(file_input_description, allowed_extens
 </details>
 
 <details>
-<summary>Create a consent page</summary>
+<summary>Create consent tabels</summary>
 
 ```Python
 import pandas as pd
@@ -161,7 +161,7 @@ consent_form = props.PropsUIPromptConsentForm(tables, meta_tables)
 </details>
 
 <details>
-<summary>Create donation page</summary>
+<summary>Create donation screens</summary>
 
 ```Python
 header = props.PropsUIHeader(title)
@@ -173,7 +173,7 @@ page = props.PropsUIPageDonation(platform, header, body, footer)
 </details>
 
 <details>
-<summary>Create page with radio buttons</summary>
+<summary>Create user input screen with radio buttons</summary>
 
 ```Python
 header = props.PropsUIHeader(title)
@@ -185,7 +185,7 @@ page = props.PropsUIPageDonation(platform, header, body, footer)
 </details>
 
 <details>
-<summary>Handling the result from a file input</summary>
+<summary>Extract data from input file</summary>
 
 ```Python
 page = props.PropsUIPageDonation(platform, header, file_input, footer)
@@ -197,8 +197,8 @@ if result.__type__ == "PayloadString":
     filename = result.value
     zipfile = zipfile.ZipFile(filename)
 
-    # Extract the data you are interested contained in zipfile
-    # Typically you will use your own written functions here
+    # Extract the data of interest from the selected file
+    # Write your own functions for data extraction
     ...
 else:
     # No file selected
@@ -207,7 +207,7 @@ else:
 </details>
 
 <details>
-<summary>Handling consent result</summary>
+<summary>Handle user consent input</summary>
 
 ```Python
 platform = "Twitter"
@@ -220,7 +220,7 @@ if result.__type__ == "PayloadJSON":
     # User gave consent
     yield CommandSystemDonate(donation_key, result.value)
 else:
-    # User declined or skipped
+    # User declined
 ```
 
 </details>
