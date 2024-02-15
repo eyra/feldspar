@@ -1,5 +1,5 @@
 {
-  "name": "port",
+  "name": "feldspar",
   "version": "0.1.0",
   "private": true,
   "homepage": ".",
@@ -31,8 +31,7 @@
     "start:app": "react-scripts start",
     "start": "concurrently 'npm run start:py' 'npm run start:app'",
     "build": "npm run build:py && npm run build:app && npm run build:css",
-    "archive": "cd build && zip -r ../release.zip .",
-    "release": "npm run build && npm run archive",
+    "release": "npm run build && ./release.sh $npm_package_name",
     "test": "react-scripts test",
     "lint": "npm run fix:ts"
   },
