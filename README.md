@@ -1,33 +1,28 @@
 # Feldspar
 
-Integration mechanism for developers to build an extension that can be hosted on the Next platform. An example of this is Port, a software service program that enables individuals to donate their digital trace data. See documentation below.
+Integration mechanism for developers to build an extension (flow application) that can be hosted on the Next platform. This is for example used in the Port program for data donation, as described below. 
 
-# Port: A frontend for data donation
+## Digital Trace Data Donation (Port)
+More information about the Port program can be found [here](https://eyra.notion.site/Port-Program-4bbf0bbc466547af95f05c609405c4b2?pvs=4). 
 
-Port is a research tool that enables individuals to donate their digital trace data for academic research in a secure, transparent, and privacy-preserving way.
+Data donation allows researchers to invite participants to share their data download packages (DDPs). However, DDPs potentially contain very sensitive data and often not all data is needed to answer a specific research question. 
 
-Data donation allows researchers to invite participants to share their data download packages (DDPs).
-A major challenge is however that DDPs potentially contain very sensitive data, and often not all data is needed to answer the specific research question under investigation.
-To circumvent these challenges, an alternative framework was developed:
+Feldspar enables researchers to:
+- extract only the data of interest through local processing (on the participants device) using Python (Pyodide)
+- prompt participants for questions about the data
+- enable participants to inspect the extracted data before donation
+- enable participants to delete table rows before donation
+- consent or decline to donate the extracted data
 
-1. The research participant requests their personal DDP at the platform of interest.
-2. They download it onto their own personal device.
-3. By means of local processing, only the features of interest to the researcher are extracted from that DDP.
-4. The participant inspects the extracted features after which they can consent (or decline) to donate.
+Feldspar is open-source under the AGPL license and allows researchers to configure the frontend that guides participants through the data donation steps. 
 
-To allow for the local processing (step 3) to take place, we developed the software Port.
-Port creates a frontend that guides participants through the data donation steps.
-
-Port is open-source and allows for researchers to fully configure their own data donation study.
-
-_Note_: Port is only a frontend. In order for it to be used in a live study, it needs to be hosted with a server and integrate with a solution to store and retrieve the donated data.
-This repository will discuss a some readily available options.
+_Note_: Feldspar is only a frontend. In order for it to be used in a live study, it needs to be hosted on a server and connected to a storage to retrieve the donated data. To run a local instance see [installation](https://github.com/eyra/feldspar/tree/master?tab=readme-ov-file#installation). To create a release for the Next platform or the self hosted version, see [release](https://github.com/eyra/feldspar/tree/master?tab=readme-ov-file#release).
 
 ## Installation
 
-In order to start a local instance of Port go through the following steps:
+In order to start a local instance of Feldspar follow these steps:
 
-0. Pre-requisites
+0. Prerequisites
 
    - Fork or clone this repo
    - Install [Node.js](https://nodejs.org/en)
@@ -38,7 +33,7 @@ In order to start a local instance of Port go through the following steps:
 1. Install dependencies & tools:
 
    ```sh
-   cd ./port
+   cd ./feldspar
    npm install
    npm run prepare
    ```
@@ -53,27 +48,39 @@ In order to start a local instance of Port go through the following steps:
 
 If the installation went correctly you should be greeted with a mock data donation study.
 
-## How to use Port
+## Release
 
-A researcher can implement their own data donation flow by altering the Python script.
-The Python scripts has 2 main functions:
+1. Create release file:
 
-1. It determines the data donation flow. i.e. what screens (for example a file prompt) does the participant gets to see and when. You can use the Port API ([`props.py`](src/framework/processing/py/port/api/props.py)) for this.
-2. It determines what data gets extract from the participants submission. Here is were Python really shines, you can use most data extraction methods you are familiar with! (As long as it's available in [Pyodide](https://pyodide.org/en/stable/))
+  ```sh
+   npm run release
+   ```
+
+2. Use release file:
+
+The generated release.zip file can be installed on the Next platform or the self-hosted version, by adding a "Donate task" and at "Flow application" select the generated zip-file.
+
+
+## How to use Feldspar?
+
+You can implement your own data donation flow by altering the Python script, which can be used to:
+
+1. customize the participant data donation flow in terms of screen content, type of screen (e.g. a file prompt) and screen order. You can use the Port API ([`props.py`](src/framework/processing/py/port/api/props.py)) for this.
+2. extract specific data from the participant DDP that is required for the research question. You can use the data extraction methods that are available in [Pyodide](https://pyodide.org/en/stable/)
 
 A typical script includes the following steps:
 
-1. Prompt the participant to submit a file
-2. Handling the submission from step 1. This is the step where you can extract the data you are interested in.
-3. The extracted data is presented on screen accompanied with a consent button. After consent is given, the data is sent to a storage location of the researcher.
+1. Prompt the participant to select the DDP file
+2. Extract the data of interest from the selected DDP file. Try to aggregate and anonymize as much as possible.
+3. Present the extracted data on screen in clear tables to allow the participant to investigate the data that they are about to donate and buttons to choose to either donate or not (consent screen). If a data storage is connected, the extracted data is stored only when participants agree to donate.
 
-A example such a script is included in this repo: [`script.py`](src/framework/processing/py/port/script.py).
-We recommend you use that script as starting point for your own data donation study.
-You can find another example of such a script in this [repository](https://github.com/d3i-infra/port-d3i-pilot).
+Example script: [`script.py`](src/framework/processing/py/port/script.py).
+
+We recommend to use the example script as starting point for your own data donation study.
 
 ### Port API examples
 
-Below you can find examples on how to use the Port API in your `script.py`
+Below some examples on how to use the Port API in your `script.py`
 
 <details>
     <summary>Main function</summary>
@@ -93,7 +100,7 @@ def process(sessionId):
     yield CommandUIRender(page3)
 ```
 
-[`ScriptWrapper`](src/framework/processing/py/port/main.py) and [py_worker](src/framework/processing/py_worker.js) using `send` to iterate over the commands one by one. For more information on yield and Generators: https://realpython.com/introduction-to-python-generators
+[`ScriptWrapper`](src/framework/processing/py/port/main.py) and [py_worker](src/framework/processing/py_worker.js) using `send` to iterate over the commands one by one. For more information on yield and Generators visit https://realpython.com/introduction-to-python-generators.
 
 </details>
 
@@ -115,8 +122,8 @@ platform = "Twitter"
 progress = 25
 
 file_input_description = props.Translatable({
-    "en": f"Please follow the download instructions and choose the file that you stored on your device. Click “Skip” at the right bottom, if you do not have a {platform} file. ",
-    "nl": f"Volg de download instructies en kies het bestand dat u opgeslagen heeft op uw apparaat. Als u geen {platform} bestand heeft klik dan op “Overslaan” rechts onder."
+    "en": f"Please follow the download instructions and choose the file that you stored on your device.",
+    "nl": f"Volg de download instructies en kies het bestand dat u opgeslagen heeft op uw apparaat."
 })
 allowed_extensions = "application/zip, text/plain"
 file_input = props.PropsUIPromptFileInput(file_input_description, allowed_extensions)
@@ -125,7 +132,7 @@ file_input = props.PropsUIPromptFileInput(file_input_description, allowed_extens
 </details>
 
 <details>
-<summary>Create a consent page</summary>
+<summary>Create consent tabels</summary>
 
 ```Python
 import pandas as pd
@@ -154,7 +161,7 @@ consent_form = props.PropsUIPromptConsentForm(tables, meta_tables)
 </details>
 
 <details>
-<summary>Create donation page</summary>
+<summary>Create donation screens</summary>
 
 ```Python
 header = props.PropsUIHeader(title)
@@ -166,7 +173,7 @@ page = props.PropsUIPageDonation(platform, header, body, footer)
 </details>
 
 <details>
-<summary>Create page with radio buttons</summary>
+<summary>Create user input screen with radio buttons</summary>
 
 ```Python
 header = props.PropsUIHeader(title)
@@ -178,7 +185,7 @@ page = props.PropsUIPageDonation(platform, header, body, footer)
 </details>
 
 <details>
-<summary>Handling the result from a file input</summary>
+<summary>Extract data from input file</summary>
 
 ```Python
 page = props.PropsUIPageDonation(platform, header, file_input, footer)
@@ -190,8 +197,8 @@ if result.__type__ == "PayloadString":
     filename = result.value
     zipfile = zipfile.ZipFile(filename)
 
-    # Extract the data you are interested contained in zipfile
-    # Typically you will use your own written functions here
+    # Extract the data of interest from the selected file
+    # Write your own functions for data extraction
     ...
 else:
     # No file selected
@@ -200,7 +207,7 @@ else:
 </details>
 
 <details>
-<summary>Handling consent result</summary>
+<summary>Handle user consent input</summary>
 
 ```Python
 platform = "Twitter"
@@ -213,7 +220,7 @@ if result.__type__ == "PayloadJSON":
     # User gave consent
     yield CommandSystemDonate(donation_key, result.value)
 else:
-    # User declined or skipped
+    # User declined
 ```
 
 </details>
@@ -231,16 +238,18 @@ yield CommandSystemDonate(tracking_key, data)
 
 </details>
 
-## Use Port in a data donation study
+## Use Feldspar in a data donation study
 
-Port serves as the frontend, providing the application with which participants
-engage. It defines the flow and logic for data donation. To utilize Port in a
+Feldspar serves as the frontend, providing the application with which participants
+engage. It facilitates the flow and logic for data donation. To utilize Feldspar in a
 data donation study, it must be hosted on a server capable of storing the
-donated data.
+donated data. 
 
-You can host Port by embedding it in an
+You can host Feldspar on the Next platform or the self-hosted version as explained [here](https://github.com/eyra/feldspar/tree/master?tab=readme-ov-file#release).
+
+Alternatively, you can host Feldspar by embedding it in an
 [iframe](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe).
-After the iframe loads, send a message that includes a channel. The Port
+After the iframe loads, send a message that includes a channel. The Feldspar
 application will use this channel to relay messages with data ready for storage.
 Here's a JavaScript example:
 
@@ -248,7 +257,7 @@ Here's a JavaScript example:
 // ... wait until the iframe is loaded
 const channel = new MessageChannel();
 channel.port1.onmessage = (e) => {
-  console.log("Message receive from Port app", e);
+  console.log("Message receive from Feldspar app", e);
 };
 // get the iframe via querySelector or another method
 iframe.contentWindow.postMessage("init", "*", [this.channel.port2]);
@@ -256,23 +265,20 @@ iframe.contentWindow.postMessage("init", "*", [this.channel.port2]);
 
 ### Data donation as a service
 
-Data donation sounds intriguing but seems like a lot to handle? Don't hesitate
-to reach out to [Eyra](https://eyra.co/).
+Would you like to get support with setting up your data donation study or host your data donation study on the Next platform? Reach out to Eyra for custom pricing: [connect@eyra.co](mailto:connect@eyra.co?subject='Data donation pricing request'). 
 
-### Previous studies done with Port
+### Example studies
 
-Here you can find a [list](https://github.com/eyra/port/wiki/Previous-data-donation-studies) of previous studies that were completed using Port. These studies can serve as inspiration or example for your own data donation study!
+The feldspar repository was previously named port. This repository is now depricated. However, you can check out the [list](https://github.com/eyra/port/wiki/Previous-data-donation-studies) of example studies that were performed using various versions of the port repository as inspiration for your data donation study.
 
-# Technical specifications of Port
+# Technical specifications of Feldspar
 
-Port is ready for use out of the box (just update the Python script). However,
-if your study requires specific adjustments (new interactive elements etc.), you
-have the flexibility to modify Port's functionalities. If customization is what
-you're after, leverage the following technical insights to suit your needs.
+If your study requires specific adjustments (new interactive elements etc.), you
+have the flexibility to modify the Feldspar functionalities. Leverage the following technical insights to suit your needs.
 
 ## Data model
 
-Port uses the following data model (also see: [src/framework/types](src/framework/types))
+Feldspar uses the following data model (also see: [src/framework/types](src/framework/types))
 
 - [Modules](src/framework/types/modules.ts)
 
@@ -348,7 +354,7 @@ See: [src/framework/processing/py/port](src/framework/processing/py/port)
 
 ## Code instructions
 
-These instructions give you some pointers on things you might like to change or add to Port.
+These instructions give you some pointers on things you might like to change or add to Feldspar.
 
 <details>
 <summary>Change copy (texts shown on the web pages)</summary>
@@ -662,22 +668,9 @@ The project uses [ts-standard](https://github.com/standard/ts-standard) for mana
 
 Before committing to github [Husky](https://github.com/typicode/husky) runs all the necessary scripts to make sure the code conforms to `ts-standard`, all the tests run green, and the `dist` folder is up-to-date.
 
-## Digital Data Donation Infrastructure (D3I)
+## Funding
 
-Port is funded by the PDI-SSH and is a collaboration between six Dutch universities and Eyra.
-
-The consortium is composed of researchers from:
-
-- University of Amsterdam
-- Radboud University Nijmegen
-- VU Amsterdam
-- Utrecht University
-- Tilburg University
-- Erasmus University Rotterdam
-
-### D3I Pilot
-
-The first phase of the project ended in December 2022 and resulted in an MVP solution to run one Port app on top of a Next bundle. This Next + Port combi can be released as a Docker image and deployed on [Azure Web App Service](https://azure.microsoft.com/en-us/products/app-service/web).
+Feldspar is part of the Port program for data donation and has been funded by the UU, PDI-SSH ([D3i project](https://datadonation.eu/)), and Eyra.
 
 # Contributing
 
@@ -688,5 +681,5 @@ We want to make contributing to this project as easy and transparent as possible
 - Submitting a fix
 - Proposing new features
 
-If you have any questions, find any bugs, or have any ideas, read how to contribute [here](https://github.com/eyra/port/blob/master/CONTRIBUTING.md).
+If you have any questions, find any bugs, or have any ideas, read how to contribute [here](https://github.com/eyra/feldspar/blob/master/CONTRIBUTING.md).
 
