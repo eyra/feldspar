@@ -267,10 +267,6 @@ iframe.contentWindow.postMessage("init", "*", [this.channel.port2]);
 
 Would you like to get support with setting up your data donation study or host your data donation study on the Next platform? Reach out to Eyra for custom pricing: [connect@eyra.co](mailto:connect@eyra.co). 
 
-### Example studies
-
-The feldspar repository was previously named port. This repository is now depricated. However, you can check out the [list](https://github.com/eyra/port/wiki/Previous-data-donation-studies) of example studies that were performed using various versions of the port repository as inspiration for your data donation study.
-
 # Technical specifications of Feldspar
 
 If your study requires specific adjustments (new interactive elements etc.), you
