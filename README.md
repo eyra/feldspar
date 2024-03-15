@@ -265,7 +265,7 @@ iframe.contentWindow.postMessage("init", "*", [this.channel.port2]);
 
 ### Data donation as a service
 
-Would you like to get support with setting up your data donation study or host your data donation study on the Next platform? Reach out to Eyra for custom pricing: [connect@eyra.co](mailto:connect@eyra.co?subject='Data donation pricing request'). 
+Would you like to get support with setting up your data donation study or host your data donation study on the Next platform? Reach out to Eyra for custom pricing: [connect@eyra.co](mailto:connect@eyra.co). 
 
 ### Example studies
 
