@@ -1,4 +1,5 @@
 import port.api.props as props
+from port.api.assets import *
 from port.api.commands import (CommandSystemDonate, CommandSystemExit, CommandUIRender)
 
 import pandas as pd
@@ -7,6 +8,8 @@ import json
 
 
 def process(sessionId):
+    print(read_asset("hello_world.txt"))
+
     key = "zip-contents-example"
     meta_data = []
     meta_data.append(("debug", f"{key}: start"))

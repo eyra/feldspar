@@ -78,6 +78,42 @@ Example script: [`script.py`](src/framework/processing/py/port/script.py).
 
 We recommend to use the example script as starting point for your own data donation study.
 
+### Port Assets
+
+Assets needed in the script can be copied to: `src/framework/processing/py/port/assets/`
+
+In your script you can access these assets as follows:
+
+#### Asset path
+
+```Python
+from port.api.assets import *
+
+def process(sessionId):
+     path = asset_path("hello_world.txt")
+     file = open(path, "r")
+     txt = file.read()
+```
+
+#### Open asset
+
+```Python
+from port.api.assets import *
+
+def process(sessionId):
+     file = open_asset("hello_world.txt")
+     txt = file.read()
+```
+
+#### Read asset
+
+```Python
+from port.api.assets import *
+
+def process(sessionId):
+     txt = read_asset("hello_world.txt")
+```
+
 ### Port API examples
 
 Below some examples on how to use the Port API in your `script.py`
