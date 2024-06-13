@@ -89,23 +89,27 @@ function prepareCopy ({ description, extensions, locale }: Props): Copy {
 const continueButtonLabel = (): Translatable => {
   return new TextBundle()
     .add('en', 'Continue')
+    .add('de', 'Weiter')
     .add('nl', 'Verder')
 }
 
 const selectButtonLabel = (): Translatable => {
   return new TextBundle()
     .add('en', 'Choose file')
+    .add('de', 'Datei wählen')
     .add('nl', 'Kies bestand')
 }
 
 const note = (): Translatable => {
   return new TextBundle()
     .add('en', 'Note: The process to extract the correct data from the file is done on your own computer. No data is stored or sent yet.')
+    .add('de', 'Anmerkung: Der Prozess der Extraktion der korrekten Daten aus der Datei erfolgt auf Ihrem eigenen Computer. Es werden noch keine Daten gespeichert oder gesendet.')
     .add('nl', 'NB: Het proces om de juiste gegevens uit het bestand te halen gebeurt op uw eigen computer. Er worden nog geen gegevens opgeslagen of verstuurd.')
 }
 
 const placeholder = (): Translatable => {
   return new TextBundle()
     .add('en', 'Choose a file')
+    .add('de', 'Eine Datei wählen')
     .add('nl', 'Kies een bestand')
 }

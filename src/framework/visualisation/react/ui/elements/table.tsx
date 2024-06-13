@@ -458,51 +458,62 @@ interface Copy {
 
 const link = new TextBundle()
   .add('en', 'Check out')
+  .add('de', 'Siehe')
   .add('nl', 'Bekijk')
 
 const searchPlaceholder = new TextBundle()
   .add('en', 'Search')
+  .add('de', 'Suche')
   .add('nl', 'Zoeken')
 
 const noDataLabel = new TextBundle()
   .add('en', 'No data found')
+  .add('de', 'Keine Daten gefunden')
   .add('nl', 'Geen gegevens gevonden')
 
 const noDataLeftLabel = new TextBundle()
   .add('en', 'All data removed')
+  .add('de', 'Alle Daten gelöscht')
   .add('nl', 'Alle gegevens verwijderd')
 
 const noResultsLabel = new TextBundle()
   .add('en', 'No search results')
+  .add('de', 'Keine Suchergebnisse')
   .add('nl', 'Geen zoek resultaten')
 
 const editLabel = new TextBundle()
   .add('en', 'Adjust')
+  .add('de', 'Anpassen')
   .add('nl', 'Aanpassen')
 
 const undoLabel = new TextBundle()
   .add('en', 'Undo')
+  .add('de', 'Wiederherstellung')
   .add('nl', 'Herstel')
 
 const deleteLabel = new TextBundle()
   .add('en', 'Delete selected')
+  .add('de', 'Auswahl löschen')
   .add('nl', 'Verwijder selectie')
 
 function deletedNoneRowLabel (): TextBundle {
   return new TextBundle()
     .add('en', 'No adjustments')
+    .add('de', 'Keine Anpassungen')
     .add('nl', 'Geen aanpassingen')
 }
 
 function deletedRowLabel (amount: number): TextBundle {
   return new TextBundle()
     .add('en', `${amount} row deleted`)
+    .add('de', `${amount} Zeile entfernt`)
     .add('nl', `${amount} rij verwijderd`)
 }
 
 function deletedRowsLabel (amount: number): TextBundle {
   return new TextBundle()
     .add('en', `${amount} rows deleted`)
+    .add('de', `${amount} Zeilen entfernt`)
     .add('nl', `${amount} rijen verwijderd`)
 }
 
@@ -515,12 +526,14 @@ function deletedLabel (amount: number): TextBundle {
 function singlePageLabel (): TextBundle {
   return new TextBundle()
     .add('en', '1 page')
+    .add('de', '1 Seite')
     .add('nl', '1 pagina')
 }
 
 function multiplePagesLabel (amount: number): TextBundle {
   return new TextBundle()
     .add('en', `${amount} pages`)
+    .add('de', `${amount} Seiten`)
     .add('nl', `${amount} pagina's`)
 }
 

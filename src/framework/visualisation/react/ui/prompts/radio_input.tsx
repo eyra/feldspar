@@ -79,5 +79,6 @@ export const RadioInput = (props: Props): JSX.Element => {
 const continueButtonLabel = (): Translatable => {
   return new TextBundle()
     .add('en', 'Continue')
+    .add('de', 'Weiter')
     .add('nl', 'Doorgaan')
 }

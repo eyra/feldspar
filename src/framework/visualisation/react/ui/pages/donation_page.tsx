@@ -66,5 +66,6 @@ function prepareCopy ({ header: { title }, locale }: Props): Copy {
 const forwardButtonLabel = (): Translatable => {
   return new TextBundle()
     .add('en', 'Skip')
+    .add('de', 'Überspringen')
     .add('nl', 'Overslaan')
 }

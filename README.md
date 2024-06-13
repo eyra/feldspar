@@ -175,6 +175,7 @@ import pandas as pd
 
 table1_title = props.Translatable({
     "en": "Title 1",
+    "de": "Titel 1",
     "nl": "Titel 1"
 })
 table1_data = pd.DataFrame(data, columns=["columnX", "columnY", "columnZ"])
@@ -182,6 +183,7 @@ table1 = props.PropsUIPromptConsentFormTable("table_1", table1_title, table1_dat
 
 table2_title = props.Translatable({
     "en": "Title 2",
+    "de": "Titel 2",
     "nl": "Titel 2"
 })
 table2_data = pd.DataFrame(data, columns=["columnA", "columnB", "columnC", "columnD"])
@@ -405,6 +407,7 @@ from port.api.props import Translatable
 
 copy = Translatable({
     "en": "English text",
+    "de": "Deutscher Text",
     "nl": "Nederlandse tekst"
 })
 ```
@@ -436,6 +439,7 @@ export const MyComponent = ({ dynamicCopy, locale }: Props): JSX.Element => {
 const staticCopy = (): Translatable => {
     return new TextBundle()
         .add('en', 'English')
+        .add('de', 'Deutsch')
         .add('nl', 'Nederlands')
 }
 ```
