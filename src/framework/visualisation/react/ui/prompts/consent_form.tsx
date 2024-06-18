@@ -184,5 +184,5 @@ const cancelButtonLabel = new TextBundle()
 
 const description = new TextBundle()
   .add('en', 'Determine whether you would like to donate the data below. Carefully check the data and adjust when required. With your donation you contribute to the previously described research. Thank you in advance.')
-  .add('de', 'Entscheiden Sie, ob Sie die nachstehenden Angaben spenden möchten. Bitte überprüfen Sie die Angaben sorgfältig und passen Sie sie ggf. an. Mit Ihrer Spende tragen Sie zu der oben beschriebenen Forschung bei. Wir danken Ihnen im Voraus.')
+  .add('de', 'Bestimmen Sie, ob Sie die untenstehenden Daten spenden möchten. Überprüfen Sie die Daten sorgfältig und passen Sie sie bei Bedarf an. Mit Ihrer Spende tragen Sie zur zuvor beschriebenen Forschung bei. Vielen Dank im Voraus.')
   .add('nl', 'Bepaal of u de onderstaande gegevens wilt doneren. Bekijk de gegevens zorgvuldig en pas zo nodig aan. Met uw donatie draagt u bij aan het eerder beschreven onderzoek. Alvast hartelijk dank.')
