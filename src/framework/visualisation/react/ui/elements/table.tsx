@@ -458,12 +458,12 @@ interface Copy {
 
 const link = new TextBundle()
   .add('en', 'Check out')
-  .add('de', 'Siehe')
+  .add('de', 'Weiter')
   .add('nl', 'Bekijk')
 
 const searchPlaceholder = new TextBundle()
   .add('en', 'Search')
-  .add('de', 'Suche')
+  .add('de', 'Suchen')
   .add('nl', 'Zoeken')
 
 const noDataLabel = new TextBundle()
@@ -488,7 +488,7 @@ const editLabel = new TextBundle()
 
 const undoLabel = new TextBundle()
   .add('en', 'Undo')
-  .add('de', 'Wiederherstellung')
+  .add('de', 'Wiederherstellen')
   .add('nl', 'Herstel')
 
 const deleteLabel = new TextBundle()
@@ -499,7 +499,7 @@ const deleteLabel = new TextBundle()
 function deletedNoneRowLabel (): TextBundle {
   return new TextBundle()
     .add('en', 'No adjustments')
-    .add('de', 'Keine Anpassungen')
+    .add('de', 'Keine Änderungen')
     .add('nl', 'Geen aanpassingen')
 }
 

@@ -169,7 +169,7 @@ export const ConsentForm = (props: Props): JSX.Element => {
 
 const donateQuestionLabel = new TextBundle()
   .add('en', 'Do you want to donate the above data?')
-  .add('de', 'Möchten Sie die oben genannten Angaben spenden?')
+  .add('de', 'Möchten Sie die oben genannten Daten spenden?')
   .add('nl', 'Wilt u de bovenstaande gegevens doneren?')
 
 const donateButtonLabel = new TextBundle()
@@ -184,5 +184,5 @@ const cancelButtonLabel = new TextBundle()
 
 const description = new TextBundle()
   .add('en', 'Determine whether you would like to donate the data below. Carefully check the data and adjust when required. With your donation you contribute to the previously described research. Thank you in advance.')
-  .add('de', 'Bestimmen Sie, ob Sie die untenstehenden Daten spenden möchten. Überprüfen Sie die Daten sorgfältig und passen Sie sie bei Bedarf an. Mit Ihrer Spende tragen Sie zur zuvor beschriebenen Forschung bei. Vielen Dank im Voraus.')
+  .add('de', 'Legen Sie fest, ob Sie die untenstehenden Daten spenden möchten. Überprüfen Sie die Daten sorgfältig und passen Sie sie bei Bedarf an. Mit Ihrer Spende tragen Sie zur zuvor beschriebenen Forschung bei. Vielen Dank im Voraus.')
   .add('nl', 'Bepaal of u de onderstaande gegevens wilt doneren. Bekijk de gegevens zorgvuldig en pas zo nodig aan. Met uw donatie draagt u bij aan het eerder beschreven onderzoek. Alvast hartelijk dank.')

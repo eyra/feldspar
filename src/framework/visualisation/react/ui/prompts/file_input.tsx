@@ -96,20 +96,20 @@ const continueButtonLabel = (): Translatable => {
 const selectButtonLabel = (): Translatable => {
   return new TextBundle()
     .add('en', 'Choose file')
-    .add('de', 'Datei wählen')
+    .add('de', 'Datei auswählen')
     .add('nl', 'Kies bestand')
 }
 
 const note = (): Translatable => {
   return new TextBundle()
     .add('en', 'Note: The process to extract the correct data from the file is done on your own computer. No data is stored or sent yet.')
-    .add('de', 'Anmerkung: Der Prozess der Extraktion der korrekten Daten aus der Datei erfolgt auf Ihrem eigenen Computer. Es werden noch keine Daten gespeichert oder gesendet.')
+    .add('de', 'Anmerkung: Die weitere Verarbeitung der Datei erfolgt auf Ihrem eigenen Endgerät. Es werden noch keine Daten gespeichert oder weiter gesendet.')
     .add('nl', 'NB: Het proces om de juiste gegevens uit het bestand te halen gebeurt op uw eigen computer. Er worden nog geen gegevens opgeslagen of verstuurd.')
 }
 
 const placeholder = (): Translatable => {
   return new TextBundle()
     .add('en', 'Choose a file')
-    .add('de', 'Eine Datei wählen')
+    .add('de', 'Eine Datei auswählen')
     .add('nl', 'Kies een bestand')
 }
