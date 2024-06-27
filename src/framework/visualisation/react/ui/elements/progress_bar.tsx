@@ -1,9 +1,9 @@
 import { Weak } from '../../../../helpers'
-import { PropsUIProgress } from '../../../../types/elements'
+import { PropsUIProgressBar } from '../../../../types/elements'
 
-type Props = Weak<PropsUIProgress>
+type Props = Weak<PropsUIProgressBar>
 
-export const Progress = ({ percentage }: Props): JSX.Element => {
+export const ProgressBar = ({ percentage }: Props): JSX.Element => {
   return (
     <div id='progress' className='relative w-full overflow-hidden rounded-full'>
       <div className='flex flex-row items-center gap-4'>

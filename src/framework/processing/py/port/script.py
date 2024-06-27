@@ -5,6 +5,7 @@ from port.api.commands import (CommandSystemDonate, CommandSystemExit, CommandUI
 import pandas as pd
 import zipfile
 import json
+import time
 
 
 def process(sessionId):
@@ -21,11 +22,23 @@ def process(sessionId):
         promptFile = prompt_file("application/zip, text/plain")
         fileResult = yield render_donation_page(promptFile)
         if fileResult.__type__ == 'PayloadString':
+            # Extracting the zipfile
             meta_data.append(("debug", f"{key}: extracting file"))
-            extractionResult = doSomethingWithTheFile(fileResult.value)
-            if extractionResult != 'invalid':
+            extraction_result = []
+            zipfile_ref = get_zipfile(fileResult.value)
+            print(zipfile_ref, fileResult.value)
+            files = get_files(zipfile_ref)
+            fileCount = len(files)
+            for index, filename in enumerate(files):
+                percentage = ((index+1)/fileCount)*100
+                promptMessage = prompt_extraction_message(f"Extracting file: {filename}", percentage)   
+                yield render_donation_page(promptMessage)   
+                file_extraction_result = extract_file(zipfile_ref, filename)
+                extraction_result.append(file_extraction_result)
+
+            if len(extraction_result) >= 0:
                 meta_data.append(("debug", f"{key}: extraction successful, go to consent form"))
-                data = extractionResult
+                data = extraction_result
                 break
             else:
                 meta_data.append(("debug", f"{key}: prompt confirmation to retry file selection"))
@@ -88,24 +101,39 @@ def prompt_file(extensions):
 
     return props.PropsUIPromptFileInput(description, extensions)
 
+def prompt_extraction_message(message, percentage):
+    description = props.Translatable({
+        "en": "One moment please. Information is now being extracted from the selected file.",
+        "de": "Einen Moment bitte. Es werden nun Informationen aus der ausgewählten Datei extrahiert.",
+        "nl": "Een moment geduld. Informatie wordt op dit moment uit het geselecteerde bestaand gehaald."
+    })
 
-def doSomethingWithTheFile(filename):
-    return extract_zip_contents(filename)
+    return props.PropsUIPromptProgress(description, message, percentage)
 
 
-def extract_zip_contents(filename):
-    names = []
+def get_zipfile(filename):
     try:
-        file = zipfile.ZipFile(filename)
-        data = []
-        for name in file.namelist():
-            names.append(name)
-            info = file.getinfo(name)
-            data.append((name, info.compress_size, info.file_size))
-        return data
+        return zipfile.ZipFile(filename)
     except zipfile.error:
         return "invalid"
+    
+   
+def get_files(zipfile_ref):
+    try: 
+        return zipfile_ref.namelist()
+    except zipfile.error:
+        return []
 
+
+def extract_file(zipfile_ref, filename):
+    try:
+        # make it slow for demo reasons only
+        time.sleep(1)
+        info = zipfile_ref.getinfo(filename)
+        return (filename, info.compress_size, info.file_size)
+    except zipfile.error:
+        return "invalid"
+    
 
 def prompt_consent(data, meta_data):
 

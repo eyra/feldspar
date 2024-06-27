@@ -9,7 +9,7 @@ export type PropsUI =
   PropsUICheckBox |
   PropsUIRadioItem |
   PropsUISpinner |
-  PropsUIProgress |
+  PropsUIProgressBar |
   PropsUIHeader |
   PropsUITable |
   PropsUISearchBar |
@@ -310,17 +310,17 @@ export function isPropsUISpinner (arg: any): arg is PropsUISpinner {
   return isInstanceOf<PropsUISpinner>(arg, 'PropsUISpinner', ['color', 'spinning'])
 }
 
-// PROGRESS
+// PROGRESS BAR
 
-export interface PropsUIProgress {
-  __type__: 'PropsUIProgress'
+export interface PropsUIProgressBar {
+  __type__: 'PropsUIProgressBar'
   percentage: number
 }
-export function isPropsUIProgress (arg: any): arg is PropsUIProgress {
-  return isInstanceOf<PropsUIProgress>(arg, 'PropsUIProgress', ['percentage'])
+export function isPropsUIProgress (arg: any): arg is PropsUIProgressBar {
+  return isInstanceOf<PropsUIProgressBar>(arg, 'PropsUIProgressBar', ['percentage'])
 }
 
-// Header
+// HEADER
 
 export interface PropsUIHeader {
   __type__: 'PropsUIHeader'

@@ -32,6 +32,6 @@ export default class LiveBridge implements Bridge {
 
   private log (level: 'info' | 'error', ...message: any[]): void {
     const logger = level === 'info' ? console.log : console.error
-    logger("[LiveBridge]", ...message)
+    logger('[LiveBridge]', ...message)
   }
 }

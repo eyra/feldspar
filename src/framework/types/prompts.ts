@@ -3,6 +3,7 @@ import { PropsUIRadioItem, Text } from './elements'
 
 export type PropsUIPrompt =
   PropsUIPromptFileInput |
+  PropsUIPromptProgress |
   PropsUIPromptRadioInput |
   PropsUIPromptConsentForm |
   PropsUIPromptConfirm
@@ -30,6 +31,16 @@ export interface PropsUIPromptFileInput {
 }
 export function isPropsUIPromptFileInput (arg: any): arg is PropsUIPromptFileInput {
   return isInstanceOf<PropsUIPromptFileInput>(arg, 'PropsUIPromptFileInput', ['description', 'extensions'])
+}
+
+export interface PropsUIPromptProgress {
+  __type__: 'PropsUIPromptProgress'
+  description: Text
+  message: string
+  percentage?: number
+}
+export function isPropsUIPromptProgress (arg: any): arg is PropsUIPromptProgress {
+  return isInstanceOf<PropsUIPromptProgress>(arg, 'PropsUIPromptProgress', ['description', 'message'])
 }
 
 export interface PropsUIPromptRadioInput {
