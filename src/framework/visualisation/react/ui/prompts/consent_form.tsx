@@ -24,7 +24,7 @@ export const ConsentForm = (props: Props): JSX.Element => {
   const [waiting, setWaiting] = React.useState<boolean>(false)
 
   const { locale, resolve } = props
-  const cancelButton  = Translator.translate(cancelButtonLabel, props.locale)
+  const cancelButton = Translator.translate(cancelButtonLabel, props.locale)
 
   function rowCell (dataFrame: any, column: string, row: number): PropsUITableCell {
     const text = String(dataFrame[column][`${row}`])
@@ -157,8 +157,10 @@ export const ConsentForm = (props: Props): JSX.Element => {
         <div>
           <BodyLarge margin='' text={Translator.translate(props.donateQuestion ?? donateQuestionLabel, locale)} />
           <div className='flex flex-row gap-4 mt-4 mb-4'>
-            <PrimaryButton label={Translator.translate(props.donateButton ?? donateButtonLabel, locale)} 
-                          onClick={handleDonate} color='bg-success text-white' spinning={waiting} />
+            <PrimaryButton
+              label={Translator.translate(props.donateButton ?? donateButtonLabel, locale)}
+              onClick={handleDonate} color='bg-success text-white' spinning={waiting}
+            />
             <LabelButton label={cancelButton} onClick={handleCancel} color='text-grey1' />
           </div>
         </div>

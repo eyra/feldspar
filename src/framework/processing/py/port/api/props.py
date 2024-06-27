@@ -167,6 +167,29 @@ class PropsUIPromptFileInput:
         return dict
 
 
+@dataclass
+class PropsUIPromptProgress:
+    """Prompt the user information during the extraction 
+
+    Attributes:
+        description: text with an explanation
+        message: can be used to show extraction progress
+    """
+
+    description: Translatable
+    message: str
+    percentage: Optional[int] = None
+
+    def toDict(self):
+        dict = {}
+        dict["__type__"] = "PropsUIPromptProgress"
+        dict["description"] = self.description.toDict()
+        dict["message"] = self.message
+        dict["percentage"] = self.percentage
+        
+        return dict
+
+
 class RadioItem(TypedDict):
     """Radio button
 

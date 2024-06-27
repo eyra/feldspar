@@ -4,12 +4,13 @@ import TextBundle from '../../../../text_bundle'
 import { Translator } from '../../../../translator'
 import { Translatable } from '../../../../types/elements'
 import { PropsUIPageDonation } from '../../../../types/pages'
-import { isPropsUIPromptConfirm, isPropsUIPromptConsentForm, isPropsUIPromptFileInput, isPropsUIPromptRadioInput } from '../../../../types/prompts'
+import { isPropsUIPromptConfirm, isPropsUIPromptConsentForm, isPropsUIPromptFileInput, isPropsUIPromptProgress, isPropsUIPromptRadioInput } from '../../../../types/prompts'
 import { ReactFactoryContext } from '../../factory'
 import { Title1 } from '../elements/text'
 import { Confirm } from '../prompts/confirm'
 import { ConsentForm } from '../prompts/consent_form'
 import { FileInput } from '../prompts/file_input'
+import { Progress } from '../prompts/progress'
 import { RadioInput } from '../prompts/radio_input'
 import { Page } from './templates/page'
 
@@ -24,6 +25,9 @@ export const DonationPage = (props: Props): JSX.Element => {
     const body = props.body
     if (isPropsUIPromptFileInput(body)) {
       return <FileInput {...body} {...context} />
+    }
+    if (isPropsUIPromptProgress(body)) {
+      return <Progress {...body} {...context} />
     }
     if (isPropsUIPromptConfirm(body)) {
       return <Confirm {...body} {...context} />

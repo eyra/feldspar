@@ -26,7 +26,7 @@ export default class CommandRouter implements CommandHandler {
     this.bridge.send(command)
 
     if (isCommandSystemExit(command)) {
-      console.log("[CommandRouter] Application exit")
+      console.log('[CommandRouter] Application exit')
     } else {
       resolve({ __type__: 'Response', command, payload: { __type__: 'PayloadVoid', value: undefined } })
     }
