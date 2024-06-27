@@ -52,7 +52,7 @@ def process(sessionId):
 def render_donation_page(body):
     header = props.PropsUIHeader(props.Translatable({
         "en": "Port flow example",
-        "de": "Port beispiel",
+        "de": "Port Beispiel",
         "nl": "Port voorbeeld flow"
     }))
 
@@ -63,7 +63,7 @@ def render_donation_page(body):
 def retry_confirmation():
     text = props.Translatable({
         "en": "Unfortunately, we cannot process your file. Continue, if you are sure that you selected the right file. Try again to select a different file.",
-        "de": "Leider können wir Ihre Datei nicht bearbeiten. Fahren Sie fort, wenn Sie sicher sind, dass Sie die richtige Datei ausgewählt haben. Versuchen Sie erneut, eine andere Datei auszuwählen.",
+        "de": "Leider können wir Ihre Datei nicht bearbeiten. Fahren Sie fort, wenn Sie sicher sind, dass Sie die richtige Datei ausgewählt haben. Versuchen Sie, eine andere Datei auszuwählen.",
         "nl": "Helaas, kunnen we uw bestand niet verwerken. Weet u zeker dat u het juiste bestand heeft gekozen? Ga dan verder. Probeer opnieuw als u een ander bestand wilt kiezen."
     })
     ok = props.Translatable({
@@ -117,7 +117,7 @@ def prompt_consent(data, meta_data):
 
     log_title = props.Translatable({
         "en": "Log messages",
-        "en": "Logmeldungen",
+        "de": "Log Nachrichten",
         "nl": "Log berichten"
     })
 
