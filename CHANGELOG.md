@@ -11,7 +11,7 @@
 
 ## \#2 unreleased
 
-* Added: German translations (draft)
+* Added: German translations
 * Added: Support for assets available in Python
 
 

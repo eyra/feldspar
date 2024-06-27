@@ -82,7 +82,7 @@ def retry_confirmation():
 def prompt_file(extensions):
     description = props.Translatable({
         "en": "Please select any zip file stored on your device.",
-        "en": "Wählen Sie eine beliebige Zip-Datei aus, die Sie auf Ihrem Gerät gespeichert haben.",
+        "de": "Wählen Sie eine beliebige Zip-Datei aus, die Sie auf Ihrem Gerät gespeichert haben.",
         "nl": "Selecteer een willekeurige zip file die u heeft opgeslagen op uw apparaat."
     })
 
