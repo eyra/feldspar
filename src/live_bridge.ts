@@ -6,6 +6,9 @@ export default class LiveBridge implements Bridge {
 
   constructor (port: MessagePort) {
     this.port = port
+    port.onmessage = (event) => {
+      console.log("[LiveBridge] incoming event", event)
+    }
   }
 
   static create (window: Window, callback: (bridge: Bridge, locale: string) => void): void {

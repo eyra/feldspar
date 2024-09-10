@@ -10,17 +10,43 @@ export const Progress = (props: Props): JSX.Element => {
   const { resolve, percentage } = props
   const { description, message } = prepareCopy(props)
 
-  function progressBar (): JSX.Element {
-    if (percentage !== undefined) {
-      return (
-        <>
-          <div className='mt-2' />
-          <ProgressBar percentage={percentage} />
-        </>
-      )
-    } else {
-      return <></>
-    }
+  function bar (): JSX.Element {
+    return (
+      <>
+      { (percentage !== undefined || message !== undefined) &&
+        <div className='p-6 border-grey4 border-2 rounded'>
+          {messageElement()}
+          {progressElement()}
+        </div>
+      }
+      </>
+    )
+  }
+
+  
+  function messageElement(): JSX.Element {
+    return (
+      <>
+        { message !== undefined &&
+          <div className='flex-wrap text-bodylarge font-body text-grey2 text-left'>
+          {message}
+         </div>
+        }
+      </>
+    )
+  }
+
+
+  function progressElement(): JSX.Element {
+    return (
+      <>
+        { percentage !== undefined &&
+          <div className='mt-2'>
+            <ProgressBar percentage={percentage} />
+          </div>
+        }
+      </>
+    )
   }
 
   function autoResolve (): void {
@@ -37,12 +63,7 @@ export const Progress = (props: Props): JSX.Element => {
           {description}
         </div>
         <div className='mt-8' />
-        <div className='p-6 border-grey4 border-2 rounded'>
-          <div className='flex-wrap text-bodylarge font-body text-grey2 text-left'>
-            {message}
-          </div>
-          {progressBar()}
-        </div>
+        {bar()}
       </div>
     </>
   )
@@ -50,7 +71,7 @@ export const Progress = (props: Props): JSX.Element => {
 
 interface Copy {
   description: string
-  message: string
+  message?: string
 }
 
 function prepareCopy ({ description, message, locale }: Props): Copy {

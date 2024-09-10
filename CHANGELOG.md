@@ -11,6 +11,7 @@
 
 ## \#2 unreleased
 
+* Added: Load test
 * Added: Support for progress prompt
 * Added: German translations
 * Added: Support for assets available in Python

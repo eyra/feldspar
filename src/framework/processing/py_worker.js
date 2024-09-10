@@ -27,7 +27,6 @@ onmessage = (event) => {
 }
 
 function runCycle(payload) {
-  console.log('[ProcessingWorker] runCycle ' + JSON.stringify(payload))
   scriptEvent = pyScript.send(payload)
   self.postMessage({
     eventType: 'runCycleDone',
@@ -39,7 +38,6 @@ function runCycle(payload) {
 }
 
 function unwrap(response) {
-  console.log('[ProcessingWorker] unwrap response: ' + JSON.stringify(response.payload))
   return new Promise((resolve) => {
     switch (response.payload.__type__) {
       case 'PayloadFile':

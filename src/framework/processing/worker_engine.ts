@@ -15,10 +15,6 @@ export default class WorkerProcessingEngine implements ProcessingEngine {
     this.worker = worker
     this.worker.onerror = console.log
     this.worker.onmessage = (event) => {
-      console.log(
-        '[WorkerProcessingEngine] Received event from worker: ',
-        event.data.eventType
-      )
       this.handleEvent(event)
     }
   }
@@ -33,7 +29,6 @@ export default class WorkerProcessingEngine implements ProcessingEngine {
 
   handleEvent (event: any): void {
     const { eventType } = event.data
-    console.log('[ReactEngine] received eventType: ', eventType)
     switch (eventType) {
       case 'initialiseDone':
         console.log('[ReactEngine] received: initialiseDone')
@@ -41,7 +36,6 @@ export default class WorkerProcessingEngine implements ProcessingEngine {
         break
 
       case 'runCycleDone':
-        console.log('[ReactEngine] received: event', event.data.scriptEvent)
         this.handleRunCycle(event.data.scriptEvent)
         break
       default:

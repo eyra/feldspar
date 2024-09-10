@@ -2,6 +2,7 @@ import { isInstanceOf } from '../helpers'
 import { PropsUIRadioItem, Text } from './elements'
 
 export type PropsUIPrompt =
+  PropsUIPromptNumberInput |
   PropsUIPromptFileInput |
   PropsUIPromptProgress |
   PropsUIPromptRadioInput |
@@ -9,7 +10,8 @@ export type PropsUIPrompt =
   PropsUIPromptConfirm
 
 export function isPropsUIPrompt (arg: any): arg is PropsUIPrompt {
-  return isPropsUIPromptFileInput(arg) ||
+  return isPropsUIPromptNumberInput(arg) ||
+    isPropsUIPromptFileInput(arg) ||
     isPropsUIPromptRadioInput(arg) ||
     isPropsUIPromptConsentForm(arg)
 }
@@ -24,6 +26,14 @@ export function isPropsUIPromptConfirm (arg: any): arg is PropsUIPromptConfirm {
   return isInstanceOf<PropsUIPromptConfirm>(arg, 'PropsUIPromptConfirm', ['text', 'ok', 'cancel'])
 }
 
+export interface PropsUIPromptNumberInput {
+  __type__: 'PropsUIPromptNumberInput'
+  description: Text
+}
+export function isPropsUIPromptNumberInput (arg: any): arg is PropsUIPromptNumberInput {
+  return isInstanceOf<PropsUIPromptNumberInput>(arg, 'PropsUIPromptNumberInput', ['description'])
+}
+
 export interface PropsUIPromptFileInput {
   __type__: 'PropsUIPromptFileInput'
   description: Text
@@ -36,11 +46,11 @@ export function isPropsUIPromptFileInput (arg: any): arg is PropsUIPromptFileInp
 export interface PropsUIPromptProgress {
   __type__: 'PropsUIPromptProgress'
   description: Text
-  message: string
+  message?: string
   percentage?: number
 }
 export function isPropsUIPromptProgress (arg: any): arg is PropsUIPromptProgress {
-  return isInstanceOf<PropsUIPromptProgress>(arg, 'PropsUIPromptProgress', ['description', 'message'])
+  return isInstanceOf<PropsUIPromptProgress>(arg, 'PropsUIPromptProgress', ['description'])
 }
 
 export interface PropsUIPromptRadioInput {

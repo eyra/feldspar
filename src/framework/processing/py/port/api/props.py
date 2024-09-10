@@ -168,6 +168,23 @@ class PropsUIPromptFileInput:
 
 
 @dataclass
+class PropsUIPromptNumberInput:
+    """Prompt the user to submit a number
+
+    Attributes:
+        description: text with an explanation
+    """
+
+    description: Translatable
+
+    def toDict(self):
+        dict = {}
+        dict["__type__"] = "PropsUIPromptNumberInput"
+        dict["description"] = self.description.toDict()
+        return dict
+    
+
+@dataclass
 class PropsUIPromptProgress:
     """Prompt the user information during the extraction 
 
@@ -177,7 +194,7 @@ class PropsUIPromptProgress:
     """
 
     description: Translatable
-    message: str
+    message: Optional[str] = None
     percentage: Optional[int] = None
 
     def toDict(self):

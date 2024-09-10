@@ -4,7 +4,7 @@ import TextBundle from '../../../../text_bundle'
 import { Translator } from '../../../../translator'
 import { Translatable } from '../../../../types/elements'
 import { PropsUIPageDonation } from '../../../../types/pages'
-import { isPropsUIPromptConfirm, isPropsUIPromptConsentForm, isPropsUIPromptFileInput, isPropsUIPromptProgress, isPropsUIPromptRadioInput } from '../../../../types/prompts'
+import { isPropsUIPromptConfirm, isPropsUIPromptConsentForm, isPropsUIPromptFileInput, isPropsUIPromptNumberInput, isPropsUIPromptProgress, isPropsUIPromptRadioInput } from '../../../../types/prompts'
 import { ReactFactoryContext } from '../../factory'
 import { Title1 } from '../elements/text'
 import { Confirm } from '../prompts/confirm'
@@ -13,6 +13,7 @@ import { FileInput } from '../prompts/file_input'
 import { Progress } from '../prompts/progress'
 import { RadioInput } from '../prompts/radio_input'
 import { Page } from './templates/page'
+import { NumberInput } from '../prompts/number_input'
 
 type Props = Weak<PropsUIPageDonation> & ReactFactoryContext
 
@@ -23,6 +24,10 @@ export const DonationPage = (props: Props): JSX.Element => {
   function renderBody (props: Props): JSX.Element {
     const context = { locale: locale, resolve: props.resolve }
     const body = props.body
+    
+    if (isPropsUIPromptNumberInput(body)) {
+      return <NumberInput {...body} {...context} />
+    }
     if (isPropsUIPromptFileInput(body)) {
       return <FileInput {...body} {...context} />
     }
@@ -38,6 +43,7 @@ export const DonationPage = (props: Props): JSX.Element => {
     if (isPropsUIPromptRadioInput(body)) {
       return <RadioInput {...body} {...context} />
     }
+
     throw new TypeError('Unknown body type')
   }
 
