@@ -52,7 +52,7 @@
     "autoprefixer": "^10.4.12",
     "husky": "^8.0.1",
     "nodemon": "^2.0.20",
-    "postcss": "^8.4.16",
+    "postcss": "^8.4.31",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
