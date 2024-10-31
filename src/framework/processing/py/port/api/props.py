@@ -114,10 +114,12 @@ class PropsUIPromptConsentForm:
     """Tables to be shown to the participant prior to donation
 
     Attributes:
+        id: A unique string to identify the table after donation.
         tables: a list of tables
         meta_tables: a list of optional tables, for example for logging data
     """
 
+    id: str
     tables: list[PropsUIPromptConsentFormTable]
     meta_tables: list[PropsUIPromptConsentFormTable]
     description: Optional[Translatable] = None
@@ -139,6 +141,7 @@ class PropsUIPromptConsentForm:
     def toDict(self):
         dict = {}
         dict["__type__"] = "PropsUIPromptConsentForm"
+        dict["id"] = self.id
         dict["tables"] = self.translate_tables()
         dict["metaTables"] = self.translate_meta_tables()
         dict["description"] = self.description and self.description.toDict()

@@ -23,7 +23,7 @@ export const ConsentForm = (props: Props): JSX.Element => {
   const tablesOut = React.useRef<Array<PropsUITable & TableContext>>(tablesIn.current)
   const [waiting, setWaiting] = React.useState<boolean>(false)
 
-  const { locale, resolve } = props
+  const { locale, resolve, id } = props
   const cancelButton = Translator.translate(cancelButtonLabel, props.locale)
 
   function rowCell (dataFrame: any, column: string, row: number): PropsUITableCell {
@@ -104,7 +104,7 @@ export const ConsentForm = (props: Props): JSX.Element => {
   function handleDonate (): void {
     setWaiting(true)
     const value = serializeConsentData()
-    resolve?.({ __type__: 'PayloadJSON', value })
+    resolve?.({ __type__: 'PayloadDonate', "value": value, "key": id })
   }
 
   function handleCancel (): void {

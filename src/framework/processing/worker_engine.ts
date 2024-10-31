@@ -1,5 +1,5 @@
 import { CommandHandler, ProcessingEngine } from '../types/modules'
-import { CommandSystemEvent, isCommand, Response } from '../types/commands'
+import { CommandSystemEvent, CommandSystemDonate, isCommand, Response, PayloadDonate } from '../types/commands'
 
 export default class WorkerProcessingEngine implements ProcessingEngine {
   sessionId: String
@@ -88,9 +88,32 @@ export default class WorkerProcessingEngine implements ProcessingEngine {
   handleRunCycle (command: any): void {
     if (isCommand(command)) {
       this.commandHandler.onCommand(command).then(
-        (response) => this.nextRunCycle(response),
+        (response) => {
+          switch(response.payload.__type__) {
+            case "PayloadDonate":
+              const donateCommand = constructDonateCommand(response.payload)
+              this.commandHandler.onCommand(donateCommand).then(
+                (response) => {
+                  this.nextRunCycle(response)
+                }
+              )
+              break
+
+            default:
+              this.nextRunCycle(response)
+          }
+        },
         () => {}
       )
     }
   }
+}
+
+function constructDonateCommand(payload: PayloadDonate) {
+  const donateCommand: CommandSystemDonate = {
+    "__type__": "CommandSystemDonate",
+    "key": payload.key,
+    "json_string": payload.value,
+  }
+  return donateCommand
 }

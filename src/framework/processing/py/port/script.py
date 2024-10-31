@@ -52,11 +52,8 @@ def process(sessionId):
 
     # STEP 2: ask for consent
     meta_data.append(("debug", f"{key}: prompt consent"))
-    prompt = prompt_consent(data, meta_data)
+    prompt = prompt_consent(f"{sessionId}-{key}", data, meta_data)
     consent_result = yield render_donation_page(prompt)
-    if consent_result.__type__ == "PayloadJSON":
-        meta_data.append(("debug", f"{key}: donate consent data"))
-        yield donate(f"{sessionId}-{key}", consent_result.value)
     if consent_result.__type__ == "PayloadFalse":   
         value = json.dumps('{"status" : "donation declined"}')
         yield donate(f"{sessionId}-{key}", value)
@@ -135,7 +132,7 @@ def extract_file(zipfile_ref, filename):
         return "invalid"
     
 
-def prompt_consent(data, meta_data):
+def prompt_consent(id, data, meta_data):
 
     table_title = props.Translatable({
         "en": "Zip file contents",
@@ -156,7 +153,7 @@ def prompt_consent(data, meta_data):
 
     meta_frame = pd.DataFrame(meta_data, columns=["type", "message"])
     meta_table = props.PropsUIPromptConsentFormTable("log_messages", log_title, meta_frame)
-    return props.PropsUIPromptConsentForm(tables, [meta_table])
+    return props.PropsUIPromptConsentForm(id, tables, [meta_table])
 
 
 def donate(key, json_string):
