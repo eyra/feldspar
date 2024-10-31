@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional, TypedDict
+from typing import Optional, TypedDict, Dict, Any
 
 import pandas as pd
 
@@ -98,14 +98,20 @@ class PropsUIPromptConsentFormTable:
 
     id: str
     title: Translatable
-    data_frame: pd.DataFrame
+    data_frame: pd.DataFrame | Dict[str, Dict[str, Any]]
+
+    def translate_data_frame(self):
+        if isinstance(self.data_frame, pd.DataFrame):
+            return self.data_frame.to_json()
+        else:
+            return self.data_frame
 
     def toDict(self):
         dict = {}
         dict["__type__"] = "PropsUIPromptConsentFormTable"
         dict["id"] = self.id
         dict["title"] = self.title.toDict()
-        dict["data_frame"] = self.data_frame.to_json()
+        dict["data_frame"] = self.translate_data_frame()
         return dict
 
 

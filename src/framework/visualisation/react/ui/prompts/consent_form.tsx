@@ -72,7 +72,7 @@ export const ConsentForm = (props: Props): JSX.Element => {
     const id = tableData.id
     const title = Translator.translate(tableData.title, props.locale)
     const deletedRowCount = 0
-    const dataFrame = JSON.parse(tableData.data_frame)
+    const dataFrame = loadDataFrame(tableData.data_frame)
     const headCells = columnNames(dataFrame).map((column: string) => headCell(dataFrame, column))
     const head: PropsUITableHead = { __type__: 'PropsUITableHead', cells: headCells }
     const body: PropsUITableBody = { __type__: 'PropsUITableBody', rows: rows(dataFrame) }
@@ -167,6 +167,13 @@ export const ConsentForm = (props: Props): JSX.Element => {
       </div>
     </>
   )
+}
+
+function loadDataFrame(dataFrame: any) {
+  if (typeof dataFrame === "string") {
+      return JSON.parse(dataFrame)
+  } 
+  return dataFrame;
 }
 
 const donateQuestionLabel = new TextBundle()
