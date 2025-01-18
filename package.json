@@ -1,53 +1,16 @@
 {
-  "name": "feldspar",
-  "version": "0.1.0",
+  "name": "feldspar-workspace",
   "private": true,
-  "homepage": ".",
-  "dependencies": {
-    "@lottiefiles/dotlottie-react": "^0.12.1",
-    "lodash": "^4.17.21",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-scripts": "5.0.1"
-  },
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "prepare": "husky install",
-    "clean": "rm -rf ./build",
-    "build:css": "NODE_ENV=production tailwindcss build -i ./src/framework/styles.css -o ./build/styles.css --minify",
-    "build:wheel": "cd src/framework/processing/py && poetry build --format wheel",
-    "build:install-wheel": "cp -R src/framework/processing/py/dist/. ./public",
-    "build:py": "npm run build:wheel && npm run build:install-wheel",
-    "build:app": "react-scripts build",
-    "start:py": "nodemon --ext py --exec \"npm run build:py\"",
-    "start:app": "react-scripts start",
-    "start": "concurrently 'npm run start:py' 'npm run start:app'",
-    "build": "npm run build:py && npm run build:app && npm run build:css",
-    "release": "npm run build && ./release.sh $npm_package_name",
-    "test": "react-scripts test"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "build": "npm run build --workspaces",
+    "dev": "npm run start --workspaces",
+    "test": "npm run test --workspaces"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.14",
-    "@types/lodash": "^4.17.14",
-    "@types/react": "^19.0.4",
-    "@types/react-dom": "^19.0.2",
-    "autoprefixer": "^10.4.20",
-    "concurrently": "^9.1.2",
-    "husky": "^9.1.7",
-    "jest": "^29.7.0",
-    "nodemon": "^3.1.9",
-    "postcss": "^8.4.49",
-    "tailwindcss": "^3.4.17"
+    "husky": "^9.1.7"
   }
 }
