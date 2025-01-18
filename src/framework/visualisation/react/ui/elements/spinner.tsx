@@ -4,6 +4,7 @@ import { PropsUISpinner } from "../../../../types/elements";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import spinnerLight from "../../../../../assets/lottie/spinner-light.json";
 import spinnerDark from "../../../../../assets/lottie/spinner-dark.json";
+import { JSX } from "react";
 
 type Props = Weak<PropsUISpinner>;
 

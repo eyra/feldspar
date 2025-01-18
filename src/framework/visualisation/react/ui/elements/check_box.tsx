@@ -1,6 +1,7 @@
 import { PropsUICheckBox } from '../../../../types/elements'
 import CheckSvg from '../../../../../assets/images/check.svg'
 import CheckActiveSvg from '../../../../../assets/images/check_active.svg'
+import { JSX } from 'react'
 
 export const CheckBox = ({ id, selected, onSelect }: PropsUICheckBox): JSX.Element => {
   return (

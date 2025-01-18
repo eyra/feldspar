@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import React from 'react'
+import React, { JSX } from 'react'
 import { Weak } from '../../../../helpers'
 import TextBundle from '../../../../text_bundle'
 import { Translator } from '../../../../translator'

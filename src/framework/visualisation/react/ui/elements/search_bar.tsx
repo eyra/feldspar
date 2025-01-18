@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { JSX, useMemo } from 'react'
 import { Weak } from '../../../../helpers'
 import { PropsUISearchBar } from '../../../../types/elements'
 import _ from 'lodash'

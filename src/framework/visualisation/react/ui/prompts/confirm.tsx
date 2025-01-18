@@ -4,6 +4,7 @@ import { PropsUIPromptConfirm } from '../../../../types/prompts'
 import { Translator } from '../../../../translator'
 import { BodyLarge } from '../elements/text'
 import { PrimaryButton } from '../elements/button'
+import { JSX } from 'react'
 
 type Props = Weak<PropsUIPromptConfirm> & ReactFactoryContext
 

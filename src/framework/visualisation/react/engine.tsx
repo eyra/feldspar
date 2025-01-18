@@ -4,6 +4,7 @@ import { Response, Payload, CommandUIRender } from '../../types/commands'
 import { PropsUIPage } from '../../types/pages'
 import VisualisationFactory from './factory'
 import { Main } from './main'
+import { JSX } from 'react'
 
 export default class ReactEngine implements VisualisationEngine {
   factory: VisualisationFactory

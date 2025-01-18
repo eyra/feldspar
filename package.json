@@ -5,21 +5,13 @@
   "homepage": ".",
   "dependencies": {
     "@lottiefiles/dotlottie-react": "^0.12.1",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.1.0",
-    "@testing-library/user-event": "^14.5.2",
-    "@types/jest": "^29.5.14",
-    "@types/node": "^22.10.5",
-    "@types/react": "^19.0.4",
-    "@types/react-dom": "^19.0.2",
-    "concurrently": "^9.1.2",
     "lodash": "^4.17.21",
-    "web-vitals": "^4.2.4"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-scripts": "5.0.1"
   },
   "scripts": {
     "prepare": "husky install",
-    "check": "eslint . --ext .ts,.tsx",
-    "fix": "eslint . --ext .ts,.tsx --fix",
     "clean": "rm -rf ./build",
     "build:css": "NODE_ENV=production tailwindcss build -i ./src/framework/styles.css -o ./build/styles.css --minify",
     "build:wheel": "cd src/framework/processing/py && poetry build --format wheel",
@@ -31,8 +23,7 @@
     "start": "concurrently 'npm run start:py' 'npm run start:app'",
     "build": "npm run build:py && npm run build:app && npm run build:css",
     "release": "npm run build && ./release.sh $npm_package_name",
-    "test": "react-scripts test",
-    "lint": "npm run fix"
+    "test": "react-scripts test"
   },
   "browserslist": {
     "production": [
@@ -47,19 +38,16 @@
     ]
   },
   "devDependencies": {
-    "@eslint/js": "^9.18.0",
+    "@types/jest": "^29.5.14",
     "@types/lodash": "^4.17.14",
+    "@types/react": "^19.0.4",
+    "@types/react-dom": "^19.0.2",
     "autoprefixer": "^10.4.20",
-    "eslint": "^8.57.1",
-    "eslint-plugin-react": "^7.37.3",
+    "concurrently": "^9.1.2",
     "husky": "^9.1.7",
+    "jest": "^29.7.0",
     "nodemon": "^3.1.9",
     "postcss": "^8.4.49",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-scripts": "5.0.1",
-    "tailwindcss": "^3.4.17",
-    "typescript": "^5.7.3",
-    "typescript-eslint": "^8.19.1"
+    "tailwindcss": "^3.4.17"
   }
 }

@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import { Weak } from '../../../../helpers'
 import { PropsUIProgressBar } from '../../../../types/elements'
 
