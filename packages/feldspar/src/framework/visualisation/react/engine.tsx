@@ -11,6 +11,7 @@ export default class ReactEngine implements VisualisationEngine {
   factory: VisualisationFactory;
   container?: HTMLElement;
   locale!: string;
+  private root?: ReactDOM.Root;
 
   constructor(factory: VisualisationFactory) {
     this.factory = factory;
@@ -18,11 +19,16 @@ export default class ReactEngine implements VisualisationEngine {
 
   start(container: HTMLElement, locale: string): void {
     console.log("[ReactEngine] started");
+    if (this.root) {
+      this.root.unmount();
+    }
     this.container = container;
     this.locale = locale;
+    this.root = ReactDOM.createRoot(container);
   }
 
   async render(command: CommandUIRender): Promise<Response> {
+    console.debug("[ReactEngine] render", command);
     const payload = await this.renderPage(command.page);
     return { __type__: "Response", command, payload };
   }
@@ -36,15 +42,14 @@ export default class ReactEngine implements VisualisationEngine {
   }
 
   renderElements(elements: JSX.Element[]): void {
-    if (!this.container) return;
-    const root = ReactDOM.createRoot(this.container);
-    root.render(<Main elements={elements} />);
+    if (!this.root) return;
+    this.root.render(<Main elements={elements} />);
   }
 
   terminate(): void {
-    if (this.container) {
-      const root = ReactDOM.createRoot(this.container);
-      root.unmount();
+    if (this.root) {
+      this.root.unmount();
+      this.root = undefined;
     }
   }
 }

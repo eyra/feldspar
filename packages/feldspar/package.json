@@ -6,17 +6,15 @@
     "types": "dist/index.d.ts",
     "type": "module",
     "files": [
-        "dist"
+        "dist",
+        "src/processing/py_worker.js",
+        "dist/styles.css"
     ],
     "scripts": {
         "build:css": "NODE_ENV=production tailwindcss build -i ./src/framework/styles.css -o ./dist/styles.css --minify",
-        "build:wheel": "cd src/framework/processing/py && poetry build --format wheel",
-        "build:install-wheel": "cp -R src/framework/processing/py/dist/. ./dist",
-        "build:py": "npm run build:wheel && npm run build:install-wheel",
         "build:ts": "rollup -c",
-        "build": "npm run build:ts && npm run build:py && npm run build:css",
-        "start:py": "nodemon --ext py --exec \"npm run build:py\"",
-        "dev": "rollup -c -w",
+        "build": "npm run build:ts && npm run build:css",
+        "dev": "concurrently \"rollup -c -w\" \"tailwindcss build -i ./src/framework/styles.css -o ./dist/styles.css --watch\"",
         "test": "jest"
     },
     "peerDependencies": {
@@ -27,6 +25,15 @@
         "@lottiefiles/dotlottie-react": "^0.12.1",
         "@types/lodash": "^4.17.14",
         "lodash": "^4.17.21"
+    },
+    "exports": {
+        ".": {
+            "import": "./dist/index.esm.js",
+            "types": "./dist/index.d.ts"
+        },
+        "./dist/styles.css": {
+            "import": "./dist/styles.css"
+        }
     },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^28.0.2",

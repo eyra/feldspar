@@ -8,9 +8,17 @@
     "prepare": "husky install",
     "build": "npm run build --workspaces",
     "dev": "npm run start --workspaces",
-    "test": "npm run test --workspaces"
+    "test": "npm run test --workspaces",
+    "build:wheel": "cd packages/python && poetry build --format wheel",
+    "build:install-wheel": "cp -R packages/python/dist/. packages/feldspar-demo/dist",
+    "build:py": "npm run build:wheel && npm run build:install-wheel",
+    "start:py": "nodemon --ext py --exec \"npm run build:py\"",
+    "dev:feldspar": "npm run dev -w @eyra/feldspar",
+    "dev:demo": "npm run start -w @eyra/feldspar-demo",
+    "start": "npm run build:py && concurrently \"npm run start:py\" \"npm run dev:feldspar\" \"npm run dev:demo\""
   },
   "devDependencies": {
-    "husky": "^9.1.7"
+    "husky": "^9.1.7",
+    "concurrently": "^8.2.2"
   }
 }

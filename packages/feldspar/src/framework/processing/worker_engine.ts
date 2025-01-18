@@ -54,7 +54,6 @@ export default class WorkerProcessingEngine implements ProcessingEngine {
 
   start (): void {
     console.log('[WorkerProcessingEngine] started')
-
     const waitForInitialization: Promise<void> = this.waitForInitialization()
 
     waitForInitialization.then(
@@ -69,6 +68,7 @@ export default class WorkerProcessingEngine implements ProcessingEngine {
   async waitForInitialization (): Promise<void> {
     return await new Promise<void>((resolve) => {
       this.resolveInitialized = resolve
+      console.debug('[WorkerProcessingEngine] waiting for initialisation')
       this.worker.postMessage({ eventType: 'initialise' })
     })
   }

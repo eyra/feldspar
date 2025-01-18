@@ -20,11 +20,13 @@ export const FeldsparComponent: React.FC<FeldsparProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const assemblyRef = useRef<Assembly | null>(null);
+  const workerRef = useRef<Worker | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
     const worker = new Worker(workerUrl);
+    workerRef.current = worker;
 
     const run = (bridge: Bridge) => {
       const assembly = new Assembly(worker, bridge);
@@ -51,7 +53,10 @@ export const FeldsparComponent: React.FC<FeldsparProps> = ({
       setTimeout(() => {
         assemblyRef.current?.visualisationEngine.terminate();
         assemblyRef.current?.processingEngine.terminate();
-        worker.terminate();
+        if (workerRef.current) {
+          workerRef.current.terminate();
+          workerRef.current = null;
+        }
       }, 0);
     };
   }, [workerUrl, locale, standalone]);
