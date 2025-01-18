@@ -7,6 +7,7 @@ import InstagramSvg from '../../../../../assets/images/instagram.svg'
 import YoutubeSvg from '../../../../../assets/images/youtube.svg'
 import TextBundle from '../../../../text_bundle'
 import { Bullet } from './bullet'
+import { JSX } from 'react'
 
 const linkTwitter: string = 'https://eyra.co'
 const linkFacebook: string = 'https://eyra.co'

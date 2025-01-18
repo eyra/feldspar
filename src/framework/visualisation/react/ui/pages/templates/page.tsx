@@ -1,3 +1,5 @@
+import { JSX } from "react"
+
 interface PageProps {
   body: JSX.Element
 }

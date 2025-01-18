@@ -5,6 +5,7 @@ import { Page } from './templates/page'
 import TextBundle from '../../../../text_bundle'
 import { Translator } from '../../../../translator'
 import { BodyLarge, Title1 } from '../elements/text'
+import { JSX } from 'react'
 
 type Props = Weak<PropsUIPageEnd> & ReactFactoryContext
 

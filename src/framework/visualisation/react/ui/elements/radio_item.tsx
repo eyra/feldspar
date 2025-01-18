@@ -1,6 +1,7 @@
 import { PropsUIRadioItem } from '../../../../types/elements'
 import RadioSvg from '../../../../../assets/images/radio.svg'
 import RadioActiveSvg from '../../../../../assets/images/radio_active.svg'
+import { JSX } from 'react'
 
 export const RadioItem = ({ id, value, selected, onSelect }: PropsUIRadioItem): JSX.Element => {
   return (

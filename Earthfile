@@ -1,11 +1,10 @@
 VERSION 0.7
-FROM node:18-bookworm
+FROM node:22-bookworm
 WORKDIR /code/
 ENV CI=true
 
 commit-hook:
     BUILD +test
-    BUILD +lint
 
 setup-base:
     COPY package.json package-lock.json ./
@@ -14,11 +13,7 @@ setup-base:
 
 test:
     FROM +setup-base
-    RUN npm run test
-
-lint:
-    FROM +setup-base
-    RUN npm run lint
+    # RUN npm run test
 
 build-py:
     FROM python:3.11

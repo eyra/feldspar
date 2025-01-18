@@ -3,6 +3,7 @@ import { Translator } from '../../../../translator'
 import { ReactFactoryContext } from '../../factory'
 import { PropsUIPromptProgress } from '../../../../types/prompts'
 import { ProgressBar } from '../elements/progress_bar'
+import { JSX } from 'react'
 
 type Props = Weak<PropsUIPromptProgress> & ReactFactoryContext
 

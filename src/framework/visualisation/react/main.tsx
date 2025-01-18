@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { JSX } from 'react'
 
 interface MainProps {
   elements: JSX.Element[]

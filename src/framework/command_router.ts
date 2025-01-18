@@ -35,7 +35,7 @@ export default class CommandRouter implements CommandHandler {
   onCommandUI (command: CommandUI, reject: (reason?: any) => void): void {
     this.visualisationEngine.render(command).then(
       (response) => { reject(response) },
-      () => {}
+      () => { /* Intentionally empty - errors are handled by the visualization engine */ }
     )
   }
 }

@@ -4,6 +4,7 @@ import { PropsUIButtonBack, PropsUIButtonForward, PropsUIButtonIcon, PropsUIButt
 import BackSvg from '../../../../../assets/images/back.svg'
 import ForwardSvg from '../../../../../assets/images/forward.svg'
 import { Spinner } from './spinner'
+import { JSX } from 'react'
 
 function spinnerColor (buttonColor: string): string {
   if (buttonColor.includes('bg-tertiary')) {

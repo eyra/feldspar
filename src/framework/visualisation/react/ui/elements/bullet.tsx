@@ -1,3 +1,5 @@
+import { JSX } from "react"
+
 interface PropsUIBullet {
   color?: string
   children: JSX.Element

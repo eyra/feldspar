@@ -7,6 +7,7 @@ import { ReactFactoryContext } from '../../factory'
 import { PropsUIPromptFileInput } from '../../../../types/prompts'
 import { PrimaryButton } from '../elements/button'
 import { BodyLarge, BodySmall } from '../elements/text'
+import { JSX } from 'react'
 
 type Props = Weak<PropsUIPromptFileInput> & ReactFactoryContext
 

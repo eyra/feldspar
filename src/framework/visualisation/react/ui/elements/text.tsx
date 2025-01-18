@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import { Weak } from '../../../../helpers'
 import { PropsUITextBodyLarge, PropsUITextBodyMedium, PropsUITextBodySmall, PropsUITextLabel, PropsUITextCaption, PropsUITextTitle0, PropsUITextTitle1, PropsUITextTitle2, PropsUITextTitle3, PropsUITextTitle4, PropsUITextTitle6 } from '../../../../types/elements'
 
