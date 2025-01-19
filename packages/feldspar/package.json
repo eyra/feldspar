@@ -22,7 +22,6 @@
         "react-dom": "^19.0.0"
     },
     "dependencies": {
-        "@lottiefiles/dotlottie-react": "^0.12.1",
         "@types/lodash": "^4.17.14",
         "lodash": "^4.17.21"
     },

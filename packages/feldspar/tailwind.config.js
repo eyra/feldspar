@@ -160,6 +160,15 @@ module.exports = {
         form: "400px",
         mailto: "128px",
       },
+      keyframes: {
+        "spinner-rotation": {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
+        },
+      },
+      animation: {
+        spinner: "spinner-rotation 1s linear infinite",
+      },
     },
   },
   variants: {

@@ -4,7 +4,11 @@ import { Bridge } from "../framework/types/modules";
 import { LiveBridge } from "../live_bridge";
 import FakeBridge from "../fake_bridge";
 import React from "react";
-import { VisualisationProvider, useVisualisation } from "../framework/visualisation/react/context";
+import {
+  VisualisationProvider,
+  useVisualisation,
+} from "../framework/visualisation/react/context";
+import { Spinner } from "../framework/visualisation/react/ui/elements/spinner";
 
 export interface FeldsparProps {
   workerUrl: string;
@@ -32,7 +36,11 @@ const FeldsparContent: React.FC<FeldsparProps> = ({
 
     const run = (bridge: Bridge) => {
       const assembly = new Assembly(worker, bridge);
-      assembly.visualisationEngine.start(containerRef.current!, locale, setState);
+      assembly.visualisationEngine.start(
+        containerRef.current!,
+        locale,
+        setState
+      );
       assembly.processingEngine.start();
       assemblyRef.current = assembly;
     };
