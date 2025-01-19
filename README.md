@@ -35,14 +35,13 @@ In order to start a local instance of Feldspar follow these steps:
 1. Install dependencies & tools:
 
    ```sh
-   cd ./feldspar
    npm install
-   npm run prepare
    ```
 
 2. Start the local web server (with hot reloading enabled):
 
    ```sh
+   cd packages/feldspar-demo
    npm run start
    ```
 
@@ -55,7 +54,7 @@ If the installation went correctly you should be greeted with a mock data donati
 1. Create release file:
 
   ```sh
-   npm run release
+   ./release.sh
    ```
 
 2. Use release file:
@@ -64,7 +63,7 @@ The generated release.zip file can be installed on the Next platform or the self
 
 ## How to use Feldspar?
 
-You can implement your own data donation flow by altering the Python script, which can be used to:
+You can implement your own data donation flow by altering the Python script, which can be found in `packages/python/port/script.py`. The script can be used to:
 
 1. customize the participant data donation flow in terms of screen content, type of screen (e.g. a file prompt) and screen order. You can use the Port API ([`props.py`](src/framework/processing/py/port/api/props.py)) for this.
 2. extract specific data from the participant DDP that is required for the research question. You can use the data extraction methods that are available in [Pyodide](https://pyodide.org/en/stable/)
@@ -81,7 +80,7 @@ We recommend to use the example script as starting point for your own data donat
 
 ### Port Assets
 
-Assets needed in the script can be copied to: `src/framework/processing/py/port/assets/`
+Assets needed in the script can be copied to: `packages/python/port/assets/`
 
 In your script you can access these assets as follows:
 
