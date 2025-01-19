@@ -1,11 +1,10 @@
-import { VisualisationEngine } from "../../types/modules";
 import { Response, CommandUIRender } from "../../types/commands";
 import { PropsUIPage } from "../../types/pages";
 import VisualisationFactory from "./factory";
 import { JSX } from "react";
 import React from "react";
 
-export default class ReactEngine implements VisualisationEngine {
+export default class ReactEngine {
   factory: VisualisationFactory;
   locale!: string;
   private setState?: (state: { elements: JSX.Element[] }) => void;

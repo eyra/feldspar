@@ -1,11 +1,12 @@
 import { Command, Response, isCommandSystem, isCommandSystemExit, isCommandUI, CommandUI, CommandSystem } from './types/commands'
-import { CommandHandler, Bridge, VisualisationEngine } from './types/modules'
+import { CommandHandler, Bridge } from './types/modules'
+import ReactEngine from './visualisation/react/engine'
 
 export default class CommandRouter implements CommandHandler {
   bridge: Bridge
-  visualisationEngine: VisualisationEngine
+  visualisationEngine: ReactEngine
 
-  constructor (bridge: Bridge, visualisationEngine: VisualisationEngine) {
+  constructor (bridge: Bridge, visualisationEngine: ReactEngine) {
     this.bridge = bridge
     this.visualisationEngine = visualisationEngine
   }

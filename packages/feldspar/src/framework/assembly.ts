@@ -1,11 +1,11 @@
 import ReactEngine from './visualisation/react/engine'
 import ReactFactory from './visualisation/react/factory'
 import WorkerProcessingEngine from './processing/worker_engine'
-import { VisualisationEngine, ProcessingEngine, Bridge } from './types/modules'
+import { ProcessingEngine, Bridge } from './types/modules'
 import CommandRouter from './command_router'
 
 export default class Assembly {
-  visualisationEngine: VisualisationEngine
+  visualisationEngine: ReactEngine
   processingEngine: ProcessingEngine
   router: CommandRouter
 

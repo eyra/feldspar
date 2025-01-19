@@ -1,15 +1,8 @@
-import { JSX } from 'react'
-import { Command, Response, CommandSystem, CommandUI } from './commands'
+import { Command, Response, CommandSystem } from './commands'
 
 export interface ProcessingEngine {
   start: () => void
   commandHandler: CommandHandler
-  terminate: () => void
-}
-
-export interface VisualisationEngine {
-  start: (rootElement: HTMLElement, locale: string, setState: (state: { elements: JSX.Element[] }) => void) => void
-  render: (command: CommandUI) => Promise<Response>
   terminate: () => void
 }
 
