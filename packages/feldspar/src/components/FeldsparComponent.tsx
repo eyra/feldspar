@@ -5,10 +5,10 @@ import { LiveBridge } from "../live_bridge";
 import FakeBridge from "../fake_bridge";
 import React from "react";
 import {
-  VisualisationProvider,
-  useVisualisation,
-} from "../framework/visualisation/react/context";
-import { Spinner } from "../framework/visualisation/react/ui/elements/spinner";
+  VisualizationProvider,
+  useVisualization,
+} from "../framework/visualization/react/context";
+import { Spinner } from "../framework/visualization/react/ui/elements/spinner";
 
 export interface FeldsparProps {
   workerUrl: string;
@@ -26,7 +26,7 @@ const FeldsparContent: React.FC<FeldsparProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const assemblyRef = useRef<Assembly | null>(null);
   const workerRef = useRef<Worker | null>(null);
-  const { setState, state } = useVisualisation();
+  const { setState, state } = useVisualization();
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -36,7 +36,7 @@ const FeldsparContent: React.FC<FeldsparProps> = ({
 
     const run = (bridge: Bridge) => {
       const assembly = new Assembly(worker, bridge);
-      assembly.visualisationEngine.start(
+      assembly.visualizationEngine.start(
         containerRef.current!,
         locale,
         setState
@@ -61,7 +61,7 @@ const FeldsparContent: React.FC<FeldsparProps> = ({
     return () => {
       observer.disconnect();
       setTimeout(() => {
-        assemblyRef.current?.visualisationEngine.terminate();
+        assemblyRef.current?.visualizationEngine.terminate();
         assemblyRef.current?.processingEngine.terminate();
         if (workerRef.current) {
           workerRef.current.terminate();
@@ -79,7 +79,7 @@ const FeldsparContent: React.FC<FeldsparProps> = ({
 };
 
 export const FeldsparComponent: React.FC<FeldsparProps> = (props) => (
-  <VisualisationProvider>
+  <VisualizationProvider>
     <FeldsparContent {...props} />
-  </VisualisationProvider>
+  </VisualizationProvider>
 );

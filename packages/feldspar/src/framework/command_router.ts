@@ -1,14 +1,14 @@
 import { Command, Response, isCommandSystem, isCommandSystemExit, isCommandUI, CommandUI, CommandSystem } from './types/commands'
 import { CommandHandler, Bridge } from './types/modules'
-import ReactEngine from './visualisation/react/engine'
+import ReactEngine from './visualization/react/engine'
 
 export default class CommandRouter implements CommandHandler {
   bridge: Bridge
-  visualisationEngine: ReactEngine
+  visualizationEngine: ReactEngine
 
-  constructor (bridge: Bridge, visualisationEngine: ReactEngine) {
+  constructor (bridge: Bridge, visualizationEngine: ReactEngine) {
     this.bridge = bridge
-    this.visualisationEngine = visualisationEngine
+    this.visualizationEngine = visualizationEngine
   }
 
   async onCommand (command: Command): Promise<Response> {
@@ -34,7 +34,7 @@ export default class CommandRouter implements CommandHandler {
   }
 
   onCommandUI (command: CommandUI, resolve: (response: Response) => void): void {
-    this.visualisationEngine.render(command)
+    this.visualizationEngine.render(command)
       .then((response) => {
         if (!response || !response.__type__) {
           console.error('[CommandRouter] Invalid response:', response);

@@ -1,20 +1,22 @@
 # Feldspar
 
-Integration mechanism for developers to build an extension (flow application) that can be hosted on the Next platform. This is for example used in the Port program for data donation, as described below. 
+Integration mechanism for developers to build an extension (flow application) that can be hosted on the Next platform. This is for example used in the Port program for data donation, as described below.
 
 ## Digital Trace Data Donation (Port)
-More information about the Port program can be found [here](https://eyra.notion.site/Port-Program-4bbf0bbc466547af95f05c609405c4b2?pvs=4). 
 
-Data donation allows researchers to invite participants to share their data download packages (DDPs). However, DDPs potentially contain very sensitive data and often not all data is needed to answer a specific research question. 
+More information about the Port program can be found [here](https://eyra.notion.site/Port-Program-4bbf0bbc466547af95f05c609405c4b2?pvs=4).
+
+Data donation allows researchers to invite participants to share their data download packages (DDPs). However, DDPs potentially contain very sensitive data and often not all data is needed to answer a specific research question.
 
 Feldspar enables researchers to:
+
 - extract only the data of interest through local processing (on the participants device) using Python (Pyodide)
 - prompt participants for questions about the data
 - enable participants to inspect the extracted data before donation
 - enable participants to delete table rows before donation
 - consent or decline to donate the extracted data
 
-Feldspar is open-source under the AGPL license and allows researchers to configure the frontend that guides participants through the data donation steps. 
+Feldspar is open-source under the AGPL license and allows researchers to configure the frontend that guides participants through the data donation steps.
 
 _Note_: Feldspar is only a frontend. In order for it to be used in a live study, it needs to be hosted on a server and connected to a storage to retrieve the donated data. To run a local instance see [installation](https://github.com/eyra/feldspar/tree/master?tab=readme-ov-file#installation). To create a release for the Next platform or the self hosted version, see [release](https://github.com/eyra/feldspar/tree/master?tab=readme-ov-file#release).
 
@@ -59,7 +61,6 @@ If the installation went correctly you should be greeted with a mock data donati
 2. Use release file:
 
 The generated release.zip file can be installed on the Next platform or the self-hosted version, by adding a "Donate task" and at "Flow application" select the generated zip-file.
-
 
 ## How to use Feldspar?
 
@@ -136,7 +137,7 @@ def process(sessionId):
     yield CommandUIRender(page3)
 ```
 
-[`ScriptWrapper`](src/framework/processing/py/port/main.py) and [py_worker](src/framework/processing/py_worker.js) using `send` to iterate over the commands one by one. For more information on yield and Generators visit https://realpython.com/introduction-to-python-generators.
+[`ScriptWrapper`](src/framework/processing/py/port/main.py) and [py_worker](src/framework/processing/py_worker.js) using `send` to iterate over the commands one by one. For more information on yield and Generators visit <https://realpython.com/introduction-to-python-generators>.
 
 </details>
 
@@ -281,7 +282,7 @@ yield CommandSystemDonate(tracking_key, data)
 Feldspar serves as the frontend, providing the application with which participants
 engage. It facilitates the flow and logic for data donation. To utilize Feldspar in a
 data donation study, it must be hosted on a server capable of storing the
-donated data. 
+donated data.
 
 You can host Feldspar on the Next platform or the self-hosted version as explained [here](https://github.com/eyra/feldspar/tree/master?tab=readme-ov-file#release).
 
@@ -303,7 +304,7 @@ iframe.contentWindow.postMessage("init", "*", [this.channel.port2]);
 
 ### Data donation as a service
 
-Would you like to get support with setting up your data donation study or host your data donation study on the Next platform? Reach out to Eyra for custom pricing: [connect@eyra.co](mailto:connect@eyra.co). 
+Would you like to get support with setting up your data donation study or host your data donation study on the Next platform? Reach out to Eyra for custom pricing: [connect@eyra.co](mailto:connect@eyra.co).
 
 # Technical specifications of Feldspar
 
@@ -383,7 +384,7 @@ See: [src/framework/processing/py/port](src/framework/processing/py/port)
 
 - [API](src/framework/processing/py/port/api)
 
-  - [commands.py](src/framework/processing/py/port/api/commands.py): Defines commands, pages and prompts that are used to communicate from the Python script to the `VisualisationEngine` and `Bridge`.
+  - [commands.py](src/framework/processing/py/port/api/commands.py): Defines commands, pages and prompts that are used to communicate from the Python script to the `VisualizationEngine` and `Bridge`.
   - [props.py](src/framework/processing/py/port/api/commands.py): Defines property objects for pages and prompts
 
 ## Code instructions
@@ -396,7 +397,7 @@ These instructions give you some pointers on things you might like to change or 
 The app has two types of copy:
 
 - Dynamic copy: part of the [Python script](src/framework/processing/py/port/script.py)
-- Static copy: part of [React components](src/framework/visualisation/react/ui)
+- Static copy: part of [React components](src/framework/visualization/react/ui)
 
 Currently two languages are supported (Dutch and English). The Translatable object plays a central role and has a [Python](src/framework/processing/py/port/api/props.py) and a [Typescript](src/framework/types/elements.ts) implementation
 
@@ -467,7 +468,7 @@ export function isPropsUIPromptNew (arg: any): arg is PropsUIPromptNew {
 }
 ```
 
-Add the prompt component to [src/framework/visualisation/react/ui/prompts](src/framework/visualisation/react/ui/prompts) with the following template:
+Add the prompt component to [src/framework/visualization/react/ui/prompts](src/framework/visualization/react/ui/prompts) with the following template:
 
 ```Typescript
 import { Weak } from '../../../../helpers'
@@ -551,13 +552,13 @@ The standard library is available by default. Please check The Pyodide [docs](ht
 <details>
 <summary>Implement support for alternative web framework</summary>
 <br>
-Create a new folder in [src/framework/visualisation](src/framework/visualisation) with a file inside called `engine.ts` to add support for your web framework of choice.
+Create a new folder in [src/framework/visualization](src/framework/visualization) with a file inside called `engine.ts` to add support for your web framework of choice.
 
 ```Typescript
-import { VisualisationEngine } from '../../types/modules'
+import { VisualizationEngine } from '../../types/modules'
 import { Response, CommandUIRender } from '../../types/commands'
 
-export default class MyEngine implements VisualisationEngine {
+export default class MyEngine implements VisualizationEngine {
     locale!: string
     root!: HTMLElement
 
@@ -577,23 +578,23 @@ export default class MyEngine implements VisualisationEngine {
 }
 ```
 
-Change implementation of [assembly.ts](src/framework/assembly.ts) to support your new VisualisationEngine:
+Change implementation of [assembly.ts](src/framework/assembly.ts) to support your new VisualizationEngine:
 
 ```Typescript
-import MyEngine from './visualisation/my/engine'
+import MyEngine from './visualization/my/engine'
 import WorkerProcessingEngine from './processing/worker_engine'
-import { VisualisationEngine, ProcessingEngine, Bridge } from './types/modules'
+import { VisualizationEngine, ProcessingEngine, Bridge } from './types/modules'
 import CommandRouter from './command_router'
 
 export default class Assembly {
-    visualisationEngine: VisualisationEngine
+    visualizationEngine: VisualizationEngine
     processingEngine: ProcessingEngine
     router: CommandRouter
 
     constructor (worker: Worker, bridge: Bridge) {
         const sessionId = String(Date.now())
-        this.visualisationEngine = new MyEngine()
-        this.router = new CommandRouter(system, this.visualisationEngine)
+        this.visualizationEngine = new MyEngine()
+        this.router = new CommandRouter(system, this.visualizationEngine)
         this.processingEngine = new WorkerProcessingEngine(sessionId, worker, this.router)
     }
 }
@@ -684,7 +685,7 @@ Note: don't forget to import this new worker file in your server code
 
 3. Integration with Next
 
-   To run the Port app on top of Next locally see: https://github.com/eyra/mono/blob/d3i/latest/PORT.md
+   To run the Port app on top of Next locally see: <https://github.com/eyra/mono/blob/d3i/latest/PORT.md>
 
 ### Technical notes
 
@@ -718,4 +719,3 @@ We want to make contributing to this project as easy and transparent as possible
 - Proposing new features
 
 If you have any questions, find any bugs, or have any ideas, read how to contribute [here](https://github.com/eyra/feldspar/blob/master/CONTRIBUTING.md).
-

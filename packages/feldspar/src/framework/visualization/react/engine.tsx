@@ -1,19 +1,23 @@
 import { Response, CommandUIRender } from "../../types/commands";
 import { PropsUIPage } from "../../types/pages";
-import VisualisationFactory from "./factory";
+import VisualizationFactory from "./factory";
 import { JSX } from "react";
 import React from "react";
 
 export default class ReactEngine {
-  factory: VisualisationFactory;
+  factory: VisualizationFactory;
   locale!: string;
   private setState?: (state: { elements: JSX.Element[] }) => void;
 
-  constructor(factory: VisualisationFactory) {
+  constructor(factory: VisualizationFactory) {
     this.factory = factory;
   }
 
-  start(container: HTMLElement, locale: string, setState: (state: { elements: JSX.Element[] }) => void): void {
+  start(
+    container: HTMLElement,
+    locale: string,
+    setState: (state: { elements: JSX.Element[] }) => void
+  ): void {
     console.log("[ReactEngine] started");
     this.locale = locale;
     this.setState = setState;
@@ -35,7 +39,7 @@ export default class ReactEngine {
 
   private updateElements(elements: JSX.Element[]): void {
     if (!this.setState) return;
-    const elementsWithKeys = elements.map((element, index) => 
+    const elementsWithKeys = elements.map((element, index) =>
       React.cloneElement(element, { key: `feldspar-element-${index}` })
     );
     this.setState({ elements: elementsWithKeys });
