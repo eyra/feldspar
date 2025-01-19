@@ -1,4 +1,5 @@
 import { isInstanceOf } from '../helpers'
+import { PromptFactory } from '../visualization/react/ui/prompts/factory'
 import { PropsUIHeader } from './elements'
 import { PropsUIPromptFileInput, PropsUIPromptProgress, PropsUIPromptConfirm, PropsUIPromptConsentForm, PropsUIPromptRadioInput } from './prompts'
 
@@ -23,6 +24,7 @@ export interface PropsUIPageDonation {
   platform: string
   header: PropsUIHeader
   body: PropsUIPromptFileInput | PropsUIPromptProgress | PropsUIPromptConfirm | PropsUIPromptConsentForm | PropsUIPromptRadioInput
+  promptFactories?: PromptFactory[]
 }
 export function isPropsUIPageDonation (arg: any): arg is PropsUIPageDonation {
   return isInstanceOf<PropsUIPageDonation>(arg, 'PropsUIPageDonation', ['platform', 'header', 'body'])
