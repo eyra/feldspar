@@ -1,11 +1,8 @@
-import { EndPage } from "./ui/pages/end_page";
-import {
-  isPropsUIPageEnd,
-  isPropsUIPageDonation,
-  PropsUIPage,
-} from "../../types/pages";
-import { DonationPage } from "./ui/pages/donation_page";
+import { PropsUIPage } from "../../types/pages";
 import { Payload } from "../../types/commands";
+import { PageFactory } from "./factories/base";
+import { EndPageFactory } from "./factories/end_page";
+import { DonationPageFactory } from "./factories/donation_page";
 import { JSX } from "react";
 import React from "react";
 
@@ -15,13 +12,26 @@ export interface ReactFactoryContext {
 }
 
 export default class ReactFactory {
+  private factories: PageFactory[];
+
+  constructor() {
+    this.factories = [
+      new EndPageFactory(),
+      new DonationPageFactory()
+    ];
+  }
+
   createPage(page: PropsUIPage, context: ReactFactoryContext): JSX.Element {
-    if (isPropsUIPageEnd(page)) {
-      return <EndPage {...page} {...context} />;
-    }
-    if (isPropsUIPageDonation(page)) {
-      return <DonationPage {...page} {...context} />;
+    for (const factory of this.factories) {
+      const element = factory.createPage(page, context);
+      if (element !== null) {
+        return element;
+      }
     }
     throw TypeError("Unknown page: " + JSON.stringify(page));
+  }
+
+  registerFactory(factory: PageFactory): void {
+    this.factories.push(factory);
   }
 }
