@@ -4,6 +4,7 @@ import { Bridge } from "../framework/types/modules";
 import { LiveBridge } from "../live_bridge";
 import FakeBridge from "../fake_bridge";
 import React from "react";
+import { VisualisationProvider, useVisualisation } from "../framework/visualisation/react/context";
 
 export interface FeldsparProps {
   workerUrl: string;
@@ -12,7 +13,7 @@ export interface FeldsparProps {
   className?: string;
 }
 
-export const FeldsparComponent: React.FC<FeldsparProps> = ({
+const FeldsparContent: React.FC<FeldsparProps> = ({
   workerUrl,
   locale = "en",
   standalone = false,
@@ -21,6 +22,7 @@ export const FeldsparComponent: React.FC<FeldsparProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const assemblyRef = useRef<Assembly | null>(null);
   const workerRef = useRef<Worker | null>(null);
+  const { setState, state } = useVisualisation();
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -30,7 +32,7 @@ export const FeldsparComponent: React.FC<FeldsparProps> = ({
 
     const run = (bridge: Bridge) => {
       const assembly = new Assembly(worker, bridge);
-      assembly.visualisationEngine.start(containerRef.current!, locale);
+      assembly.visualisationEngine.start(containerRef.current!, locale, setState);
       assembly.processingEngine.start();
       assemblyRef.current = assembly;
     };
@@ -59,7 +61,17 @@ export const FeldsparComponent: React.FC<FeldsparProps> = ({
         }
       }, 0);
     };
-  }, [workerUrl, locale, standalone]);
+  }, [workerUrl, locale, standalone, setState]);
 
-  return <div ref={containerRef} className={className} />;
+  return (
+    <div ref={containerRef} className={className}>
+      {state.elements}
+    </div>
+  );
 };
+
+export const FeldsparComponent: React.FC<FeldsparProps> = (props) => (
+  <VisualisationProvider>
+    <FeldsparContent {...props} />
+  </VisualisationProvider>
+);

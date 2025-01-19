@@ -1,30 +1,23 @@
-import * as ReactDOM from "react-dom/client";
 import { VisualisationEngine } from "../../types/modules";
-import { Response, Payload, CommandUIRender } from "../../types/commands";
+import { Response, CommandUIRender } from "../../types/commands";
 import { PropsUIPage } from "../../types/pages";
 import VisualisationFactory from "./factory";
-import { Main } from "./main";
 import { JSX } from "react";
 import React from "react";
 
 export default class ReactEngine implements VisualisationEngine {
   factory: VisualisationFactory;
-  container?: HTMLElement;
   locale!: string;
-  private root?: ReactDOM.Root;
+  private setState?: (state: { elements: JSX.Element[] }) => void;
 
   constructor(factory: VisualisationFactory) {
     this.factory = factory;
   }
 
-  start(container: HTMLElement, locale: string): void {
+  start(container: HTMLElement, locale: string, setState: (state: { elements: JSX.Element[] }) => void): void {
     console.log("[ReactEngine] started");
-    if (this.root) {
-      this.root.unmount();
-    }
-    this.container = container;
     this.locale = locale;
-    this.root = ReactDOM.createRoot(container);
+    this.setState = setState;
   }
 
   async render(command: CommandUIRender): Promise<Response> {
@@ -37,19 +30,19 @@ export default class ReactEngine implements VisualisationEngine {
     return new Promise<any>((resolve) => {
       const context = { locale: this.locale, resolve };
       const page = this.factory.createPage(props, context);
-      this.renderElements([page]);
+      this.updateElements([page]);
     });
   }
 
-  renderElements(elements: JSX.Element[]): void {
-    if (!this.root) return;
-    this.root.render(<Main elements={elements} />);
+  private updateElements(elements: JSX.Element[]): void {
+    if (!this.setState) return;
+    const elementsWithKeys = elements.map((element, index) => 
+      React.cloneElement(element, { key: `feldspar-element-${index}` })
+    );
+    this.setState({ elements: elementsWithKeys });
   }
 
   terminate(): void {
-    if (this.root) {
-      this.root.unmount();
-      this.root = undefined;
-    }
+    this.setState = undefined;
   }
 }

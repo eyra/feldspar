@@ -32,10 +32,27 @@ export default class CommandRouter implements CommandHandler {
     }
   }
 
-  onCommandUI (command: CommandUI, reject: (reason?: any) => void): void {
-    this.visualisationEngine.render(command).then(
-      (response) => { reject(response) },
-      () => { /* Intentionally empty - errors are handled by the visualization engine */ }
-    )
+  onCommandUI (command: CommandUI, resolve: (response: Response) => void): void {
+    this.visualisationEngine.render(command)
+      .then((response) => {
+        if (!response || !response.__type__) {
+          console.error('[CommandRouter] Invalid response:', response);
+          resolve({ 
+            __type__: 'Response', 
+            command, 
+            payload: { __type__: 'PayloadVoid', value: undefined } 
+          });
+        } else {
+          resolve(response);
+        }
+      })
+      .catch((error) => {
+        console.error('[CommandRouter] Error:', error);
+        resolve({ 
+          __type__: 'Response', 
+          command, 
+          payload: { __type__: 'PayloadVoid', value: undefined } 
+        });
+      });
   }
 }
