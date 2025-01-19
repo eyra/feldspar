@@ -14,10 +14,11 @@ export interface ReactFactoryContext {
 export default class ReactFactory {
   private factories: PageFactory[];
 
-  constructor() {
+  constructor(initialFactories: PageFactory[] = []) {
     this.factories = [
+      ...initialFactories,
       new EndPageFactory(),
-      new DonationPageFactory()
+      new DonationPageFactory(),
     ];
   }
 

@@ -9,12 +9,14 @@ import {
   useVisualization,
 } from "../framework/visualization/react/context";
 import { Spinner } from "../framework/visualization/react/ui/elements/spinner";
+import { PageFactory } from "../framework/visualization/react/factories/base";
 
 export interface FeldsparProps {
   workerUrl: string;
   locale?: string;
   standalone?: boolean;
   className?: string;
+  factories?: PageFactory[];
 }
 
 const FeldsparContent: React.FC<FeldsparProps> = ({
@@ -22,6 +24,7 @@ const FeldsparContent: React.FC<FeldsparProps> = ({
   locale = "en",
   standalone = false,
   className,
+  factories = []
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const assemblyRef = useRef<Assembly | null>(null);
@@ -35,7 +38,7 @@ const FeldsparContent: React.FC<FeldsparProps> = ({
     workerRef.current = worker;
 
     const run = (bridge: Bridge) => {
-      const assembly = new Assembly(worker, bridge);
+      const assembly = new Assembly(worker, bridge, factories);
       assembly.visualizationEngine.start(
         containerRef.current!,
         locale,
@@ -69,7 +72,7 @@ const FeldsparContent: React.FC<FeldsparProps> = ({
         }
       }, 0);
     };
-  }, [workerUrl, locale, standalone, setState]);
+  }, [workerUrl, locale, standalone, setState, factories]);
 
   return (
     <div ref={containerRef} className={className}>

@@ -1,7 +1,7 @@
-import { CommandHandler, ProcessingEngine } from '../types/modules'
+import { CommandHandler } from '../types/modules'
 import { CommandSystemEvent, isCommand, Response } from '../types/commands'
 
-export default class WorkerProcessingEngine implements ProcessingEngine {
+export default class WorkerProcessingEngine  {
   sessionId: String
   worker: Worker
   commandHandler: CommandHandler
