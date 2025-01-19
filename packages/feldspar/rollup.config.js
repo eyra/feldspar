@@ -30,8 +30,9 @@ const config = [
       peerDepsExternal(),
       url({
         include: ['**/*.svg'],
-        limit: 0,
-        fileName: '[name][extname]'
+        limit: Infinity,
+        publicPath: '',
+        emitFiles: true
       }),
       json({
         include: ['**/*.json'],
