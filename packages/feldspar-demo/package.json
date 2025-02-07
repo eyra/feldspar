@@ -2,6 +2,7 @@
   "name": "@eyra/feldspar-demo",
   "version": "0.1.0",
   "private": true,
+  "homepage": ".",
   "dependencies": {
     "@eyra/feldspar": "^0.1.0",
     "react": "^19.0.0",

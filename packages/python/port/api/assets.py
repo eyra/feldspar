@@ -1,5 +1,6 @@
 import os
 
+
 def asset_path(asset):
     return os.path.join(os.path.join(os.path.dirname(__file__), "../assets"), asset)
 
@@ -10,5 +11,5 @@ def open_asset(asset):
 
 
 def read_asset(asset):
-   file = open_asset(asset)
-   return file.read()
+    file = open_asset(asset)
+    return file.read()

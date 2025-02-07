@@ -78,6 +78,7 @@ export default class WorkerProcessingEngine  {
   }
 
   nextRunCycle (response: Response): void {
+    console.log('[WorkerProcessingEngine] nextRunCycle');
     this.worker.postMessage({ eventType: 'nextRunCycle', response })
   }
 

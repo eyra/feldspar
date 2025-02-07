@@ -1,7 +1,7 @@
 import * as React from "react";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App.tsx";
+import App from "./App";
 import "./index.css";
 import "@eyra/feldspar/dist/styles.css";
 

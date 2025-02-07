@@ -58,10 +58,9 @@ export interface PropsUIPromptConsentForm {
   donateQuestion?: Text
   donateButton?: Text
   tables: PropsUIPromptConsentFormTable[]
-  metaTables: PropsUIPromptConsentFormTable[]
 }
 export function isPropsUIPromptConsentForm (arg: any): arg is PropsUIPromptConsentForm {
-  return isInstanceOf<PropsUIPromptConsentForm>(arg, 'PropsUIPromptConsentForm', ['tables', 'metaTables'])
+  return isInstanceOf<PropsUIPromptConsentForm>(arg, 'PropsUIPromptConsentForm', ['tables'])
 }
 
 export interface PropsUIPromptConsentFormTable {
@@ -73,4 +72,16 @@ export interface PropsUIPromptConsentFormTable {
 }
 export function isPropsUIPromptConsentFormTable (arg: any): arg is PropsUIPromptConsentFormTable {
   return isInstanceOf<PropsUIPromptConsentFormTable>(arg, 'PropsUIPromptConsentFormTable', ['id', 'title', 'description', 'data_frame'])
+}
+export interface PropsUIDonationButtons {
+  __type__: 'PropsUIDonationButtons'
+  donateQuestion?: Text
+  donateButton?: Text
+  onDonate: () => void
+  onCancel: () => void
+  waiting: boolean
+}
+
+export function isPropsUIDonationButtons(arg: any): arg is PropsUIDonationButtons {
+  return isInstanceOf<PropsUIDonationButtons>(arg, 'PropsUIDonationButtons', ['donateQuestion', 'donateButton']);
 }

@@ -9,8 +9,6 @@ import time
 
 
 def process(sessionId):
-    print(read_asset("hello_world.txt"))
-
     key = "zip-contents-example"
     meta_data = []
     meta_data.append(("debug", f"{key}: start"))
@@ -20,7 +18,7 @@ def process(sessionId):
     while True:
         meta_data.append(("debug", f"{key}: prompt file"))
         promptFile = prompt_file("application/zip, text/plain")
-        fileResult = yield render_donation_page(promptFile)
+        fileResult = yield render_donation_page([prompt_hello_world(), promptFile])
         if fileResult.__type__ == "PayloadString":
             # Extracting the zipfile
             meta_data.append(("debug", f"{key}: extracting file"))
@@ -58,28 +56,33 @@ def process(sessionId):
 
     # STEP 2: ask for consent
     meta_data.append(("debug", f"{key}: prompt consent"))
-    prompt = prompt_consent(data, meta_data)
-    consent_result = yield render_donation_page(prompt)
-    if consent_result.__type__ == "PayloadJSON":
-        meta_data.append(("debug", f"{key}: donate consent data"))
-        yield donate(f"{sessionId}-{key}", consent_result.value)
-    if consent_result.__type__ == "PayloadFalse":
-        value = json.dumps('{"status" : "donation declined"}')
-        yield donate(f"{sessionId}-{key}", value)
+    for prompt in prompt_consent(data):
+        result = yield prompt
+        if result.__type__ == "PayloadJSON":
+            meta_data.append(("debug", f"{key}: donate consent data"))
+            meta_frame = pd.DataFrame(meta_data, columns=["type", "message"])
+            donation_data = json.loads(result.value)
+            donation_data["meta"] = meta_frame.to_json()
+            yield donate(f"{sessionId}-{key}", json.dumps(donation_data))
+        if result.__type__ == "PayloadFalse":
+            value = json.dumps('{"status" : "donation declined"}')
+            yield donate(f"{sessionId}-{key}", value)
 
 
 def render_donation_page(body):
     header = props.PropsUIHeader(
         props.Translatable(
             {
-                "en": "Port flow example",
-                "de": "Port Beispiel",
-                "nl": "Port voorbeeld flow",
+                "en": "Demo donation page",
+                "de": "Demo-Spenden-Seite",
+                "nl": "Demo-donatiepagina",
             }
         )
     )
 
-    page = props.PropsUIPageDonation("Zip", header, body)
+    # Convert single body item to array if needed
+    body_items = [body] if not isinstance(body, list) else body
+    page = props.PropsUIPageDonation("Zip", header, body_items)
     return CommandUIRender(page)
 
 
@@ -150,8 +153,7 @@ def extract_file(zipfile_ref, filename):
         return "invalid"
 
 
-def prompt_consent(data, meta_data):
-
+def prompt_consent(data):
     table_title = props.Translatable(
         {
             "en": "Zip file contents",
@@ -160,22 +162,44 @@ def prompt_consent(data, meta_data):
         }
     )
 
-    log_title = props.Translatable(
-        {"en": "Log messages", "de": "Log Nachrichten", "nl": "Log berichten"}
-    )
-
-    tables = []
+    # Show data table if available
+    data_table = None
     if data is not None:
         data_frame = pd.DataFrame(data, columns=["filename", "compressed size", "size"])
-        tables = [
-            props.PropsUIPromptConsentFormTable("zip_content", table_title, data_frame)
-        ]
+        data_table = props.PropsUIPromptConsentFormTable(
+            "zip_content",
+            table_title,
+            props.Translatable(
+                {
+                    "en": "The table below shows the contents of the zip file you selected.",
+                }
+            ),
+            data_frame,
+        )
 
-    meta_frame = pd.DataFrame(meta_data, columns=["type", "message"])
-    meta_table = props.PropsUIPromptConsentFormTable(
-        "log_messages", log_title, meta_frame
+    # Show log messages table with donation buttons
+    result = yield render_donation_page(
+        [
+            item
+            for item in [
+                data_table,
+                props.PropsUIDonationButtons(
+                    donate_question=props.Translatable(
+                        {
+                            "en": "Would you like to donate this data?",
+                            "de": "Möchten Sie diese Daten spenden?",
+                            "nl": "Wilt u deze gegevens doneren?",
+                        }
+                    ),
+                    donate_button=props.Translatable(
+                        {"en": "Donate", "de": "Spenden", "nl": "Doneren"}
+                    ),
+                ),
+            ]
+            if item is not None
+        ]
     )
-    return props.PropsUIPromptConsentForm(tables, [meta_table])
+    return result
 
 
 def donate(key, json_string):
@@ -184,3 +208,7 @@ def donate(key, json_string):
 
 def exit(code, info):
     return CommandSystemExit(code, info)
+
+
+def prompt_hello_world():
+    return props.PropsUIPromptHelloWorld("Hello World!")

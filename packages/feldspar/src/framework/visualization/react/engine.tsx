@@ -26,10 +26,11 @@ export default class ReactEngine {
   async render(command: CommandUIRender): Promise<Response> {
     console.debug("[ReactEngine] render", command);
     const payload = await this.renderPage(command.page);
+    console.log("[ReactEngine] render done", command, payload);
     return { __type__: "Response", command, payload };
   }
 
-  async renderPage(props: PropsUIPage): Promise<any> {
+  renderPage(props: PropsUIPage): Promise<any> {
     return new Promise<any>((resolve) => {
       const context = { locale: this.locale, resolve };
       const page = this.factory.createPage(props, context);

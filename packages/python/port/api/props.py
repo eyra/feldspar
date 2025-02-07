@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional, TypedDict
+from typing import Optional, TypedDict, Union
 
 import pandas as pd
 
@@ -98,6 +98,7 @@ class PropsUIPromptConsentFormTable:
 
     id: str
     title: Translatable
+    description: Translatable
     data_frame: pd.DataFrame
 
     def toDict(self):
@@ -105,6 +106,7 @@ class PropsUIPromptConsentFormTable:
         dict["__type__"] = "PropsUIPromptConsentFormTable"
         dict["id"] = self.id
         dict["title"] = self.title.toDict()
+        dict["description"] = self.description.toDict()
         dict["data_frame"] = self.data_frame.to_json()
         return dict
 
@@ -114,12 +116,13 @@ class PropsUIPromptConsentForm:
     """Tables to be shown to the participant prior to donation
 
     Attributes:
-        tables: a list of tables
-        meta_tables: a list of optional tables, for example for logging data
+        tables: a list of tables, including both editable and read-only tables
+        description: Optional description text
+        donate_question: Optional question text for donation button
+        donate_button: Optional text for donation button
     """
 
     tables: list[PropsUIPromptConsentFormTable]
-    meta_tables: list[PropsUIPromptConsentFormTable]
     description: Optional[Translatable] = None
     donate_question: Optional[Translatable] = None
     donate_button: Optional[Translatable] = None
@@ -130,17 +133,10 @@ class PropsUIPromptConsentForm:
             output.append(table.toDict())
         return output
 
-    def translate_meta_tables(self):
-        output = []
-        for table in self.meta_tables:
-            output.append(table.toDict())
-        return output
-
     def toDict(self):
         dict = {}
         dict["__type__"] = "PropsUIPromptConsentForm"
         dict["tables"] = self.translate_tables()
-        dict["metaTables"] = self.translate_meta_tables()
         dict["description"] = self.description and self.description.toDict()
         dict["donateQuestion"] = self.donate_question and self.donate_question.toDict()
         dict["donateButton"] = self.donate_button and self.donate_button.toDict()
@@ -169,7 +165,7 @@ class PropsUIPromptFileInput:
 
 @dataclass
 class PropsUIPromptProgress:
-    """Prompt the user information during the extraction 
+    """Prompt the user information during the extraction
 
     Attributes:
         description: text with an explanation
@@ -186,7 +182,7 @@ class PropsUIPromptProgress:
         dict["description"] = self.description.toDict()
         dict["message"] = self.message
         dict["percentage"] = self.percentage
-        
+
         return dict
 
 
@@ -228,6 +224,46 @@ class PropsUIPromptRadioInput:
 
 
 @dataclass
+class PropsUIPromptHelloWorld:
+    """Hello world component to welcome users
+
+    Attributes:
+        text: welcome message to display
+    """
+
+    text: Translatable
+
+    def toDict(self):
+        dict = {}
+        dict["__type__"] = "PropsUIPromptHelloWorld"
+        dict["text"] = self.text
+        return dict
+
+
+@dataclass
+class PropsUIDonationButtons:
+    """Buttons for donation actions
+
+    Attributes:
+        donate_question: Optional question text above buttons
+        donate_button: Optional text for donate button
+        waiting: Whether the donation is in progress
+    """
+
+    donate_question: Optional[Translatable] = None
+    donate_button: Optional[Translatable] = None
+    waiting: bool = False
+
+    def toDict(self):
+        dict = {}
+        dict["__type__"] = "PropsUIDonationButtons"
+        dict["donateQuestion"] = self.donate_question and self.donate_question.toDict()
+        dict["donateButton"] = self.donate_button and self.donate_button.toDict()
+        dict["waiting"] = self.waiting
+        return dict
+
+
+@dataclass
 class PropsUIPageDonation:
     """A multi-purpose page that gets shown to the user
 
@@ -239,14 +275,27 @@ class PropsUIPageDonation:
 
     platform: str
     header: PropsUIHeader
-    body: PropsUIPromptRadioInput | PropsUIPromptConsentForm | PropsUIPromptFileInput | PropsUIPromptConfirm
+    body: Union[
+        PropsUIPromptRadioInput,
+        PropsUIPromptConsentForm,
+        PropsUIPromptFileInput,
+        PropsUIPromptConfirm,
+        PropsUIPromptProgress,
+        PropsUIPromptHelloWorld,
+        PropsUIPromptConsentFormTable,
+        PropsUIDonationButtons,
+        list,
+    ]
 
     def toDict(self):
         dict = {}
         dict["__type__"] = "PropsUIPageDonation"
         dict["platform"] = self.platform
         dict["header"] = self.header.toDict()
-        dict["body"] = self.body.toDict()
+        if isinstance(self.body, list):
+            dict["body"] = [item.toDict() for item in self.body]
+        else:
+            dict["body"] = [self.body.toDict()]
         return dict
 
 

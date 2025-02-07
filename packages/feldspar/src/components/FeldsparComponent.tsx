@@ -8,7 +8,6 @@ import {
   VisualizationProvider,
   useVisualization,
 } from "../framework/visualization/react/context";
-import { Spinner } from "../framework/visualization/react/ui/elements/spinner";
 import { PageFactory } from "../framework/visualization/react/factories/base";
 
 export interface FeldsparProps {
@@ -24,7 +23,7 @@ const FeldsparContent: React.FC<FeldsparProps> = ({
   locale = "en",
   standalone = false,
   className,
-  factories = []
+  factories = [],
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const assemblyRef = useRef<Assembly | null>(null);
@@ -49,8 +48,10 @@ const FeldsparContent: React.FC<FeldsparProps> = ({
     };
 
     if (!standalone && process.env.NODE_ENV === "production") {
+      console.log("Initializing bridge system");
       LiveBridge.create(window, run);
     } else {
+      console.log("Running with fake bridge");
       run(new FakeBridge());
     }
 
