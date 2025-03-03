@@ -91,6 +91,7 @@ const continueButtonLabel = (): Translatable => {
   return new TextBundle()
     .add('en', 'Continue')
     .add('de', 'Weiter')
+    .add('it', 'Continua')
     .add('nl', 'Verder')
 }
 
@@ -98,19 +99,22 @@ const selectButtonLabel = (): Translatable => {
   return new TextBundle()
     .add('en', 'Choose file')
     .add('de', 'Datei auswählen')
+    .add('it', 'Scegli file')
     .add('nl', 'Kies bestand')
 }
 
 const note = (): Translatable => {
   return new TextBundle()
-    .add('en', 'Note: The process to extract the correct data from the file is done on your own computer. No data is stored or sent yet.')
-    .add('de', 'Anmerkung: Die weitere Verarbeitung der Datei erfolgt auf Ihrem eigenen Endgerät. Es werden noch keine Daten gespeichert oder weiter gesendet.')
-    .add('nl', 'NB: Het proces om de juiste gegevens uit het bestand te halen gebeurt op uw eigen computer. Er worden nog geen gegevens opgeslagen of verstuurd.')
+    .add('en', 'Note: The process to extract the correct data from the file is done on your own device. No data is stored or sent yet.')
+    .add('de', 'Hinweis: Der Prozess zur Extraktion der richtigen Daten aus der Datei erfolgt auf Ihrem eigenen Gerät. Es werden noch keine Daten gespeichert oder gesendet.')
+    .add('it', 'Nota: Il processo per estrarre i dati corretti dal file viene eseguito sul Suo dispositivo. Nessun dato viene ancora memorizzato o inviato.')
+    .add('nl', 'Let op: Het proces om de juiste gegevens uit het bestand te halen wordt uitgevoerd op uw eigen apparaat. Er worden nog geen gegevens opgeslagen of verzonden.')
 }
 
 const placeholder = (): Translatable => {
   return new TextBundle()
     .add('en', 'Choose a file')
     .add('de', 'Eine Datei auswählen')
-    .add('nl', 'Kies een bestand')
+    .add('it', 'Scegli un file')
+    .add('nl', 'Bestand kiezen')
 }
