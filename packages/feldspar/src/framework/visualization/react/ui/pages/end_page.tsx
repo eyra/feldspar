@@ -38,6 +38,7 @@ function prepareCopy({ locale }: Props): Copy {
 const title = new TextBundle()
   .add("en", "Thank you")
   .add("de", "Danke")
+  .add("it", "Grazie")
   .add("nl", "Bedankt");
 
 const text = new TextBundle()
@@ -48,6 +49,10 @@ const text = new TextBundle()
   .add(
     "de",
     "Herzlichen Dank für Ihre Teilnahme. Sie können diese Seite nun schließen oder die Seite aktualisieren, um die Datenspende erneut durchzuführen."
+  )
+  .add(
+    "it",
+    "Grazie per la tua partecipazione. Ora puoi chiudere la pagina o aggiornare per riavviare il flusso di donazione."
   )
   .add(
     "nl",

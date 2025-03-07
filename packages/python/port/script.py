@@ -73,9 +73,10 @@ def render_donation_page(body):
     header = props.PropsUIHeader(
         props.Translatable(
             {
-                "en": "Demo donation page",
-                "de": "Demo-Spenden-Seite",
-                "nl": "Demo-donatiepagina",
+                "en": "Data donation demo",
+                "de": "Demonstration der Datenspende",
+                "it": "Dimostrazione di donazione dei dati",
+                "nl": "Data donatie demo",
             }
         )
     )
@@ -91,26 +92,29 @@ def retry_confirmation():
         {
             "en": "Unfortunately, we cannot process your file. Continue, if you are sure that you selected the right file. Try again to select a different file.",
             "de": "Leider können wir Ihre Datei nicht bearbeiten. Fahren Sie fort, wenn Sie sicher sind, dass Sie die richtige Datei ausgewählt haben. Versuchen Sie, eine andere Datei auszuwählen.",
+            "it": "Purtroppo non possiamo elaborare il tuo file. Continua se sei sicuro di aver selezionato il file corretto. Prova a selezionare un file diverso.",
             "nl": "Helaas, kunnen we uw bestand niet verwerken. Weet u zeker dat u het juiste bestand heeft gekozen? Ga dan verder. Probeer opnieuw als u een ander bestand wilt kiezen.",
         }
     )
     ok = props.Translatable(
         {
             "en": "Try again",
-            "de": "Versuchen Sie es noch einmal",
+            "de": "Erneut versuchen",
+            "it": "Riprova",
             "nl": "Probeer opnieuw",
         }
     )
-    cancel = props.Translatable({"en": "Continue", "de": "Weiter", "nl": "Verder"})
+    cancel = props.Translatable({"en": "Continue", "de": "Weiter", "it": "Continua", "nl": "Verder"})
     return props.PropsUIPromptConfirm(text, ok, cancel)
 
 
 def prompt_file(extensions):
     description = props.Translatable(
         {
-            "en": "Please select any zip file stored on your device.",
-            "de": "Wählen Sie eine beliebige Zip-Datei aus, die Sie auf Ihrem Gerät gespeichert haben.",
-            "nl": "Selecteer een willekeurige zip file die u heeft opgeslagen op uw apparaat.",
+            "en": "Please select a zip file stored on your device.",
+            "de": "Bitte wählen Sie eine ZIP-Datei auf Ihrem Gerät aus.",
+            "it": "Seleziona un file ZIP memorizzato sul tuo dispositivo.",
+            "nl": "Selecteer een ZIP-bestand dat op uw apparaat is opgeslagen.",
         }
     )
 
@@ -122,6 +126,7 @@ def prompt_extraction_message(message, percentage):
         {
             "en": "One moment please. Information is now being extracted from the selected file.",
             "de": "Einen Moment bitte. Es werden nun Informationen aus der ausgewählten Datei extrahiert.",
+            "it": "Un momento, per favore. Le informazioni vengono estratte dal file selezionato.",
             "nl": "Een moment geduld. Informatie wordt op dit moment uit het geselecteerde bestaand gehaald.",
         }
     )
@@ -157,8 +162,9 @@ def prompt_consent(data):
     table_title = props.Translatable(
         {
             "en": "Zip file contents",
-            "de": "Inhalt der Zip-Datei",
-            "nl": "Inhoud zip bestand",
+            "de": "Inhalt der ZIP-Datei",
+            "it": "Contenuto del file ZIP",
+            "nl": "Inhoud van het ZIP-bestand",
         }
     )
 
@@ -172,6 +178,9 @@ def prompt_consent(data):
             props.Translatable(
                 {
                     "en": "The table below shows the contents of the zip file you selected.",
+                    "de": "Die Tabelle unten zeigt den Inhalt der ZIP-Datei, die Sie gewählt haben.",
+                    "it": "La tabella qui sotto mostra il contenuto del file ZIP che ha scelto.",
+                    "nl": "De tabel hieronder laat de inhoud zien van het zip-bestand dat u heeft gekozen.",
                 }
             ),
             data_frame,
@@ -188,11 +197,12 @@ def prompt_consent(data):
                         {
                             "en": "Would you like to donate this data?",
                             "de": "Möchten Sie diese Daten spenden?",
+                            "it": "Vuoi donare questi dati?",
                             "nl": "Wilt u deze gegevens doneren?",
                         }
                     ),
                     donate_button=props.Translatable(
-                        {"en": "Donate", "de": "Spenden", "nl": "Doneren"}
+                        {"en": "Donate", "de": "Spenden", "it": "Dona", "nl": "Doneren"}
                     ),
                 ),
             ]

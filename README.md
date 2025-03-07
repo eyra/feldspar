@@ -159,6 +159,8 @@ progress = 25
 
 file_input_description = props.Translatable({
     "en": f"Please follow the download instructions and choose the file that you stored on your device.",
+    "de": f"Bitte folgen Sie den Download-Anweisungen und wählen Sie die Datei aus, die Sie auf Ihrem Gerät gespeichert haben.",
+    "it": f"Si prega di seguire le istruzioni per il download e scegliere il file che ha memorizzato sul Suo dispositivo.",
     "nl": f"Volg de download instructies en kies het bestand dat u opgeslagen heeft op uw apparaat."
 })
 allowed_extensions = "application/zip, text/plain"
@@ -176,6 +178,7 @@ import pandas as pd
 table1_title = props.Translatable({
     "en": "Title 1",
     "de": "Titel 1",
+    "it": "Titolo 1",
     "nl": "Titel 1"
 })
 table1_data = pd.DataFrame(data, columns=["columnX", "columnY", "columnZ"])
@@ -184,6 +187,7 @@ table1 = props.PropsUIPromptConsentFormTable("table_1", table1_title, table1_dat
 table2_title = props.Translatable({
     "en": "Title 2",
     "de": "Titel 2",
+    "it": "Titolo 2",
     "nl": "Titel 2"
 })
 table2_data = pd.DataFrame(data, columns=["columnA", "columnB", "columnC", "columnD"])
@@ -398,7 +402,7 @@ The app has two types of copy:
 - Dynamic copy: part of the [Python script](src/framework/processing/py/port/script.py)
 - Static copy: part of [React components](src/framework/visualization/react/ui)
 
-Currently two languages are supported (Dutch and English). The Translatable object plays a central role and has a [Python](src/framework/processing/py/port/api/props.py) and a [Typescript](src/framework/types/elements.ts) implementation
+Currently four languages are supported (Dutch, English, German and Italian). The Translatable object plays a central role and has a [Python](src/framework/processing/py/port/api/props.py) and a [Typescript](src/framework/types/elements.ts) implementation
 
 From Python code copy can be used as follows:
 
@@ -408,6 +412,7 @@ from port.api.props import Translatable
 copy = Translatable({
     "en": "English text",
     "de": "Deutscher Text",
+    "it": "Testo italiano",
     "nl": "Nederlandse tekst"
 })
 ```
@@ -440,6 +445,7 @@ const staticCopy = (): Translatable => {
     return new TextBundle()
         .add('en', 'English')
         .add('de', 'Deutsch')
+        .add('it', 'Italiano')                                
         .add('nl', 'Nederlands')
 }
 ```
@@ -514,6 +520,7 @@ function prepareCopy ({ title, locale }: Props): Copy {
 const continueButtonLabel = (): Translatable => {
     return new TextBundle()
         .add('en', 'Continue')
+        .add('de', 'Weiter')                                       .add('it', 'Continua')  
         .add('nl', 'Verder')
 }
 ```
