@@ -4,7 +4,7 @@ import { Bridge } from './framework/types/modules'
 export default class FakeBridge implements Bridge {
   send (command: CommandSystem): void {
     if (isCommandSystemDonate(command)) {
-      this.handleDonation(command)
+      this.handleDataSubmission(command)
     } else if (isCommandSystemExit(command)) {
       this.handleExit(command)
     } else {
@@ -12,8 +12,8 @@ export default class FakeBridge implements Bridge {
     }
   }
 
-  handleDonation (command: CommandSystemDonate): void {
-    console.log(`[FakeBridge] received donation: ${command.key}=${command.json_string}`)
+  handleDataSubmission (command: CommandSystemDonate): void {
+    console.log(`[FakeBridge] received dataSubmission: ${command.key}=${command.json_string}`)
   }
 
   handleExit (command: CommandSystemExit): void {

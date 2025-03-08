@@ -18,7 +18,9 @@ def process(sessionId):
     while True:
         meta_data.append(("debug", f"{key}: prompt file"))
         promptFile = prompt_file("application/zip, text/plain")
-        fileResult = yield render_donation_page([prompt_hello_world(), promptFile])
+        fileResult = yield render_data_submission_page(
+            [prompt_hello_world(), promptFile]
+        )
         if fileResult.__type__ == "PayloadString":
             # Extracting the zipfile
             meta_data.append(("debug", f"{key}: extracting file"))
@@ -32,7 +34,7 @@ def process(sessionId):
                 promptMessage = prompt_extraction_message(
                     f"Extracting file: {filename}", percentage
                 )
-                yield render_donation_page(promptMessage)
+                yield render_data_submission_page(promptMessage)
                 file_extraction_result = extract_file(zipfile_ref, filename)
                 extraction_result.append(file_extraction_result)
 
@@ -46,7 +48,7 @@ def process(sessionId):
                 meta_data.append(
                     ("debug", f"{key}: prompt confirmation to retry file selection")
                 )
-                retry_result = yield render_donation_page(retry_confirmation())
+                retry_result = yield render_data_submission_page(retry_confirmation())
                 if retry_result.__type__ == "PayloadTrue":
                     meta_data.append(("debug", f"{key}: skip due to invalid file"))
                     continue
@@ -61,19 +63,19 @@ def process(sessionId):
         if result.__type__ == "PayloadJSON":
             meta_data.append(("debug", f"{key}: donate consent data"))
             meta_frame = pd.DataFrame(meta_data, columns=["type", "message"])
-            donation_data = json.loads(result.value)
-            donation_data["meta"] = meta_frame.to_json()
-            yield donate(f"{sessionId}-{key}", json.dumps(donation_data))
+            data_submission_data = json.loads(result.value)
+            data_submission_data["meta"] = meta_frame.to_json()
+            yield donate(f"{sessionId}-{key}", json.dumps(data_submission_data))
         if result.__type__ == "PayloadFalse":
-            value = json.dumps('{"status" : "donation declined"}')
+            value = json.dumps('{"status" : "data_submission declined"}')
             yield donate(f"{sessionId}-{key}", value)
 
 
-def render_donation_page(body):
+def render_data_submission_page(body):
     header = props.PropsUIHeader(
         props.Translatable(
             {
-                "en": "Data donation demo",
+                "en": "Data data_submission demo",
                 "de": "Demonstration der Datenspende",
                 "it": "Dimostrazione di donazione dei dati",
                 "nl": "Data donatie demo",
@@ -83,7 +85,7 @@ def render_donation_page(body):
 
     # Convert single body item to array if needed
     body_items = [body] if not isinstance(body, list) else body
-    page = props.PropsUIPageDonation("Zip", header, body_items)
+    page = props.PropsUIPageDataSubmission("Zip", header, body_items)
     return CommandUIRender(page)
 
 
@@ -104,7 +106,9 @@ def retry_confirmation():
             "nl": "Probeer opnieuw",
         }
     )
-    cancel = props.Translatable({"en": "Continue", "de": "Weiter", "it": "Continua", "nl": "Verder"})
+    cancel = props.Translatable(
+        {"en": "Continue", "de": "Weiter", "it": "Continua", "nl": "Verder"}
+    )
     return props.PropsUIPromptConfirm(text, ok, cancel)
 
 
@@ -186,13 +190,13 @@ def prompt_consent(data):
             data_frame,
         )
 
-    # Show log messages table with donation buttons
-    result = yield render_donation_page(
+    # Show log messages table with data_submission buttons
+    result = yield render_data_submission_page(
         [
             item
             for item in [
                 data_table,
-                props.PropsUIDonationButtons(
+                props.PropsUIDataSubmissionButtons(
                     donate_question=props.Translatable(
                         {
                             "en": "Would you like to donate this data?",

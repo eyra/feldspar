@@ -2,7 +2,7 @@ import { PropsUITable, PropsUITableHead, PropsUITableRow } from "../../../../typ
 import { Table } from "../elements/table";
 import { Title4 } from "../elements/text";
 import React, { JSX, forwardRef, useImperativeHandle, MutableRefObject } from "react";
-import { DonationData, DonationProvider } from "../../../../types/donation";
+import { DataSubmissionData, DataSubmissionProvider } from "../../../../types/data_submission";
 import _ from "lodash";
 import { PromptContext } from "./factory";
 
@@ -13,13 +13,13 @@ interface Props {
   onChange: (id: string, rows: PropsUITableRow[]) => void;
 }
 
-export interface ConsentTableHandle extends DonationProvider {}
+export interface ConsentTableHandle extends DataSubmissionProvider {}
 
 export const ConsentTable = forwardRef<ConsentTableHandle | null, Props>(({ table, readOnly = false, context, onChange }, ref): JSX.Element => {
   const [currentTable, setCurrentTable] = React.useState<PropsUITable & { title: string; deletedRowCount: number }>(table);
 
   useImperativeHandle(ref, () => ({
-    getDonationData(): DonationData {
+    getDataSubmissionData(): DataSubmissionData {
       return {
         [currentTable.id]: {
           data: serializeTableData(currentTable),
@@ -39,14 +39,14 @@ export const ConsentTable = forwardRef<ConsentTableHandle | null, Props>(({ tabl
     };
 
     
-    context.onDonationDataChanged(currentTable.id, serializeTableData(newTable));
+    context.onDataSubmissionDataChanged(currentTable.id, serializeTableData(newTable));
     setCurrentTable(newTable);
     onChange(id, rows);
   };
 
 React.useEffect(() => {
     console.log("ConsentTable useEffect", currentTable);
-    context.onDonationDataChanged(currentTable.id, serializeTableData(currentTable));
+    context.onDataSubmissionDataChanged(currentTable.id, serializeTableData(currentTable));
 }, []);
 
   return (

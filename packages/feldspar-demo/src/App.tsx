@@ -1,4 +1,4 @@
-import { DonationPageFactory, FeldsparComponent } from "@eyra/feldspar";
+import { DataSubmissionPageFactory, FeldsparComponent } from "@eyra/feldspar";
 import { HelloWorldFactory } from "./components/hello_world";
 
 function App() {
@@ -8,7 +8,7 @@ function App() {
         workerUrl="./py_worker.js"
         standalone={process.env.NODE_ENV !== "production"}
         factories={[
-          new DonationPageFactory({
+          new DataSubmissionPageFactory({
             promptFactories: [new HelloWorldFactory()],
           }),
         ]}

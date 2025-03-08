@@ -5,12 +5,12 @@ import { PropsUIPromptFileInput, PropsUIPromptProgress, PropsUIPromptConfirm, Pr
 
 export type PropsUIPage =
   PropsUIPageSplashScreen |
-  PropsUIPageDonation |
+  PropsUIPageDataSubmission |
   PropsUIPageEnd
 
 export function isPropsUIPage (arg: any): arg is PropsUIPage {
   return (
-    isPropsUIPageDonation(arg) ||
+    isPropsUIPageDataSubmission(arg) ||
     isPropsUIPageEnd(arg)
   )
 }
@@ -19,15 +19,15 @@ export interface PropsUIPageSplashScreen {
   __type__: 'PropsUIPageSplashScreen'
 }
 
-export interface PropsUIPageDonation {
-  __type__: 'PropsUIPageDonation'
+export interface PropsUIPageDataSubmission {
+  __type__: 'PropsUIPageDataSubmission'
   platform: string
   header: PropsUIHeader
   body: (PropsUIPromptFileInput | PropsUIPromptProgress | PropsUIPromptConfirm | PropsUIPromptConsentForm | PropsUIPromptRadioInput)[]
   promptFactories?: PromptFactory[]
 }
-export function isPropsUIPageDonation (arg: any): arg is PropsUIPageDonation {
-  return isInstanceOf<PropsUIPageDonation>(arg, 'PropsUIPageDonation', ['platform', 'header', 'body'])
+export function isPropsUIPageDataSubmission (arg: any): arg is PropsUIPageDataSubmission {
+  return isInstanceOf<PropsUIPageDataSubmission>(arg, 'PropsUIPageDataSubmission', ['platform', 'header', 'body'])
 }
 
 export interface PropsUIPageEnd {

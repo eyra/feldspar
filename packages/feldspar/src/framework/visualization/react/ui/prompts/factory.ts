@@ -13,8 +13,8 @@ import {
   isPropsUIPromptRadioInput,
   PropsUIPromptConsentFormTable,
   isPropsUIPromptConsentFormTable,
-  PropsUIDonationButtons,
-  isPropsUIDonationButtons
+  PropsUIDataSubmissionButtons,
+  isPropsUIDataSubmissionButtons
 } from '../../../../types/prompts'
 import { Translatable, PropsUITable } from '../../../../types/elements'
 import TextBundle from '../../../../text_bundle'
@@ -27,7 +27,7 @@ import { ConsentTable } from './consent_table'
 import { DonateButtons } from './donate_buttons'
 
 export interface PromptContext extends ReactFactoryContext {
-  onDonationDataChanged: (key: string, value: any) => void
+  onDataSubmissionDataChanged: (key: string, value: any) => void
   onDonate: () => void
 }
 
@@ -116,7 +116,7 @@ export class TableFactory implements PromptFactory {
           deletedRowCount: 0
         },
         context,
-        onChange: () => {}  // Tables in donation page are read-only
+        onChange: () => {}  // Tables in data submission page are read-only
       });
     }
     return null;
@@ -125,7 +125,7 @@ export class TableFactory implements PromptFactory {
 
 export class DonateButtonsFactory implements PromptFactory {
   create(body: unknown, context: PromptContext): JSX.Element | null {
-    if (isPropsUIDonationButtons(body)) {
+    if (isPropsUIDataSubmissionButtons(body)) {
       const { donateQuestion, donateButton, ...rest } = body;
       const props = {
         ...rest,

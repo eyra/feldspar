@@ -44,7 +44,7 @@ const title = new TextBundle()
 const text = new TextBundle()
   .add(
     "en",
-    "Thank you for your participation. You can now close the page or refresh to restart the donation flow."
+    "Thank you for your participation. You can now close the page or refresh to restart the DataSubmission flow."
   )
   .add(
     "de",

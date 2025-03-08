@@ -88,10 +88,10 @@ class PropsUIPromptConfirm:
 
 @dataclass
 class PropsUIPromptConsentFormTable:
-    """Table to be shown to the participant prior to donation
+    """Table to be shown to the participant prior to data_submission
 
     Attributes:
-        id: a unique string to itentify the table after donation
+        id: a unique string to itentify the table after data_submission
         title: title of the table
         data_frame: table to be shown
     """
@@ -113,13 +113,13 @@ class PropsUIPromptConsentFormTable:
 
 @dataclass
 class PropsUIPromptConsentForm:
-    """Tables to be shown to the participant prior to donation
+    """Tables to be shown to the participant prior to data submission
 
     Attributes:
         tables: a list of tables, including both editable and read-only tables
         description: Optional description text
-        donate_question: Optional question text for donation button
-        donate_button: Optional text for donation button
+        donate_question: Optional question text for data submission button
+        donate_button: Optional text for data submission button
     """
 
     tables: list[PropsUIPromptConsentFormTable]
@@ -241,13 +241,13 @@ class PropsUIPromptHelloWorld:
 
 
 @dataclass
-class PropsUIDonationButtons:
-    """Buttons for donation actions
+class PropsUIDataSubmissionButtons:
+    """Buttons for data submission actions
 
     Attributes:
         donate_question: Optional question text above buttons
         donate_button: Optional text for donate button
-        waiting: Whether the donation is in progress
+        waiting: Whether the data submission is in progress
     """
 
     donate_question: Optional[Translatable] = None
@@ -256,7 +256,7 @@ class PropsUIDonationButtons:
 
     def toDict(self):
         dict = {}
-        dict["__type__"] = "PropsUIDonationButtons"
+        dict["__type__"] = "PropsUIDataSubmissionButtons"
         dict["donateQuestion"] = self.donate_question and self.donate_question.toDict()
         dict["donateButton"] = self.donate_button and self.donate_button.toDict()
         dict["waiting"] = self.waiting
@@ -264,7 +264,7 @@ class PropsUIDonationButtons:
 
 
 @dataclass
-class PropsUIPageDonation:
+class PropsUIPageDataSubmission:
     """A multi-purpose page that gets shown to the user
 
     Attributes:
@@ -283,13 +283,13 @@ class PropsUIPageDonation:
         PropsUIPromptProgress,
         PropsUIPromptHelloWorld,
         PropsUIPromptConsentFormTable,
-        PropsUIDonationButtons,
+        PropsUIDataSubmissionButtons,
         list,
     ]
 
     def toDict(self):
         dict = {}
-        dict["__type__"] = "PropsUIPageDonation"
+        dict["__type__"] = "PropsUIPageDataSubmission"
         dict["platform"] = self.platform
         dict["header"] = self.header.toDict()
         if isinstance(self.body, list):
