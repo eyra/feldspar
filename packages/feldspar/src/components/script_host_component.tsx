@@ -10,7 +10,7 @@ import {
 } from "../framework/visualization/react/context";
 import { PageFactory } from "../framework/visualization/react/factories/base";
 
-export interface FeldsparProps {
+export interface ScriptHostProps {
   workerUrl: string;
   locale?: string;
   standalone?: boolean;
@@ -18,7 +18,7 @@ export interface FeldsparProps {
   factories?: PageFactory[];
 }
 
-const FeldsparContent: React.FC<FeldsparProps> = ({
+const FeldsparContent: React.FC<ScriptHostProps> = ({
   workerUrl,
   locale = "en",
   standalone = false,
@@ -82,7 +82,7 @@ const FeldsparContent: React.FC<FeldsparProps> = ({
   );
 };
 
-export const FeldsparComponent: React.FC<FeldsparProps> = (props) => (
+export const ScriptHostComponent: React.FC<ScriptHostProps> = (props) => (
   <VisualizationProvider>
     <FeldsparContent {...props} />
   </VisualizationProvider>

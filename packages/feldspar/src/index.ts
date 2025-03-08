@@ -1,5 +1,5 @@
-export { FeldsparComponent } from './components/FeldsparComponent'
-export type { FeldsparProps } from './components/FeldsparComponent'
+export { ScriptHostComponent } from './components/script_host_component'
+export type { ScriptHostProps } from './components/script_host_component'
 export { Bridge } from './framework/types/modules'
 export { default as FakeBridge } from './fake_bridge'
 export { LiveBridge } from './live_bridge'

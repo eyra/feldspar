@@ -1,10 +1,10 @@
-import { DataSubmissionPageFactory, FeldsparComponent } from "@eyra/feldspar";
+import { DataSubmissionPageFactory, ScriptHostComponent } from "@eyra/feldspar";
 import { HelloWorldFactory } from "./components/hello_world";
 
 function App() {
   return (
     <div className="App">
-      <FeldsparComponent
+      <ScriptHostComponent
         workerUrl="./py_worker.js"
         standalone={process.env.NODE_ENV !== "production"}
         factories={[
