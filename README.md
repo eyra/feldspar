@@ -41,7 +41,7 @@ In order to start a local instance of Feldspar follow these steps:
 2. Start the local web server (with hot reloading enabled):
 
    ```sh
-   cd packages/feldspar-demo
+   cd packages/data-collector
    npm run start
    ```
 
@@ -53,9 +53,9 @@ If the installation went correctly you should be greeted with a mock data donati
 
 1. Create release file:
 
-  ```sh
-   ./release.sh
-   ```
+```sh
+ ./release.sh
+```
 
 2. Use release file:
 
@@ -325,7 +325,7 @@ Feldspar uses the following data model (also see: [src/framework/types](src/fram
   | ProcessingEngine    | Responsible for processing donation flows                  |
   | VisualizationEngine | Responsible for presenting the UI and accepting user input |
   | CommandHandler      | Decoupling of ProcessingEngine and VisualizationEngine     |
-  | Bridge              | Callback interface for Bridge Commands (e.g. Donation)    |
+  | Bridge              | Callback interface for Bridge Commands (e.g. Donation)     |
 
 - [Pages](src/framework/types/pages.ts)
 
@@ -445,7 +445,7 @@ const staticCopy = (): Translatable => {
     return new TextBundle()
         .add('en', 'English')
         .add('de', 'Deutsch')
-        .add('it', 'Italiano')                                
+        .add('it', 'Italiano')
         .add('nl', 'Nederlands')
 }
 ```
@@ -520,7 +520,7 @@ function prepareCopy ({ title, locale }: Props): Copy {
 const continueButtonLabel = (): Translatable => {
     return new TextBundle()
         .add('en', 'Continue')
-        .add('de', 'Weiter')                                       .add('it', 'Continua')  
+        .add('de', 'Weiter')                                       .add('it', 'Continua')
         .add('nl', 'Verder')
 }
 ```

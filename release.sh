@@ -7,5 +7,5 @@ NR=$(find ./releases -type f | wc -l | xargs)
 NR=$(($NR + 1))
 TIMESTAMP=$(date '+%Y-%m-%d')
 npm run build
-cd packages/feldspar-demo/build
+cd packages/data-collector/build
 zip -r ../../../releases/${NAME}_${TIMESTAMP}_${NR}.zip .
