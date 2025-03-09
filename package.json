@@ -9,6 +9,10 @@
     "build": "npm run build --workspaces",
     "dev": "npm run start --workspaces",
     "test": "npm run test --workspaces",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:report": "playwright show-report",
     "build:wheel": "cd packages/python && poetry build --format wheel",
     "build:install-wheel": "cp -R packages/python/dist/*.whl packages/data-collector/public",
     "build:py": "npm run build:wheel && npm run build:install-wheel",
@@ -18,7 +22,9 @@
     "start": "npm run build:py && concurrently \"npm run start:py\" \"npm run dev:feldspar\" \"npm run dev:demo\""
   },
   "devDependencies": {
-    "husky": "^9.1.7",
-    "concurrently": "^8.2.2"
+    "@playwright/test": "^1.51.0",
+    "@types/node": "^22.13.10",
+    "concurrently": "^8.2.2",
+    "husky": "^9.1.7"
   }
 }

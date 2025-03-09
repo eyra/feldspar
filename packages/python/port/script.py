@@ -75,7 +75,7 @@ def render_data_submission_page(body):
     header = props.PropsUIHeader(
         props.Translatable(
             {
-                "en": "Data data_submission demo",
+                "en": "Data data donation demo",
                 "de": "Demonstration der Datenspende",
                 "it": "Dimostrazione di donazione dei dati",
                 "nl": "Data donatie demo",

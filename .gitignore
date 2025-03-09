@@ -29,3 +29,10 @@ yarn-debug.log*
 yarn-error.log*
 /public/port-0.0.0-py3-none-any.whl
 /src/framework/processing/py/dist/port-0.0.0-py3-none-any.whl
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
