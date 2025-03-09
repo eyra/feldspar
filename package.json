@@ -22,9 +22,9 @@
     "start": "npm run build:py && concurrently \"npm run start:py\" \"npm run dev:feldspar\" \"npm run dev:demo\""
   },
   "devDependencies": {
-    "@playwright/test": "^1.51.0",
-    "@types/node": "^22.13.10",
+    "@playwright/test": "^1.42.1",
+    "@types/node": "^20.11.24",
     "concurrently": "^8.2.2",
-    "husky": "^9.1.7"
+    "husky": "^9.0.11"
   }
 }
