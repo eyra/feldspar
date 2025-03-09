@@ -22,9 +22,22 @@
     "start": "npm run build:py && concurrently \"npm run start:py\" \"npm run dev:feldspar\" \"npm run dev:demo\""
   },
   "devDependencies": {
-    "@playwright/test": "^1.42.1",
-    "@types/node": "^20.11.24",
-    "concurrently": "^8.2.2",
-    "husky": "^9.0.11"
+    "@playwright/test": "*",
+    "@types/node": "*",
+    "concurrently": "*",
+    "husky": "*"
+  },
+  "dependencies": {
+    "@svgr/plugin-svgo": "^8.1.0",
+    "@svgr/webpack": "^8.1.0",
+    "css-select": "^5.1.0",
+    "nth-check": "^2.1.1",
+    "postcss": "^8.5.3",
+    "resolve-url-loader": "^5.0.0",
+    "rollup-plugin-terser": "^7.0.2",
+    "serialize-javascript": "^6.0.2",
+    "svgo": "^3.3.2",
+    "workbox-build": "^7.3.0",
+    "workbox-webpack-plugin": "^7.3.0"
   }
 }
