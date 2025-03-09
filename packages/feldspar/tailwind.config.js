@@ -2,7 +2,7 @@
 const plugin = require("tailwindcss/plugin");
 
 module.exports = {
-  content: ["./packages/**/*.{js,jsx,ts,tsx}"],
+  content: ["./src/**/*.{js,jsx,ts,tsx}"],
 
   darkMode: "media",
   theme: {
@@ -159,6 +159,15 @@ module.exports = {
         header1: "376px",
         form: "400px",
         mailto: "128px",
+      },
+      keyframes: {
+        "spinner-rotation": {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
+        },
+      },
+      animation: {
+        spinner: "spinner-rotation 1s linear infinite",
       },
     },
   },

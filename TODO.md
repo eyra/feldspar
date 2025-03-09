@@ -1,0 +1,3 @@
+- [ ] Python als losse lib
+- [ ] React style factory registratie
+- [ ] Testen / werkend maken in Next
