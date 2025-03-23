@@ -11,11 +11,12 @@
         "dist/styles.css"
     ],
     "scripts": {
-        "build:css": "NODE_ENV=production tailwindcss build -i ./src/framework/styles.css -o ./dist/styles.css --minify",
+        "build:css": "NODE_ENV=production postcss ./src/framework/styles.css -o ./dist/styles.css",
         "build:ts": "rollup -c",
         "build": "npm run build:css && npm run build:ts",
         "dev": "concurrently \"rollup -c -w\" \"tailwindcss build -i ./src/framework/styles.css -o ./dist/styles.css --watch\"",
-        "test": "jest"
+        "test": "jest",
+        "clean": "rm -rf dist node_modules"
     },
     "peerDependencies": {
         "react": "^19.0.0",
@@ -35,17 +36,22 @@
         }
     },
     "devDependencies": {
-        "@rollup/plugin-commonjs": "^28.0.2",
-        "@rollup/plugin-json": "^6.0.0",
-        "@rollup/plugin-node-resolve": "^16.0.0",
-        "@rollup/plugin-typescript": "^12.1.2",
-        "@rollup/plugin-url": "^8.0.2",
-        "@types/react": "^19.0.7",
-        "@types/react-dom": "^19.0.3",
-        "rollup": "^4.30.1",
-        "rollup-plugin-dts": "^6.1.1",
-        "rollup-plugin-peer-deps-external": "^2.2.4",
-        "rollup-plugin-terser": "^7.0.2",
-        "tslib": "^2.8.1"
+        "@rollup/plugin-commonjs": "*",
+        "@rollup/plugin-json": "*",
+        "@rollup/plugin-node-resolve": "*",
+        "@rollup/plugin-terser": "*",
+        "@rollup/plugin-typescript": "*",
+        "@rollup/plugin-url": "*",
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "fdir": "*",
+        "postcss": "*",
+        "postcss-cli": "*",
+        "postcss-import": "*",
+        "rollup": "*",
+        "rollup-plugin-copy": "*",
+        "rollup-plugin-dts": "*",
+        "rollup-plugin-peer-deps-external": "*",
+        "tslib": "*"
     }
 }
