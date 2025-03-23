@@ -56,7 +56,7 @@ const FeldsparContent: React.FC<ScriptHostProps> = ({
     }
 
     const observer = new ResizeObserver(() => {
-      const height = window.document.body.scrollHeight;
+      const height = window.document.documentElement.getBoundingClientRect().height;
       window.parent.postMessage({ action: "resize", height }, "*");
     });
 
