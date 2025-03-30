@@ -36,11 +36,11 @@ const FeldsparContent: React.FC<ScriptHostProps> = ({
     const worker = new Worker(workerUrl);
     workerRef.current = worker;
 
-    const run = (bridge: Bridge) => {
+    const run = (bridge: Bridge, selectedLocale: string = locale) => {
       const assembly = new Assembly(worker, bridge, factories);
       assembly.visualizationEngine.start(
         containerRef.current!,
-        locale,
+        selectedLocale,
         setState
       );
       assembly.processingEngine.start();
