@@ -6,12 +6,14 @@ export type PropsUIPrompt =
   PropsUIPromptProgress |
   PropsUIPromptRadioInput |
   PropsUIPromptConsentForm |
-  PropsUIPromptConfirm
+  PropsUIPromptConfirm |
+  PropsUIPromptText
 
 export function isPropsUIPrompt (arg: any): arg is PropsUIPrompt {
   return isPropsUIPromptFileInput(arg) ||
     isPropsUIPromptRadioInput(arg) ||
-    isPropsUIPromptConsentForm(arg)
+    isPropsUIPromptConsentForm(arg) ||
+    isPropsUIPromptText(arg)
 }
 
 export interface PropsUIPromptConfirm {
@@ -73,6 +75,16 @@ export interface PropsUIPromptConsentFormTable {
 export function isPropsUIPromptConsentFormTable (arg: any): arg is PropsUIPromptConsentFormTable {
   return isInstanceOf<PropsUIPromptConsentFormTable>(arg, 'PropsUIPromptConsentFormTable', ['id', 'title', 'description', 'data_frame'])
 }
+
+export interface PropsUIPromptText {
+  __type__: 'PropsUIPromptText'
+  text: Text
+  title?: Text
+}
+export function isPropsUIPromptText (arg: any): arg is PropsUIPromptText {
+  return isInstanceOf<PropsUIPromptText>(arg, 'PropsUIPromptText', ['text'])
+}
+
 export interface PropsUIDataSubmissionButtons {
   __type__: 'PropsUIDataSubmissionButtons'
   donateQuestion?: Text

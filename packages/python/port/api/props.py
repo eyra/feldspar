@@ -241,6 +241,26 @@ class PropsUIPromptHelloWorld:
 
 
 @dataclass
+class PropsUIPromptText:
+    """Text block to display information to the user
+
+    Attributes:
+        title: optional title for the text block
+        text: main text content to display
+    """
+
+    text: Translatable
+    title: Optional[Translatable] = None
+
+    def toDict(self):
+        dict = {}
+        dict["__type__"] = "PropsUIPromptText"
+        dict["title"] = self.title and self.title.toDict()
+        dict["text"] = self.text.toDict()
+        return dict
+
+
+@dataclass
 class PropsUIDataSubmissionButtons:
     """Buttons for data submission actions
 
