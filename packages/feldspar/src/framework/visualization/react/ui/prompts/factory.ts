@@ -14,7 +14,9 @@ import {
   PropsUIPromptConsentFormTable,
   isPropsUIPromptConsentFormTable,
   PropsUIDataSubmissionButtons,
-  isPropsUIDataSubmissionButtons
+  isPropsUIDataSubmissionButtons,
+  PropsUIPromptText,
+  isPropsUIPromptText
 } from '../../../../types/prompts'
 import { Translatable, PropsUITable } from '../../../../types/elements'
 import TextBundle from '../../../../text_bundle'
@@ -25,6 +27,7 @@ import { Confirm } from './confirm'
 import { RadioInput } from './radio_input'
 import { ConsentTable } from './consent_table'
 import { DonateButtons } from './donate_buttons'
+import { TextBlock } from './text_block'
 
 export interface PromptContext extends ReactFactoryContext {
   onDataSubmissionDataChanged: (key: string, value: any) => void
@@ -137,6 +140,15 @@ export class DonateButtonsFactory implements PromptFactory {
   }
 }
 
+export class TextBlockFactory implements PromptFactory {
+  create(body: unknown, context: ReactFactoryContext): JSX.Element | null {
+    if (isPropsUIPromptText(body)) {
+      return React.createElement(TextBlock, { ...body, ...context });
+    }
+    return null
+  }
+}
+
 export const createPromptFactoriesWithDefaults = (factories: PromptFactory[]=[]): PromptFactory[] => {
     return [
         ...factories,
@@ -145,6 +157,7 @@ export const createPromptFactoriesWithDefaults = (factories: PromptFactory[]=[])
         new ConfirmFactory(),
         new RadioInputFactory(),
         new TableFactory(),
-        new DonateButtonsFactory()
+        new DonateButtonsFactory(),
+        new TextBlockFactory()
     ];
 }

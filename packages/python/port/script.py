@@ -19,7 +19,20 @@ def process(sessionId):
         meta_data.append(("debug", f"{key}: prompt file"))
         promptFile = prompt_file("application/zip, text/plain")
         fileResult = yield render_data_submission_page(
-            [prompt_hello_world(), promptFile]
+            [
+                prompt_hello_world(),
+                props.PropsUIPromptText(
+                    text=props.Translatable(
+                        {
+                            "en": "Demo",
+                            "de": "Demo",
+                            "it": "Demo",
+                            "nl": "Demo",
+                        }
+                    )
+                ),
+                promptFile,
+            ]
         )
         if fileResult.__type__ == "PayloadString":
             # Extracting the zipfile
