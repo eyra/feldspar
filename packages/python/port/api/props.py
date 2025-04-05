@@ -100,7 +100,7 @@ class PropsUIPromptConsentFormTable:
     title: Translatable
     description: Translatable
     data_frame: pd.DataFrame
-    headers: dict[str, Translatable]
+    headers: Optional[dict[str, Translatable]] = None
 
     def toDict(self):
         dict = {}
@@ -109,7 +109,10 @@ class PropsUIPromptConsentFormTable:
         dict["title"] = self.title.toDict()
         dict["description"] = self.description.toDict()
         dict["data_frame"] = self.data_frame.to_json()
-        dict["headers"] = {key: value.toDict() for key, value in self.headers.items()}
+        if self.headers:
+            dict["headers"] = {
+                key: value.toDict() for key, value in self.headers.items()
+            }
         return dict
 
 
