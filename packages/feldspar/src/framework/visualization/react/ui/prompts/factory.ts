@@ -133,6 +133,8 @@ export class DonateButtonsFactory implements PromptFactory {
       const props = {
         ...rest,
         ...context,
+        donateQuestion,
+        donateButton,
       };
       return React.createElement(DonateButtons, props);
     }
