@@ -6,7 +6,7 @@
   ],
   "scripts": {
     "prepare": "husky install",
-    "build": "npm run build -w packages/feldspar && npm run build -w packages/data-collector",
+    "build": "npm run build:py && npm run build -w packages/feldspar && npm run build -w packages/data-collector",
     "dev": "npm run start --workspaces",
     "test": "npm run test --workspaces",
     "test:e2e": "playwright test",

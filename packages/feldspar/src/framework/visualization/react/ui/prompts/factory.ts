@@ -14,7 +14,9 @@ import {
   PropsUIPromptConsentFormTable,
   isPropsUIPromptConsentFormTable,
   PropsUIDataSubmissionButtons,
-  isPropsUIDataSubmissionButtons
+  isPropsUIDataSubmissionButtons,
+  PropsUIPromptText,
+  isPropsUIPromptText
 } from '../../../../types/prompts'
 import { Translatable, PropsUITable } from '../../../../types/elements'
 import TextBundle from '../../../../text_bundle'
@@ -25,6 +27,7 @@ import { Confirm } from './confirm'
 import { RadioInput } from './radio_input'
 import { ConsentTable } from './consent_table'
 import { DonateButtons } from './donate_buttons'
+import { TextBlock } from './text_block'
 
 export interface PromptContext extends ReactFactoryContext {
   onDataSubmissionDataChanged: (key: string, value: any) => void
@@ -87,8 +90,18 @@ export class TableFactory implements PromptFactory {
       const { id, title, data_frame } = body;
       const dataFrame = JSON.parse(data_frame);
 
-      const headCells = Object.keys(dataFrame).map((column: string) => 
-        ({ __type__: "PropsUITableCell" as const, text: column }));
+      // Translate the column headers when overrides are provided
+      const headers = body.headers || {};
+      const headCells = Object.keys(dataFrame).map((column: string) => {
+        const text = headers[column] 
+          ? Translator.translate(headers[column], context.locale) 
+          : column;
+        
+        return { 
+          __type__: "PropsUITableCell" as const, 
+          text 
+        };
+      });
       const head = { __type__: "PropsUITableHead" as const, cells: headCells };
       
       const rows = Object.keys(dataFrame[Object.keys(dataFrame)[0]] || {}).map(rowIndex => ({
@@ -130,10 +143,21 @@ export class DonateButtonsFactory implements PromptFactory {
       const props = {
         ...rest,
         ...context,
+        donateQuestion,
+        donateButton,
       };
       return React.createElement(DonateButtons, props);
     }
     return null;
+  }
+}
+
+export class TextBlockFactory implements PromptFactory {
+  create(body: unknown, context: ReactFactoryContext): JSX.Element | null {
+    if (isPropsUIPromptText(body)) {
+      return React.createElement(TextBlock, { ...body, ...context });
+    }
+    return null
   }
 }
 
@@ -145,6 +169,7 @@ export const createPromptFactoriesWithDefaults = (factories: PromptFactory[]=[])
         new ConfirmFactory(),
         new RadioInputFactory(),
         new TableFactory(),
-        new DonateButtonsFactory()
+        new DonateButtonsFactory(),
+        new TextBlockFactory()
     ];
 }

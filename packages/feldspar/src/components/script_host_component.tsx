@@ -36,11 +36,11 @@ const FeldsparContent: React.FC<ScriptHostProps> = ({
     const worker = new Worker(workerUrl);
     workerRef.current = worker;
 
-    const run = (bridge: Bridge) => {
+    const run = (bridge: Bridge, selectedLocale: string = locale) => {
       const assembly = new Assembly(worker, bridge, factories);
       assembly.visualizationEngine.start(
         containerRef.current!,
-        locale,
+        selectedLocale,
         setState
       );
       assembly.processingEngine.start();
@@ -56,7 +56,7 @@ const FeldsparContent: React.FC<ScriptHostProps> = ({
     }
 
     const observer = new ResizeObserver(() => {
-      const height = window.document.body.scrollHeight;
+      const height = window.document.documentElement.getBoundingClientRect().height;
       window.parent.postMessage({ action: "resize", height }, "*");
     });
 

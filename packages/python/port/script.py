@@ -19,7 +19,20 @@ def process(sessionId):
         meta_data.append(("debug", f"{key}: prompt file"))
         promptFile = prompt_file("application/zip, text/plain")
         fileResult = yield render_data_submission_page(
-            [prompt_hello_world(), promptFile]
+            [
+                prompt_hello_world(),
+                props.PropsUIPromptText(
+                    text=props.Translatable(
+                        {
+                            "en": "Demo",
+                            "de": "Demo",
+                            "it": "Demo",
+                            "nl": "Demo",
+                        }
+                    )
+                ),
+                promptFile,
+            ]
         )
         if fileResult.__type__ == "PayloadString":
             # Extracting the zipfile
@@ -175,7 +188,7 @@ def prompt_consent(data):
     # Show data table if available
     data_table = None
     if data is not None:
-        data_frame = pd.DataFrame(data, columns=["filename", "compressed size", "size"])
+        data_frame = pd.DataFrame(data, columns=["filename", "compressed_size", "size"])
         data_table = props.PropsUIPromptConsentFormTable(
             "zip_content",
             table_title,
@@ -188,6 +201,16 @@ def prompt_consent(data):
                 }
             ),
             data_frame,
+            headers={
+                "compressed_size": props.Translatable(
+                    {
+                        "en": "Compressed Size",
+                        "de": "Komprimierte Größe",
+                        "it": "Dimensione compressa",
+                        "nl": "Gecomprimeerde grootte",
+                    }
+                )
+            },
         )
 
     # Show log messages table with data_submission buttons

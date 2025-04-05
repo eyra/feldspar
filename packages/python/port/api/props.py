@@ -100,6 +100,7 @@ class PropsUIPromptConsentFormTable:
     title: Translatable
     description: Translatable
     data_frame: pd.DataFrame
+    headers: dict[str, Translatable]
 
     def toDict(self):
         dict = {}
@@ -108,6 +109,7 @@ class PropsUIPromptConsentFormTable:
         dict["title"] = self.title.toDict()
         dict["description"] = self.description.toDict()
         dict["data_frame"] = self.data_frame.to_json()
+        dict["headers"] = {key: value.toDict() for key, value in self.headers.items()}
         return dict
 
 
@@ -237,6 +239,26 @@ class PropsUIPromptHelloWorld:
         dict = {}
         dict["__type__"] = "PropsUIPromptHelloWorld"
         dict["text"] = self.text
+        return dict
+
+
+@dataclass
+class PropsUIPromptText:
+    """Text block to display information to the user
+
+    Attributes:
+        title: optional title for the text block
+        text: main text content to display
+    """
+
+    text: Translatable
+    title: Optional[Translatable] = None
+
+    def toDict(self):
+        dict = {}
+        dict["__type__"] = "PropsUIPromptText"
+        dict["title"] = self.title and self.title.toDict()
+        dict["text"] = self.text.toDict()
         return dict
 
 
