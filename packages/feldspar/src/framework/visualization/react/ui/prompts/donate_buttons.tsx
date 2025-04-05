@@ -3,14 +3,14 @@ import { LabelButton, PrimaryButton } from "../elements/button";
 import { BodyLarge } from "../elements/text";
 import TextBundle from "../../../../text_bundle";
 import { Translator } from "../../../../translator";
-import { Translatable } from "../../../../types/elements";
+import { Text } from "../../../../types/elements";
 
 interface Props {
   onDonate: () => void;
   onCancel: () => void;
   locale: string;
-  donateQuestion?: Translatable;
-  donateButton?: Translatable;
+  donateQuestion?: Text;
+  donateButton?: Text;
 }
 
 export const DonateButtons = ({ onDonate, onCancel, locale, donateQuestion, donateButton }: Props): JSX.Element => {

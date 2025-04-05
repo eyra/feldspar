@@ -24,5 +24,5 @@ test('can upload a zip file and view contents', async ({ page }) => {
   await expect(page.getByText('hello_world.txt')).toBeVisible();
   
   // Check that the donation actions are visible
-  await expect(page.getByText('Do you want to donate the above data?')).toBeVisible();
+  await expect(page.getByText('Would you like to donate this data?')).toBeVisible();
 });
