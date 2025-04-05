@@ -212,13 +212,48 @@ def prompt_consent(data):
                 )
             },
         )
-
+    # Another table example
+    jokes_table = props.PropsUIPromptConsentFormTable(
+        "dad_jokes",
+        props.Translatable(
+            {
+                "en": "Dad Jokes",
+                "de": "Vaterwitze",
+                "it": "Barzellette da papà",
+                "nl": "Vadergrappen",
+            }
+        ),
+        props.Translatable(
+            {
+                "en": "This is another table example.",
+                "de": "Das ist ein weiteres Tabellenbeispiel.",
+                "it": "Questo è un altro esempio di tabella.",
+                "nl": "Dit is een ander tabelvoorbeeld.",
+            }
+        ),
+        pd.DataFrame(
+            [
+                ["I don't always test my code, but when I do, I do it in production."],
+                [
+                    "There are only two hard things in computer science: cache invalidation and naming things."
+                ],
+                ["Why do programmers prefer dark mode? Because light attracts bugs."],
+                ["I would tell you a joke about UDP, but you probably won't get it."],
+                [
+                    "A SQL query walks into a bar, walks up to two tables and asks, 'Can I join you?'"
+                ],
+                ["Why do Java developers wear glasses? Because they don't see sharp."],
+            ],
+            columns=["joke"],
+        ),
+    )
     # Show log messages table with data_submission buttons
     result = yield render_data_submission_page(
         [
             item
             for item in [
                 data_table,
+                jokes_table,
                 props.PropsUIDataSubmissionButtons(
                     donate_question=props.Translatable(
                         {
