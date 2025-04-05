@@ -192,17 +192,25 @@ export default App;
 
 ### Step 5: Use Your Component in Python
 
-Add a function to your `script.py` to create your component:
+Add a class to your `script.py` to create your component:
 
 ```python
-def prompt_my_component(title):
-    return {
-        "__type__": "PropsUIPromptMyComponent",
-        "title": title
-    }
+from dataclasses import dataclass
+
+@dataclass
+class PropsUIPromptMyComponent:
+    title: str
+
+    def toDict(self):
+        dict = {}
+        dict["__type__"] = "PropsUIPromptMyComponent"
+        dict["title"] = self.title
+        return dict
 
 def process(sessionId):
-    result = yield render_data_submission_page(prompt_my_component("My Custom Component"))
+    result = yield render_data_submission_page(
+        PropsUIPromptMyComponent("My Custom Component")
+    )
     # Handle the result...
 ```
 
