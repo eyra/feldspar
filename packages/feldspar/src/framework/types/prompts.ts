@@ -70,7 +70,8 @@ export interface PropsUIPromptConsentFormTable {
   id: string
   title: Text
   description: Text
-  data_frame: any
+  data_frame: any,
+  headers?: Record<string, Text>
 }
 export function isPropsUIPromptConsentFormTable (arg: any): arg is PropsUIPromptConsentFormTable {
   return isInstanceOf<PropsUIPromptConsentFormTable>(arg, 'PropsUIPromptConsentFormTable', ['id', 'title', 'description', 'data_frame'])
