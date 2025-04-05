@@ -90,8 +90,18 @@ export class TableFactory implements PromptFactory {
       const { id, title, data_frame } = body;
       const dataFrame = JSON.parse(data_frame);
 
-      const headCells = Object.keys(dataFrame).map((column: string) => 
-        ({ __type__: "PropsUITableCell" as const, text: column }));
+      // Translate the column headers when overrides are provided
+      const headers = body.headers || {};
+      const headCells = Object.keys(dataFrame).map((column: string) => {
+        const text = headers[column] 
+          ? Translator.translate(headers[column], context.locale) 
+          : column;
+        
+        return { 
+          __type__: "PropsUITableCell" as const, 
+          text 
+        };
+      });
       const head = { __type__: "PropsUITableHead" as const, cells: headCells };
       
       const rows = Object.keys(dataFrame[Object.keys(dataFrame)[0]] || {}).map(rowIndex => ({
