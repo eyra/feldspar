@@ -20,15 +20,13 @@ export const TextBlock = (props: Props): JSX.Element => {
 
   return (
     <>
-      <div id='text-block-panel'>
+      <div className='my-8'>
         {title && (
           <>
             <Title3 text={title} margin='mb-4' />
           </>
         )}
-        <div className='flex-wrap text-bodylarge font-body text-grey1 text-left'>
-          <BodyLarge text={text} margin='' />
-        </div>
+        <BodyLarge text={text} margin='' />
       </div>
     </>
   )

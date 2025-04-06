@@ -253,6 +253,24 @@ def prompt_consent(data):
             item
             for item in [
                 data_table,
+                props.PropsUIPromptText(
+                    title=props.Translatable(
+                        {
+                            "en": "Recursion",
+                            "de": "Rekursion",
+                            "it": "Ricorsione",
+                            "nl": "Recursie",
+                        }
+                    ),
+                    text=props.Translatable(
+                        {
+                            "en": "To understand what recursion is, you must first understand recursion.",
+                            "de": "Um zu verstehen, was Rekursion ist, müssen Sie zuerst Rekursion verstehen.",
+                            "it": "Per capire cos'è la ricorsione, devi prima capire la ricorsione.",
+                            "nl": "Om te begrijpen wat recursie is, moet je eerst recursie begrijpen.",
+                        }
+                    ),
+                ),
                 jokes_table,
                 props.PropsUIDataSubmissionButtons(
                     donate_question=props.Translatable(
