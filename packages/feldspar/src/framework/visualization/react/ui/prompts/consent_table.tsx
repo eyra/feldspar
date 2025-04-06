@@ -82,7 +82,7 @@ export const ConsentTable = forwardRef<ConsentTableHandle | null, Props>(
       );
     }, []);
 
-    console.debug(table.description);
+    
     return (
       <div key={table.id} className="flex flex-col gap-4 mb-4">
         <Title4 text={table.title} margin="" />
