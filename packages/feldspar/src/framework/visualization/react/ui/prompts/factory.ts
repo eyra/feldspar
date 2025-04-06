@@ -126,7 +126,7 @@ export class TableFactory implements PromptFactory {
         table: {
           ...parsedTable,
           title: Translator.translate(title, context.locale),
-          description: Translator.translate(description, context.locale),
+          description: description && Translator.translate(description, context.locale),
           deletedRowCount: 0
         },
         context,
