@@ -98,6 +98,7 @@ class PropsUIPromptConsentFormTable:
     """
 
     id: str
+    number: int
     title: Translatable
     data_frame: pd.DataFrame
 
@@ -105,6 +106,7 @@ class PropsUIPromptConsentFormTable:
         dict = {}
         dict["__type__"] = "PropsUIPromptConsentFormTable"
         dict["id"] = self.id
+        dict["number"] = self.number
         dict["title"] = self.title.toDict()
         dict["data_frame"] = self.data_frame.to_json()
         return dict

@@ -8,10 +8,15 @@ export type PropsUI =
   PropsUIButton |
   PropsUICheckBox |
   PropsUIRadioItem |
+  PropsUINumberIcon |
   PropsUISpinner |
   PropsUIProgressBar |
+  PropsUIPagination |
   PropsUIHeader |
   PropsUITable |
+  PropsUITablePage |
+  PropsUITableCard |
+  PropsUITableCardItem |
   PropsUISearchBar |
   PropsUIPage |
   PropsUIPrompt
@@ -43,6 +48,7 @@ export function isPropsUI (arg: any): arg is PropsUI {
     isPropsUIButton(arg) ||
     isPropsUISpinner(arg) ||
     isPropsUIProgress(arg) ||
+    isPropsUIPagination(arg) ||
     isPropsUIHeader(arg) ||
     isPropsUITable(arg) ||
     isPropsUIPage(arg) ||
@@ -288,6 +294,15 @@ export function isPropsUIRadioItem (arg: any): arg is PropsUIRadioItem {
   return isInstanceOf<PropsUIRadioItem>(arg, 'PropsUIRadioItem', ['id', 'value', 'selected', 'onSelect'])
 }
 
+// Number icon
+
+export interface PropsUINumberIcon {
+  number: number
+}
+export function isPropsUINumberIcon (arg: any): arg is PropsUINumberIcon {
+  return isInstanceOf<PropsUINumberIcon>(arg, 'PropsUINumberIcon', ['number'])
+}
+
 // Check box
 
 export interface PropsUICheckBox {
@@ -320,6 +335,18 @@ export function isPropsUIProgress (arg: any): arg is PropsUIProgressBar {
   return isInstanceOf<PropsUIProgressBar>(arg, 'PropsUIProgressBar', ['percentage'])
 }
 
+// PAGINATION
+
+export interface PropsUIPagination {
+  __type__: 'PropsUIPagination'
+  page: number
+  pageCount: number
+  pageWindowLegSize: number
+}
+export function isPropsUIPagination (arg: any): arg is PropsUIPagination {
+  return isInstanceOf<PropsUIPagination>(arg, 'PropsUIPagination', ['page', 'pageCount'])
+}
+
 // HEADER
 
 export interface PropsUIHeader {
@@ -342,6 +369,33 @@ export interface PropsUITable {
 }
 export function isPropsUITable (arg: any): arg is PropsUITable {
   return isInstanceOf<PropsUITable>(arg, 'PropsUITable', ['readOnly', 'pageSize', 'id', 'head', 'body'])
+}
+
+export interface PropsUITablePage {
+  __type__: 'PropsUITablePage'
+  head: PropsUITableHead
+  rows: PropsUITableRow[]
+}
+export function isPropsUITablePage (arg: any): arg is PropsUITablePage {
+  return isInstanceOf<PropsUITablePage>(arg, 'PropsUITablePage', ['head', 'rows'])
+}
+
+export interface PropsUITableCard {
+  __type__: 'PropsUITableCard'
+  headCells: PropsUITableCell[]
+  row: PropsUITableRow
+}
+export function isPropsUITableCard (arg: any): arg is PropsUITableCard {
+  return isInstanceOf<PropsUITableCard>(arg, 'PropsUITableCard', ['headCells', 'row'])
+}
+
+export interface PropsUITableCardItem {
+  __type__: 'PropsUITableCardItem'
+  title: PropsUITableCell
+  description: PropsUITableCell
+}
+export function isPropsUITableCardItem (arg: any): arg is PropsUITableCardItem {
+  return isInstanceOf<PropsUITableCardItem>(arg, 'PropsUITableCardItem', ['title', 'description'])
 }
 
 export interface PropsUITableHead {

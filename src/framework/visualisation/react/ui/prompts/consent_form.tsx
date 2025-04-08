@@ -9,10 +9,12 @@ import { Translator } from '../../../../translator'
 import { ReactFactoryContext } from '../../factory'
 import React from 'react'
 import _ from 'lodash'
+import { NumberIcon } from '../elements/number_icon'
 
 type Props = Weak<PropsUIPromptConsentForm> & ReactFactoryContext
 
 interface TableContext {
+  number: number
   title: string
   deletedRowCount: number
 }
@@ -64,12 +66,12 @@ export const ConsentForm = (props: Props): JSX.Element => {
   }
 
   function parseTables (tablesData: PropsUIPromptConsentFormTable[]): Array<PropsUITable & TableContext> {
-    console.log('parseTables')
     return tablesData.map((table) => parseTable(table))
   }
 
   function parseTable (tableData: PropsUIPromptConsentFormTable): (PropsUITable & TableContext) {
     const id = tableData.id
+    const number = tableData.number
     const title = Translator.translate(tableData.title, props.locale)
     const deletedRowCount = 0
     const dataFrame = JSON.parse(tableData.data_frame)
@@ -77,14 +79,19 @@ export const ConsentForm = (props: Props): JSX.Element => {
     const head: PropsUITableHead = { __type__: 'PropsUITableHead', cells: headCells }
     const body: PropsUITableBody = { __type__: 'PropsUITableBody', rows: rows(dataFrame) }
 
-    return { __type__: 'PropsUITable', id, head, body, title, deletedRowCount }
+    return { __type__: 'PropsUITable', id, head, body, number, title, deletedRowCount }
   }
 
   function renderTable (table: (Weak<PropsUITable> & TableContext), readOnly = false): JSX.Element {
     return (
       <div key={table.id} className='flex flex-col gap-4 mb-4'>
-        <Title4 text={table.title} margin='' />
-        <Table {...table} readOnly={readOnly} locale={locale} onChange={handleTableChange} />
+        <div className='flex flex-row gap-4 items-center'>
+          <NumberIcon number={table.number} />
+          <div className='pt-2px'>
+            <Title4 text={table.title} margin='' />
+          </div>
+        </div>
+        <Table {...table} readOnly={readOnly} locale={locale} onChange={handleTableChange} id={table.id} key={table.id} />
       </div>
     )
   }
@@ -93,10 +100,10 @@ export const ConsentForm = (props: Props): JSX.Element => {
     const tablesCopy = tablesOut.current.slice(0)
     const index = tablesCopy.findIndex(table => table.id === id)
     if (index > -1) {
-      const { title, head, body: oldBody, deletedRowCount: oldDeletedRowCount } = tablesCopy[index]
+      const { number, title, head, body: oldBody, deletedRowCount: oldDeletedRowCount } = tablesCopy[index]
       const body: PropsUITableBody = { __type__: 'PropsUITableBody', rows }
       const deletedRowCount = oldDeletedRowCount + (oldBody.rows.length - rows.length)
-      tablesCopy[index] = { __type__: 'PropsUITable', id, head, body, title, deletedRowCount }
+      tablesCopy[index] = { __type__: 'PropsUITable', id, head, body, number, title, deletedRowCount }
     }
     tablesOut.current = tablesCopy
   }
@@ -154,7 +161,7 @@ export const ConsentForm = (props: Props): JSX.Element => {
       <BodyLarge text={Translator.translate(props.description ?? description, locale)} />
       <div className='flex flex-col gap-8'>
         {tablesIn.current.map((table) => renderTable(table))}
-        <div>
+        <div className='flex flex-col'>
           <BodyLarge margin='' text={Translator.translate(props.donateQuestion ?? donateQuestionLabel, locale)} />
           <div className='flex flex-row gap-4 mt-4 mb-4'>
             <PrimaryButton

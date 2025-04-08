@@ -10,19 +10,6 @@ export const Progress = (props: Props): JSX.Element => {
   const { resolve, percentage } = props
   const { description, message } = prepareCopy(props)
 
-  function progressBar (): JSX.Element {
-    if (percentage !== undefined) {
-      return (
-        <>
-          <div className='mt-2' />
-          <ProgressBar percentage={percentage} />
-        </>
-      )
-    } else {
-      return <></>
-    }
-  }
-
   function autoResolve (): void {
     resolve?.({ __type__: 'PayloadTrue', value: true })
   }
@@ -32,16 +19,15 @@ export const Progress = (props: Props): JSX.Element => {
 
   return (
     <>
-      <div id='select-panel'>
+      <div id='select-panel flex flex-col gap-8'>
         <div className='flex-wrap text-bodylarge font-body text-grey1 text-left'>
           {description}
         </div>
-        <div className='mt-8' />
-        <div className='p-6 border-grey4 border-2 rounded'>
+        <div className='p-6 border-grey4 border-2 rounded flex flex-col gap-4 overflow-hidden'>
+          {percentage !== undefined && <ProgressBar percentage={percentage} />}
           <div className='flex-wrap text-bodylarge font-body text-grey2 text-left'>
             {message}
           </div>
-          {progressBar()}
         </div>
       </div>
     </>
