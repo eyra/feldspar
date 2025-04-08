@@ -92,6 +92,7 @@ class PropsUIPromptConsentFormTable:
 
     Attributes:
         id: a unique string to itentify the table after donation
+        number: the number of table in the list of tables
         title: title of the table
         data_frame: table to be shown
     """
