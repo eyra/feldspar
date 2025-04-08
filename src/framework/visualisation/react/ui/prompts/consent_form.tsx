@@ -161,7 +161,7 @@ export const ConsentForm = (props: Props): JSX.Element => {
       <BodyLarge text={Translator.translate(props.description ?? description, locale)} />
       <div className='flex flex-col gap-8'>
         {tablesIn.current.map((table) => renderTable(table))}
-        <div>
+        <div className='flex flex-col'>
           <BodyLarge margin='' text={Translator.translate(props.donateQuestion ?? donateQuestionLabel, locale)} />
           <div className='flex flex-row gap-4 mt-4 mb-4'>
             <PrimaryButton

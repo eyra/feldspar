@@ -146,7 +146,6 @@ module.exports = {
       minWidth: {
         '1/2': '50%',
         '3/4': '75%',
-        button: '200px'
       },
       maxWidth: {
         card: '376px',

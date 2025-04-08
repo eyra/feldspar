@@ -14,7 +14,7 @@ function spinnerColor (buttonColor: string): string {
 
 export const PrimaryButton = ({ label, spinning = false, enabled = true, color = 'bg-primary text-white', onClick }: Weak<PropsUIButtonPrimary>): JSX.Element => {
   return (
-    <div className='relative min-w-button'>
+    <div className='relative'>
       <div className={`flex flex-col items-center leading-none font-button text-button rounded ${enabled ? 'cursor-pointer active:shadow-top4px' : ''} ${color}`} onClick={onClick}>
         <div id='confirm-button' className={`pt-15px pb-15px pr-4 pl-4 ${enabled ? 'active:pt-4 active:pb-14px' : ''} ${spinning ? 'opacity-0' : ''}`}>
           {label}
@@ -31,7 +31,7 @@ export const PrimaryButton = ({ label, spinning = false, enabled = true, color =
 
 export const SecondaryButton = ({ label, color = 'bg-delete text-delete', onClick }: Weak<PropsUIButtonSecundary>): JSX.Element => {
   return (
-    <div className='relative min-w-button'>
+    <div className='relative'>
       <div className={`flex flex-col items-center active:shadow-top2px border-2 font-button text-button rounded bg-opacity-0 cursor-pointer ${color}`} onClick={onClick}>
         <div className='pt-13px pb-13px pr-4 pl-4 active:pt-14px active:pb-3'>
           {label}
