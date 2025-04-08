@@ -256,7 +256,7 @@ export const Table = ({ id, head, body, readOnly = false, locale, onChange }: Pr
 
         {/* Mobile header */}
         <div className='block sm:hidden'>
-          <div className='flex flex-row gap-4'>
+          <div className='flex flex-row gap-4 px-4'>
             {/* Mobile search */}
             <div className='w-full'>
               <SearchBar placeholder={copy.searchPlaceholder} onSearch={(query) => handleSearch(query)} />

@@ -12,7 +12,7 @@ export interface TableContext {
 
 export const TableCards = ({ head, rows, locale, onDelete }: Props): JSX.Element => {
   return (
-    <div className='flex flex-col gap-4'>
+    <div className='flex flex-col gap-4 px-4'>
       {rows.map((row, index) => <TableCard row={row} headCells={head.cells} locale={locale} onDelete={onDelete} key={`${index}`} />)}
     </div>
   )
