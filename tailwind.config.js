@@ -112,7 +112,9 @@ module.exports = {
         body: ['Finador-Light', 'sans-serif'],
         bodybold: ['Finador-Medium', 'sans-serif'],
         'table-header': ['Finador-Bold', 'sans-serif'],
-        'table-row': ['Finador-Regular', 'sans-serif']
+        'table-row': ['Finador-Regular', 'sans-serif'],
+        'card-key': ['Finador-Medium', 'sans-serif'],
+        'card-value': ['Finador-Regular', 'sans-serif']
       },
       fontSize: {
         title0: ['64px', '68px'],
@@ -138,7 +140,8 @@ module.exports = {
         bodylinklarge: ['24px', '36px'],
         bodylinkmedium: ['30px', '30px'],
         link: ['16px', '24px'],
-        table: ['14px', '14px']
+        table: ['14px', '18px'],
+        card: ['14px', '18px']
       },
       minWidth: {
         '1/2': '50%',
