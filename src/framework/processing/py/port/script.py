@@ -31,7 +31,7 @@ def process(sessionId):
             fileCount = len(files)
             for index, filename in enumerate(files):
                 percentage = ((index+1)/fileCount)*100
-                promptMessage = prompt_extraction_message(f"Extracting file: {filename}", percentage)   
+                promptMessage = prompt_extraction_message(f"{filename}", percentage)   
                 yield render_donation_page(promptMessage)   
                 file_extraction_result = extract_file(zipfile_ref, filename)
                 extraction_result.append(file_extraction_result)

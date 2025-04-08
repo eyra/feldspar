@@ -19,13 +19,13 @@ export const Progress = (props: Props): JSX.Element => {
 
   return (
     <>
-      <div id='select-panel flex flex-col gap-8'>
-        <div className='flex-wrap text-bodylarge font-body text-grey1 text-left'>
+      <div className='flex flex-col gap-8'>
+        <div className='text-bodylarge font-body text-grey1 text-left'>
           {description}
         </div>
-        <div className='p-6 border-grey4 border-2 rounded flex flex-col gap-4 overflow-hidden'>
+        <div className='p-6 border-grey4 border-2 rounded flex flex-col gap-4'>
           {percentage !== undefined && <ProgressBar percentage={percentage} />}
-          <div className='flex-wrap text-bodylarge font-body text-grey2 text-left'>
+          <div className='flex-wrap text-bodylarge font-body text-grey2 text-left truncate'>
             {message}
           </div>
         </div>
