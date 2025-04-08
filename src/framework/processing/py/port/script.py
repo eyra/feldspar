@@ -127,8 +127,8 @@ def get_files(zipfile_ref):
 
 def extract_file(zipfile_ref, filename):
     try:
-        # make it slow for demo reasons only
-        time.sleep(1)
+        # make it slower on purpose to demonstrate the progress bar
+        time.sleep(0.01)
         info = zipfile_ref.getinfo(filename)
         return (filename, info.compress_size, info.file_size)
     except zipfile.error:
@@ -137,10 +137,16 @@ def extract_file(zipfile_ref, filename):
 
 def prompt_consent(data, meta_data):
 
-    table_title = props.Translatable({
+    table_title_1 = props.Translatable({
         "en": "Zip file contents",
         "de": "Inhalt der Zip-Datei",
         "nl": "Inhoud zip bestand"
+    })
+
+    table_title_2 = props.Translatable({
+        "en": "Another table",
+        "de": "Eine andere Tabelle",
+        "nl": "Een andere tabel"
     })
 
     log_title = props.Translatable({
@@ -152,10 +158,13 @@ def prompt_consent(data, meta_data):
     tables=[]
     if data is not None:
         data_frame = pd.DataFrame(data, columns=["filename", "compressed size", "size"])
-        tables = [props.PropsUIPromptConsentFormTable("zip_content", table_title, data_frame)]
+        tables = [
+            props.PropsUIPromptConsentFormTable("zip_content_1", 1, table_title_1, data_frame),
+            props.PropsUIPromptConsentFormTable("zip_content_2", 2, table_title_2, data_frame),    
+        ]
 
     meta_frame = pd.DataFrame(meta_data, columns=["type", "message"])
-    meta_table = props.PropsUIPromptConsentFormTable("log_messages", log_title, meta_frame)
+    meta_table = props.PropsUIPromptConsentFormTable("log_messages", 2, log_title, meta_frame)
     return props.PropsUIPromptConsentForm(tables, [meta_table])
 
 

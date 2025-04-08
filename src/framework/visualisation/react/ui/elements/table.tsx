@@ -1,26 +1,26 @@
-import _ from 'lodash'
 import React from 'react'
 import { Weak } from '../../../../helpers'
 import TextBundle from '../../../../text_bundle'
 import { Translator } from '../../../../translator'
-import { PropsUITable, PropsUITableCell, PropsUITableHead, PropsUITableRow } from '../../../../types/elements'
+import { PropsUITable, PropsUITableRow } from '../../../../types/elements'
 import { ReactFactoryContext } from '../../factory'
-import { BackIconButton, ForwardIconButton, IconLabelButton } from './button'
+import { IconLabelButton } from './button'
 import { CheckBox } from './check_box'
 import { SearchBar } from './search_bar'
 import { Caption, Label, Title3 } from './text'
 import UndoSvg from '../../../../../assets/images/undo.svg'
 import DeleteSvg from '../../../../../assets/images/delete.svg'
-import { PageIcon } from './page_icon'
-
+import { Pagination } from './pagination'
+import { TablePage } from './table_page'
+import { TableCards } from './table_cards'
 type Props = Weak<PropsUITable> & TableContext & ReactFactoryContext
 
 export interface TableContext {
+  id: string
   onChange: (id: string, rows: PropsUITableRow[]) => void
 }
 
 interface Visibility {
-  search: boolean
   undo: boolean
   delete: boolean
   table: boolean
@@ -31,32 +31,35 @@ interface Visibility {
 
 interface State {
   edit: boolean
-  page: number
-  pageCount: number
-  pageWindow: number[]
-  rows: PropsUITableRow[]
+  desktopPage: number
+  desktopPageCount: number
+  mobilePage: number
+  mobilePageCount: number
+  desktopRows: PropsUITableRow[]
+  mobileRows: PropsUITableRow[]
   selected: string[]
   deletedCount: number
   visibility: Visibility
 }
 
-export const Table = ({ id, head, body, readOnly = false, pageSize = 7, locale, onChange }: Props): JSX.Element => {
-  const pageWindowLegSize = 3
-
+export const Table = ({ id, head, body, readOnly = false, locale, onChange }: Props): JSX.Element => {
   const query = React.useRef<string[]>([])
   const alteredRows = React.useRef<PropsUITableRow[]>(body.rows)
   const filteredRows = React.useRef<PropsUITableRow[]>(alteredRows.current)
+  const desktopPageSize = 7
+  const mobilePageSize = 1
 
   const initialState: State = {
     edit: false,
-    pageCount: getPageCount(),
-    page: 0,
-    pageWindow: updatePageWindow(0),
-    rows: updateRows(0),
+    desktopPage: 0,
+    desktopPageCount: getPageCount(desktopPageSize),
+    desktopRows: updateRows(0, desktopPageSize),
+    mobilePage: 0,
+    mobilePageCount: getPageCount(mobilePageSize),
+    mobileRows: updateRows(0, mobilePageSize),
     selected: [],
     deletedCount: 0,
     visibility: {
-      search: alteredRows.current.length > pageSize,
       delete: false,
       undo: false,
       table: filteredRows.current.length > 0,
@@ -81,39 +84,7 @@ export const Table = ({ id, head, body, readOnly = false, pageSize = 7, locale, 
     return false
   }
 
-  function updatePageWindow (currentPage: number): number[] {
-    const pageWindowSize = (pageWindowLegSize * 2) + 1
-    const pageCount = getPageCount()
-
-    let range: number[] = []
-    if (pageWindowSize >= pageCount && pageCount > 0) {
-      range = _.range(0, Math.min(pageCount, pageWindowSize))
-    } else if (pageWindowSize < pageCount) {
-      const maxIndex = pageCount - 1
-
-      let start: number
-      let end: number
-
-      if (currentPage < pageWindowLegSize) {
-        // begin
-        start = 0
-        end = Math.min(pageCount, pageWindowSize)
-      } else if (maxIndex - currentPage <= pageWindowLegSize) {
-        // end
-        start = maxIndex - (pageWindowSize - 1)
-        end = maxIndex + 1
-      } else {
-        // middle
-        start = currentPage - pageWindowLegSize
-        end = currentPage + pageWindowLegSize + 1
-      }
-      range = _.range(start, end)
-    }
-
-    return range
-  }
-
-  function getPageCount (): number {
+  function getPageCount (pageSize: number): number {
     if (filteredRows.current.length === 0) {
       return 0
     }
@@ -121,101 +92,9 @@ export const Table = ({ id, head, body, readOnly = false, pageSize = 7, locale, 
     return Math.ceil(filteredRows.current.length / pageSize)
   }
 
-  function updateRows (currentPage: number): PropsUITableRow[] {
+  function updateRows (currentPage: number, pageSize: number): PropsUITableRow[] {
     const offset = currentPage * pageSize
     return filteredRows.current.slice(offset, offset + pageSize)
-  }
-
-  function renderHeadRow (props: Weak<PropsUITableHead>): JSX.Element {
-    return (
-      <tr>
-        {state.edit ? renderHeadCheck() : ''}
-        {props.cells.map((cell, index) => renderHeadCell(cell, index))}
-      </tr>
-    )
-  }
-
-  function renderHeadCheck (): JSX.Element {
-    const selected = state.selected.length > 0 && state.selected.length === state.rows.length
-    return (
-      <td key='check-head' className='pl-4 w-10'>
-        <CheckBox id='-1' selected={selected} onSelect={() => handleSelectHead()} />
-      </td>
-    )
-  }
-
-  function renderHeadCell (props: Weak<PropsUITableCell>, index: number): JSX.Element {
-    return (
-      <th key={`${index}`} className='h-12 px-4 text-left'>
-        <div className='font-table-header text-table text-grey1'>{props.text}</div>
-      </th>
-    )
-  }
-
-  function renderRows (): JSX.Element[] {
-    return state.rows.map((row, index) => renderRow(row, index))
-  }
-
-  function renderRow (row: PropsUITableRow, rowIndex: number): JSX.Element {
-    return (
-      <tr key={`${rowIndex}`} className='hover:bg-grey6'>
-        {state.edit ? renderRowCheck(row.id) : ''}
-        {row.cells.map((cell, cellIndex) => renderRowCell(cell, cellIndex))}
-      </tr>
-    )
-  }
-
-  function renderRowCheck (rowId: string): JSX.Element {
-    const selected = state.selected.includes(rowId)
-    return (
-      <td key={`check-${rowId}`} className='pl-4'>
-        <CheckBox id={rowId} selected={selected} onSelect={() => handleSelectRow(rowId)} />
-      </td>
-    )
-  }
-
-  function renderRowCell ({ text }: Weak<PropsUITableCell>, cellIndex: number): JSX.Element {
-    const body = isValidHttpUrl(text) ? renderRowLink(text) : renderRowText(text)
-
-    return (
-      <td key={`${cellIndex}`} className='h-12 px-4'>
-        {body}
-      </td>
-    )
-  }
-
-  function renderRowText (text: string): JSX.Element {
-    return <div className='font-table-row text-table text-grey1'>{text}</div>
-  }
-
-  function renderRowLink (href: string): JSX.Element {
-    return (
-      <div className='font-table-row text-table text-primary underline'>
-        <a href={href} target='_blank' rel='noreferrer' title={href}>{copy.link}</a>
-      </div>
-    )
-  }
-
-  function isValidHttpUrl (value: string): boolean {
-    let url
-    try {
-      url = new URL(value)
-    } catch (_) {
-      return false
-    }
-    return url.protocol === 'http:' || url.protocol === 'https:'
-  }
-
-  function renderPageIcons (): JSX.Element {
-    return (
-      <div className='flex flex-row gap-2'>
-        {state.pageWindow.map((page) => renderPageIcon(page))}
-      </div>
-    )
-  }
-
-  function renderPageIcon (index: number): JSX.Element {
-    return <PageIcon key={`page-${index}`} index={index + 1} selected={state.page === index} onClick={() => handleNewPage(index)} />
   }
 
   function filterRows (): PropsUITableRow[] {
@@ -230,62 +109,27 @@ export const Table = ({ id, head, body, readOnly = false, pageSize = 7, locale, 
     return query.find((word) => !rowText.includes(word)) === undefined
   }
 
-  function handleSelectHead (): void {
-    const allRowsSelected = state.selected.length === state.rows.length
-    if (allRowsSelected) {
-      setState((state) => {
-        return { ...state, selected: [] }
-      })
-    } else {
-      handleSelectAll()
-    }
-  }
-
-  function handleSelectRow (rowId: string): void {
+  function handleSelectedChange (selected: string[]): void {
     setState((state) => {
-      const selected = state.selected.slice(0)
-      const index = selected.indexOf(rowId)
-      if (index === -1) {
-        selected.push(rowId)
-      } else {
-        selected.splice(index, 1)
-      }
       return { ...state, selected }
     })
   }
 
-  function handleSelectAll (): void {
-    setState((state) => {
-      const selected = state.rows.map((row) => row.id)
-      return { ...state, selected }
-    })
-  }
-
-  function handlePrevious (): void {
-    setState((state) => {
-      const page = state.page === 0 ? state.pageCount - 1 : state.page - 1
-      const pageWindow = updatePageWindow(page)
-      const rows = updateRows(page)
-      return { ...state, page, pageWindow, rows }
-    })
-  }
-
-  function handleNext (): void {
-    setState((state) => {
-      const page = state.page === state.pageCount - 1 ? 0 : state.page + 1
-      const pageWindow = updatePageWindow(page)
-      const rows = updateRows(page)
-      return { ...state, page, pageWindow, rows }
-    })
+  function handleDeleteRow (rowId: string): void {
+    deleteRows([rowId])
   }
 
   function handleDeleteSelected (): void {
     const currentSelectedRows = state.selected.slice(0)
     if (currentSelectedRows.length === 0) return
 
+    deleteRows(currentSelectedRows)
+  }
+
+  function deleteRows (rows: String[]): void {
     const newAlteredRows = alteredRows.current.slice(0)
 
-    for (const rowId of currentSelectedRows) {
+    for (const rowId of rows) {
       const index = newAlteredRows.findIndex((row) => row.id === rowId)
       if (index !== -1) {
         newAlteredRows.splice(index, 1)
@@ -296,10 +140,12 @@ export const Table = ({ id, head, body, readOnly = false, pageSize = 7, locale, 
     filteredRows.current = filterRows()
 
     setState((state) => {
-      const pageCount = getPageCount()
-      const page = Math.max(0, Math.min(pageCount - 1, state.page))
-      const pageWindow = updatePageWindow(page)
-      const rows = updateRows(page)
+      const desktopPageCount = getPageCount(desktopPageSize)
+      const desktopPage = Math.max(0, Math.min(desktopPageCount - 1, state.desktopPage))
+      const desktopRows = updateRows(desktopPage, desktopPageSize)
+      const mobilePageCount = getPageCount(mobilePageSize)
+      const mobilePage = Math.max(0, Math.min(mobilePageCount - 1, state.mobilePage))
+      const mobileRows = updateRows(mobilePage, mobilePageSize)
       const deletedCount = body.rows.length - alteredRows.current.length
       const visibility = {
         ...state.visibility,
@@ -309,7 +155,7 @@ export const Table = ({ id, head, body, readOnly = false, pageSize = 7, locale, 
         noDataLeft: alteredRows.current.length === 0,
         noResults: alteredRows.current.length > 0 && filteredRows.current.length === 0
       }
-      return { ...state, page, pageCount, pageWindow, rows, deletedCount, selected: [], visibility }
+      return { ...state, desktopPage, desktopPageCount, desktopRows, mobilePage, mobilePageCount, mobileRows, deletedCount, selected: [], visibility }
     })
 
     onChange(id, alteredRows.current)
@@ -319,10 +165,12 @@ export const Table = ({ id, head, body, readOnly = false, pageSize = 7, locale, 
     alteredRows.current = body.rows
     filteredRows.current = filterRows()
     setState((state) => {
-      const pageCount = getPageCount()
-      const page = Math.min(pageCount, state.page)
-      const pageWindow = updatePageWindow(page)
-      const rows = updateRows(state.page)
+      const desktopPageCount = getPageCount(desktopPageSize)
+      const desktopPage = Math.min(desktopPageCount, state.desktopPage)
+      const desktopRows = updateRows(desktopPage, desktopPageSize)
+      const mobilePageCount = getPageCount(mobilePageSize)
+      const mobilePage = Math.min(mobilePageCount, state.mobilePage)
+      const mobileRows = updateRows(mobilePage, mobilePageSize)
 
       const visibility = {
         ...state.visibility,
@@ -332,7 +180,7 @@ export const Table = ({ id, head, body, readOnly = false, pageSize = 7, locale, 
         noDataLeft: false,
         noResults: filteredRows.current.length === 0
       }
-      return { ...state, page, pageCount, pageWindow, rows, deletedCount: 0, selected: [], visibility }
+      return { ...state, desktopPage, desktopPageCount, desktopRows, mobilePage, mobilePageCount, mobileRows, deletedCount: 0, selected: [], visibility }
     })
 
     onChange(id, body.rows)
@@ -342,10 +190,12 @@ export const Table = ({ id, head, body, readOnly = false, pageSize = 7, locale, 
     query.current = newQuery
     filteredRows.current = filterRows()
     setState((state) => {
-      const pageCount = getPageCount()
-      const page = Math.min(pageCount, state.page)
-      const pageWindow = updatePageWindow(page)
-      const rows = updateRows(state.page)
+      const desktopPageCount = getPageCount(desktopPageSize)
+      const desktopPage = Math.min(desktopPageCount, state.desktopPage)
+      const desktopRows = updateRows(desktopPage, desktopPageSize)
+      const mobilePageCount = getPageCount(mobilePageSize)
+      const mobilePage = Math.min(mobilePageCount, state.mobilePage)
+      const mobileRows = updateRows(mobilePage, mobilePageSize)
       const visibility = {
         ...state.visibility,
         table: filteredRows.current.length > 0,
@@ -353,14 +203,21 @@ export const Table = ({ id, head, body, readOnly = false, pageSize = 7, locale, 
         noDataLeft: body.rows.length > 0 && alteredRows.current.length === 0,
         noResults: body.rows.length > 0 && alteredRows.current.length > 0 && filteredRows.current.length === 0
       }
-      return { ...state, page, pageCount, pageWindow, rows, visibility }
+      return { ...state, desktopPage, desktopPageCount, desktopRows, mobilePage, mobilePageCount, mobileRows, visibility }
     })
   }
 
-  function handleNewPage (page: number): void {
+  function handleDesktopPageChange (page: number): void {
     setState((state) => {
-      const rows = updateRows(page)
-      return { ...state, page, rows }
+      const desktopRows = updateRows(page, desktopPageSize)
+      return { ...state, desktopPage: page, desktopRows }
+    })
+  }
+
+  function handleMobilePageChange (page: number): void {
+    setState((state) => {
+      const mobileRows = updateRows(page, mobilePageSize)
+      return { ...state, mobilePage: page, mobileRows }
     })
   }
 
@@ -377,51 +234,112 @@ export const Table = ({ id, head, body, readOnly = false, pageSize = 7, locale, 
 
   return (
     <>
-      <div className='flex flex-row gap-4 items-center'>
-        <div className={`flex flex-row items-center gap-2 mt-2 ${body.rows.length <= pageSize ? 'hidden' : ''} `}>
-          <BackIconButton onClick={handlePrevious} />
-          <div>
-            {renderPageIcons()}
+      <div className='flex flex-col gap-4'>
+        {/* Desktop header */}
+        <div className='hidden sm:block'>
+          <div className='flex flex-row gap-4 items-center'>
+            {/* Desktop pagination */}
+            <div className={`${body.rows.length <= desktopPageSize ? 'hidden' : ''} `}>
+              <Pagination pageCount={state.desktopPageCount} page={state.desktopPage} pageWindowLegSize={3} onChange={handleDesktopPageChange} />
+            </div>
+            <div className='flex-grow' />
+
+            {/* Desktop pages */}
+            <Caption text={copy.desktopPages} color='text-grey2' margin='' />
+
+            {/* Desktop search */}
+            <div>
+              <SearchBar placeholder={copy.searchPlaceholder} onSearch={(query) => handleSearch(query)} />
+            </div>
           </div>
-          <ForwardIconButton onClick={handleNext} />
         </div>
-        <div className='flex-grow' />
-        <Caption text={copy.pages} color='text-grey2' margin='' />
-        <div className={`${display('search')}`}>
-          <SearchBar placeholder={copy.searchPlaceholder} onSearch={(query) => handleSearch(query)} />
+
+        {/* Mobile header */}
+        <div className='block sm:hidden'>
+          <div className='flex flex-row gap-4'>
+            {/* Mobile search */}
+            <div className='w-full'>
+              <SearchBar placeholder={copy.searchPlaceholder} onSearch={(query) => handleSearch(query)} />
+            </div>
+          </div>
         </div>
-      </div>
-      <div className={`flex flex-col gap-4 justify-center h-full ${display('table')}`}>
-        <table className='text-grey1 table-fixed divide-y divide-grey4'>
-          <thead>
-            {renderHeadRow(head)}
-          </thead>
-          <tbody className='divide-y divide-grey4'>
-            {renderRows()}
-          </tbody>
-        </table>
-      </div>
-      <div className={`flex flex-col justify-center items-center w-full h-table bg-grey6 ${display('noData')}`}>
-        <Title3 text={copy.noData} color='text-grey3' margin='' />
-      </div>
-      <div className={`flex flex-col justify-center items-center w-full h-table bg-grey6 ${display('noDataLeft')}`}>
-        <Title3 text={copy.noDataLeft} color='text-grey3' margin='' />
-      </div>
-      <div className={`flex flex-col justify-center items-center w-full h-table bg-grey6 ${display('noResults')}`}>
-        <Title3 text={copy.noResults} color='text-grey3' margin='' />
-      </div>
-      <div className={`flex flex-row items-center gap-6 mt-2 h-8 ${body.rows.length === 0 ? 'hidden' : ''} `}>
-        <div className='flex flex-row gap-4 items-center'>
-          <CheckBox id='edit' selected={state.edit} onSelect={handleEditToggle} />
-          <Label text={copy.edit} margin='mt-1px' />
+
+        {/* Desktop body */}
+        {state.desktopRows.length > 0 && (
+          <div className='hidden sm:block'>
+            <div className={`flex flex-col ${display('table')}`}>
+              <TablePage head={head} rows={state.desktopRows} edit={state.edit} selected={state.selected} locale={locale} onChange={handleSelectedChange} />
+            </div>
+          </div>
+        )}
+
+        {/* Mobile body */}
+        {state.mobileRows.length > 0 && (
+          <div className='block sm:hidden'>
+            <TableCards head={head} rows={state.mobileRows} locale={locale} onDelete={handleDeleteRow} key={id} />
+          </div>
+        )}
+
+        {/* No data */}
+        <div className={`flex flex-col justify-center items-center w-full h-[200px] sm:h-table bg-grey6 ${display('noData')}`}>
+          <Title3 text={copy.noData} color='text-grey3' margin='' />
         </div>
-        <div className={`${display('delete')} mt-1px`}>
-          <IconLabelButton label={copy.delete} color='text-delete' icon={DeleteSvg} onClick={handleDeleteSelected} />
+
+        {/* No data left */}
+        <div className={`flex flex-col justify-center items-center w-full h-[200px] sm:h-table bg-grey6 ${display('noDataLeft')}`}>
+          <Title3 text={copy.noDataLeft} color='text-grey3' margin='' />
         </div>
-        <div className='flex-grow' />
-        <Label text={copy.deleted} />
-        <div className={`${display('undo')}`}>
-          <IconLabelButton label={copy.undo} color='text-primary' icon={UndoSvg} onClick={handleUndo} />
+
+        {/* No search results */}
+        <div className={`flex flex-col justify-center items-center w-full h-[200px] sm:h-table bg-grey6 ${display('noResults')}`}>
+          <Title3 text={copy.noResults} color='text-grey3' margin='' />
+        </div>
+
+        {/* Desktop footer */}
+        <div className='hidden sm:block'>
+          <div className={`flex flex-row items-center gap-6 mt-2 h-8 ${body.rows.length === 0 ? 'hidden' : ''} `}>
+            <div className='flex flex-row gap-4 items-center'>
+              <CheckBox id='edit' selected={state.edit} onSelect={handleEditToggle} />
+              <Label text={copy.edit} margin='mt-1px' />
+            </div>
+
+            {/* Delete selected */}
+            <div className={`${display('delete')} mt-1px`}>
+              <IconLabelButton label={copy.delete} color='text-delete' icon={DeleteSvg} onClick={handleDeleteSelected} />
+            </div>
+            <div className='flex-grow' />
+            {/* Number of deleted rows */}
+            <Label text={copy.deleted} />
+            {/* Undo button */}
+            <div className={`${display('undo')}`}>
+              <IconLabelButton label={copy.undo} color='text-primary' icon={UndoSvg} onClick={handleUndo} />
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile footer */}
+        <div className='block sm:hidden'>
+          <div className='flex flex-col gap-4'>
+            {state.deletedCount > 0 &&
+              <div className='flex flex-row gap-4 items-center'>
+                {/* Number of deleted rows */}
+                <Label text={copy.deleted} />
+                <div className='flex-grow' />
+                {/* Undo button */}
+                <div className={`${display('undo')}`}>
+                  <IconLabelButton label={copy.undo} color='text-primary' icon={UndoSvg} onClick={handleUndo} />
+                </div>
+              </div>}
+
+            <div className='flex flex-col gap-4 items-center'>
+              {/* Mobile pagination */}
+              <div className={`${body.rows.length <= mobilePageSize ? 'hidden' : ''} `}>
+                <Pagination pageCount={state.mobilePageCount} page={state.mobilePage} pageWindowLegSize={2} onChange={handleMobilePageChange} />
+              </div>
+              {/* Number of pages */}
+              <Caption text={copy.mobilePages} color='text-grey2' margin='' />
+            </div>
+          </div>
         </div>
       </div>
     </>
@@ -434,11 +352,11 @@ export const Table = ({ id, head, body, readOnly = false, pageSize = 7, locale, 
       noData: Translator.translate(noDataLabel, locale),
       noDataLeft: Translator.translate(noDataLeftLabel, locale),
       noResults: Translator.translate(noResultsLabel, locale),
-      pages: Translator.translate(pagesLabel(state.pageCount), locale),
+      desktopPages: Translator.translate(pagesLabel(state.desktopPageCount), locale),
+      mobilePages: Translator.translate(pagesLabel(state.mobilePageCount), locale),
       delete: Translator.translate(deleteLabel, locale),
       deleted: Translator.translate(deletedLabel(body.rows.length - alteredRows.current.length), locale),
-      searchPlaceholder: Translator.translate(searchPlaceholder, locale),
-      link: Translator.translate(link, locale)
+      searchPlaceholder: Translator.translate(searchPlaceholder, locale)
     }
   }
 }
@@ -449,17 +367,12 @@ interface Copy {
   noData: string
   noDataLeft: string
   noResults: string
-  pages: string
+  desktopPages: string
+  mobilePages: string
   delete: string
   deleted: string
   searchPlaceholder: string
-  link: String
 }
-
-const link = new TextBundle()
-  .add('en', 'Check out')
-  .add('de', 'Weiter')
-  .add('nl', 'Bekijk')
 
 const searchPlaceholder = new TextBundle()
   .add('en', 'Search')
