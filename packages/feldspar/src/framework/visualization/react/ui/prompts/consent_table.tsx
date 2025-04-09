@@ -41,48 +41,21 @@ export const ConsentTable = forwardRef<ConsentTableHandle | null, Props>(
       }
     >(table);
 
-    useImperativeHandle(ref, () => ({
-      getDataSubmissionData(): DataSubmissionData {
-        return {
-          [currentTable.id]: {
-            data: serializeTableData(currentTable),
-            metadata: {
-              deletedRowCount: currentTable.deletedRowCount,
-            },
-          },
-        };
-      },
-    }));
-
-    const handleChange = (id: string, rows: PropsUITableRow[]) => {
-      const newTable: PropsUITable & {
-        title: string;
-        deletedRowCount: number;
-      } = {
-        ...currentTable,
-        body: { __type__: "PropsUITableBody" as const, rows },
-        deletedRowCount:
-          currentTable.deletedRowCount +
-          (currentTable.body.rows.length - rows.length),
-      };
-
+    const handleChange = (rows: PropsUITableRow[], deletedCount: number) => {
       context.onDataSubmissionDataChanged(
-        currentTable.id,
-        serializeTableData(newTable)
+        table.id,
+        getDataSubmissionData(table.head, rows, deletedCount)
       );
-      setCurrentTable(newTable);
-      onChange(id, rows);
     };
 
     React.useEffect(() => {
       console.log("ConsentTable useEffect", currentTable);
       context.onDataSubmissionDataChanged(
-        currentTable.id,
-        serializeTableData(currentTable)
+        table.id,
+        getDataSubmissionData(table.head, table.body.rows, 0)
       );
     }, []);
 
-    
     return (
       <div key={table.id} className="flex flex-col gap-4 mb-4">
         <Title4 text={table.title} margin="" />
@@ -98,8 +71,24 @@ export const ConsentTable = forwardRef<ConsentTableHandle | null, Props>(
   }
 );
 
-function serializeTableData(table: PropsUITable): any[] {
-  return table.body.rows.map((row) => serializeRow(row, table.head));
+function getDataSubmissionData(
+  head: PropsUITableHead,
+  rows: PropsUITableRow[],
+  deletedRowCount: number
+): DataSubmissionData {
+  return {
+    data: serializeTableData(head, rows),
+    metadata: {
+      deletedRowCount,
+    },
+  };
+}
+
+function serializeTableData(
+  head: PropsUITableHead,
+  rows: PropsUITableRow[]
+): any[] {
+  return rows.map((row) => serializeRow(row, head));
 }
 
 function serializeRow(row: PropsUITableRow, head: PropsUITableHead): any {

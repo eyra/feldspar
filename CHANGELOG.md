@@ -13,6 +13,7 @@
 
 * Changed: Feldspar is now split into React component and app
 * Changed: Allow multiple block-types to interleave on a submission page
+* Added: end to end tests using Playwright
 
 ## \#2 2024-06-13
 
