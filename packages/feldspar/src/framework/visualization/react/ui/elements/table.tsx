@@ -1,5 +1,5 @@
 import _ from "lodash";
-import React from "react";
+import React, { useEffect, useImperativeHandle } from "react";
 import type { JSX, ReactElement } from "react";
 import { Weak } from "../../../../helpers";
 import TextBundle from "../../../../text_bundle";
@@ -18,11 +18,12 @@ import { Caption, Label, Title3 } from "./text";
 import UndoSvg from "../../../../../assets/images/undo.svg";
 import DeleteSvg from "../../../../../assets/images/delete.svg";
 import { PageIcon } from "./page_icon";
+import { DataSubmissionData } from "../../../../types/data_submission";
 
 type Props = Weak<PropsUITable> & TableContext & ReactFactoryContext;
 
 export interface TableContext {
-  onChange: (id: string, rows: PropsUITableRow[]) => void;
+  onChange: (rows: PropsUITableRow[], deletedRowCount: number) => void;
 }
 
 interface Visibility {
@@ -336,16 +337,16 @@ export const Table = ({
 
     alteredRows.current = newAlteredRows;
     filteredRows.current = filterRows();
+    const deletedRowCount = body.rows.length - alteredRows.current.length;
 
     setState((state) => {
       const pageCount = getPageCount();
       const page = Math.max(0, Math.min(pageCount - 1, state.page));
       const pageWindow = updatePageWindow(page);
       const rows = updateRows(page);
-      const deletedCount = body.rows.length - alteredRows.current.length;
       const visibility = {
         ...state.visibility,
-        undo: deletedCount > 0,
+        undo: deletedRowCount > 0,
         table: filteredRows.current.length > 0,
         noData: false,
         noDataLeft: alteredRows.current.length === 0,
@@ -358,18 +359,22 @@ export const Table = ({
         pageCount,
         pageWindow,
         rows,
-        deletedCount,
+        deletedCount: deletedRowCount,
         selected: [],
         visibility,
       };
     });
 
-    onChange(id, alteredRows.current);
+    onChange(
+      alteredRows.current,
+      deletedRowCount
+    );
   }
 
   function handleUndo(): void {
     alteredRows.current = body.rows;
     filteredRows.current = filterRows();
+
     setState((state) => {
       const pageCount = getPageCount();
       const page = Math.min(pageCount, state.page);
@@ -396,7 +401,10 @@ export const Table = ({
       };
     });
 
-    onChange(id, body.rows);
+    onChange(
+      alteredRows.current,
+      body.rows.length - alteredRows.current.length
+    );
   }
 
   function handleSearch(newQuery: string[]): void {
@@ -465,7 +473,10 @@ export const Table = ({
           "table"
         )}`}
       >
-        <table className="text-grey1 table-fixed divide-y divide-grey4">
+        <table
+          data-testid={`table-${id}`}
+          className="text-grey1 table-fixed divide-y divide-grey4"
+        >
           <thead>{renderHeadRow(head)}</thead>
           <tbody className="divide-y divide-grey4">{renderRows()}</tbody>
         </table>

@@ -140,6 +140,7 @@ export const IconLabelButton = ({
 }: Weak<PropsUIButtonIconLabel>): JSX.Element => {
   return (
     <div
+      role="button"
       className="pt-1 pb-1 active:pt-5px active:pb-3px rounded bg-opacity-0 focus:outline-none cursor-pointer "
       onClick={onClick}
     >
