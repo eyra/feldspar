@@ -16,18 +16,43 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - uses: earthly/actions-setup@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          version: v0.7.8
+          node-version: "22"
+          cache: "npm"
 
-      - name: Build release
-        run: earthly +release --build_type=standalone
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
 
-      - name: Unpack release
-        run: unzip release.zip -d build
+      - name: Install Poetry
+        run: |
+          python -m pip install --upgrade pip
+          pip install poetry
+
+      - name: Build Python Package
+        working-directory: packages/python
+        run: |
+          poetry lock
+          poetry install
+          poetry build --format wheel
+
+      - name: Install Node Dependencies
+        run: npm ci
+
+      - name: Copy Python Wheel
+        run: |
+          mkdir -p packages/data-collector/public
+          cp packages/python/dist/*.whl packages/data-collector/public/
+
+      - name: Build App
+        run: npm run build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build
+          publish_dir: ./packages/data-collector/build

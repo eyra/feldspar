@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import { assert, Weak } from '../../../../helpers'
 import { PropsUITable, PropsUITableBody, PropsUITableCell, PropsUITableHead, PropsUITableRow } from '../../../../types/elements'
 import { PropsUIPromptConsentForm, PropsUIPromptConsentFormTable } from '../../../../types/prompts'

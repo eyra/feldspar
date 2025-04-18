@@ -1,69 +1,34 @@
 {
-  "name": "feldspar",
-  "version": "0.1.0",
+  "name": "feldspar-workspace",
   "private": true,
-  "homepage": ".",
-  "dependencies": {
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "@types/jest": "^27.5.2",
-    "@types/node": "^16.11.59",
-    "@types/react": "^18.0.21",
-    "@types/react-dom": "^18.0.6",
-    "concurrently": "^8.2.1",
-    "lodash": "^4.17.21",
-    "lottie-react": "^2.3.1",
-    "typescript": "^4.4.3",
-    "web-vitals": "^2.1.4"
-  },
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "prepare": "husky install",
-    "check:ts": "ts-standard --env jest",
-    "fix:ts": "ts-standard --env jest --fix",
-    "clean": "rm -rf ./build",
-    "build:css": "NODE_ENV=production tailwindcss build -i ./src/framework/styles.css -o ./build/styles.css --minify",
-    "build:wheel": "cd src/framework/processing/py && poetry build --format wheel",
-    "build:install-wheel": "cp -R src/framework/processing/py/dist/. ./public",
+    "build": "npm run build:py && npm run build -w packages/feldspar && npm run build -w packages/data-collector",
+    "dev": "npm run start --workspaces",
+    "test": "npm run test --workspaces",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:report": "playwright show-report",
+    "build:wheel": "cd packages/python && poetry build --format wheel",
+    "build:install-wheel": "cp -R packages/python/dist/*.whl packages/data-collector/public",
     "build:py": "npm run build:wheel && npm run build:install-wheel",
-    "build:app": "react-scripts build",
     "start:py": "nodemon --ext py --exec \"npm run build:py\"",
-    "start:app": "react-scripts start",
-    "start": "concurrently 'npm run start:py' 'npm run start:app'",
-    "build": "npm run build:py && npm run build:app && npm run build:css",
-    "release": "npm run build && ./release.sh $npm_package_name",
-    "test": "react-scripts test",
-    "lint": "npm run fix:ts"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "dev:feldspar": "npm run dev -w @eyra/feldspar",
+    "dev:demo": "npm run start -w @eyra/data-collector",
+    "start": "npm run build:py && concurrently \"npm run start:py\" \"npm run dev:feldspar\" \"npm run dev:demo\"",
+    "clean": "npm run clean --workspaces && rm -rf node_modules"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.185",
-    "autoprefixer": "^10.4.12",
-    "husky": "^8.0.1",
-    "nodemon": "^2.0.20",
-    "postcss": "^8.4.16",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
-    "tailwindcss": "^3.1.8",
-    "ts-standard": "^11.0.0"
+    "@playwright/test": "^1.51.0",
+    "@types/node": "^22.13.10",
+    "concurrently": "^8.2.2",
+    "husky": "^9.1.7"
   },
-  "ts-standard": {
-    "project": "./tsconfig.json",
-    "ignore": [
-      "dist",
-      "src/framework/processing/py_worker.js"
-    ]
+  "dependencies": {
+    "fdir": "^6.4.3"
   }
 }

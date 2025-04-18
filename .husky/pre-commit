@@ -1,10 +1,10 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-earthly +commit-hook
+# Run Playwright tests
+npm run test:e2e
 
 diff=$(git diff --name-only)
-
 if [[ ! -z "$diff" ]]; then 
   echo ""
   echo "Unstaged modified files detected!"

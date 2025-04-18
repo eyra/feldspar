@@ -1,6 +1,6 @@
 # Changelog
 
-## Types of Changes and How to Note Them 
+## Types of Changes and How to Note Them
 
 * Added - For any new features that have been added since the last version was released
 * Changed - To note any changes to the software's existing functionality
@@ -9,14 +9,22 @@
 * Removed - This notes any features that have been deleted and removed from the software
 * Security - This acts as an invitation to users who want to upgrade and avoid any software vulnerabilities
 
-## \#3 unreleased
+## \#4 unreleased
 
-## \#2 2024-06-27
+* Changed: Feldspar is now split into React component and app
+* Changed: Allow multiple block-types to interleave on a submission page
+* Added: end to end tests using Playwright
+
+## \#3 2024-06-27
+
+* Changed: layout to support mobile screens
+* Added: support for mible variant of a table using
+
+## \#2 2024-06-13
 
 * Added: Support for progress prompt
 * Added: German translations
 * Added: Support for assets available in Python
-
 
 ## \#1 2024-03-15
 

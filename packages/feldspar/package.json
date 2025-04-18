@@ -1,0 +1,57 @@
+{
+    "name": "@eyra/feldspar",
+    "version": "0.1.0",
+    "main": "dist/index.js",
+    "module": "dist/index.esm.js",
+    "types": "dist/index.d.ts",
+    "type": "module",
+    "files": [
+        "dist",
+        "src/processing/py_worker.js",
+        "dist/styles.css"
+    ],
+    "scripts": {
+        "build:css": "NODE_ENV=production postcss ./src/framework/styles.css -o ./dist/styles.css",
+        "build:ts": "rollup -c",
+        "build": "npm run build:css && npm run build:ts",
+        "dev": "concurrently \"rollup -c -w\" \"tailwindcss build -i ./src/framework/styles.css -o ./dist/styles.css --watch\"",
+        "test": "jest",
+        "clean": "rm -rf dist node_modules"
+    },
+    "peerDependencies": {
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0"
+    },
+    "dependencies": {
+        "@types/lodash": "^4.17.14",
+        "lodash": "^4.17.21"
+    },
+    "exports": {
+        ".": {
+            "import": "./dist/index.esm.js",
+            "types": "./dist/index.d.ts"
+        },
+        "./dist/styles.css": {
+            "import": "./dist/styles.css"
+        }
+    },
+    "devDependencies": {
+        "@rollup/plugin-commonjs": "*",
+        "@rollup/plugin-json": "*",
+        "@rollup/plugin-node-resolve": "*",
+        "@rollup/plugin-terser": "*",
+        "@rollup/plugin-typescript": "*",
+        "@rollup/plugin-url": "*",
+        "@types/react": "*",
+        "@types/react-dom": "*",
+        "fdir": "*",
+        "postcss": "*",
+        "postcss-cli": "*",
+        "postcss-import": "*",
+        "rollup": "*",
+        "rollup-plugin-copy": "*",
+        "rollup-plugin-dts": "*",
+        "rollup-plugin-peer-deps-external": "*",
+        "tslib": "*"
+    }
+}

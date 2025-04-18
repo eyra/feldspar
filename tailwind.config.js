@@ -1,98 +1,96 @@
 /** @type {import('tailwindcss').Config} */
-const plugin = require('tailwindcss/plugin')
+const plugin = require("tailwindcss/plugin");
 
 module.exports = {
-  content: [
-    './src/**/*.{js,jsx,ts,tsx}'
-  ],
+  content: ["./packages/**/*.{js,jsx,ts,tsx}"],
 
-  darkMode: 'media',
+  darkMode: "media",
   theme: {
     boxShadow: {
-      top4px: 'inset 0 4px 0 0 rgba(0, 0, 0, 0.15)',
-      top2px: 'inset 0 2px 0 0 rgba(0, 0, 0, 0.15)',
-      '2xl': '0 5px 20px 0px rgba(0, 0, 0, 0.10)'
+      top4px: "inset 0 4px 0 0 rgba(0, 0, 0, 0.15)",
+      top2px: "inset 0 2px 0 0 rgba(0, 0, 0, 0.15)",
+      "2xl": "0 5px 20px 0px rgba(0, 0, 0, 0.10)",
     },
     colors: {
-      primary: '#4272EF',
-      primarylight: '#E3EAFD',
-      secondary: '#FF5E5E',
-      tertiary: '#FFCF60',
-      success: '#6FCA37',
-      successlight: '#EBFFDF',
-      warning: '#F28D15',
-      warninglight: '#FFEFDC',
-      delete: '#DB1E1E',
-      deletelight: '#FFECEC',
-      error: '#DB1E1E',
-      errorlight: '#FFECEC',
-      black: '#000000',
-      grey1: '#222222',
-      grey2: '#999999',
-      grey3: '#CCCCCC',
-      grey4: '#EEEEEE',
-      grey5: '#F6F6F6',
-      grey6: '#FAFAFA',
-      white: '#FFFFFF'
+      primary: "#4272EF",
+      primarylight: "#E3EAFD",
+      secondary: "#FF5E5E",
+      tertiary: "#FFCF60",
+      success: "#6FCA37",
+      successlight: "#EBFFDF",
+      warning: "#F28D15",
+      warninglight: "#FFEFDC",
+      delete: "#DB1E1E",
+      deletelight: "#FFECEC",
+      error: "#DB1E1E",
+      errorlight: "#FFECEC",
+      black: "#000000",
+      grey1: "#222222",
+      grey2: "#999999",
+      grey3: "#CCCCCC",
+      grey4: "#EEEEEE",
+      grey5: "#F6F6F6",
+      grey6: "#FAFAFA",
+      white: "#FFFFFF",
     },
     extend: {
       opacity: {
-        shadow: '.15'
+        shadow: ".15",
       },
       spacing: {
-        '1px': '1px',
-        '2px': '2px',
-        '3px': '3px',
-        '5px': '5px',
-        '6px': '6px',
-        '7px': '7px',
-        '9px': '9px',
-        '10px': '10px',
-        '11px': '11px',
-        '13px': '13px',
-        '14px': '14px',
-        '15px': '15px',
-        '17px': '17px',
-        '18px': '18px',
-        '19px': '19px',
-        '30px': '30px',
-        '48px': '48px',
-        '44px': '44px',
-        '84px': '84px',
-        '200px': '200px',
-        '224px': '224px',
-        30: '120px',
-        34: '136px',
-        35: '140px'
+        "1px": "1px",
+        "2px": "2px",
+        "3px": "3px",
+        "5px": "5px",
+        "6px": "6px",
+        "7px": "7px",
+        "9px": "9px",
+        "10px": "10px",
+        "11px": "11px",
+        "13px": "13px",
+        "14px": "14px",
+        "15px": "15px",
+        "17px": "17px",
+        "18px": "18px",
+        "19px": "19px",
+        "30px": "30px",
+        "48px": "48px",
+        "44px": "44px",
+        "84px": "84px",
+        "200px": "200px",
+        "224px": "224px",
+        30: "120px",
+        34: "136px",
+        35: "140px",
       },
       width: {
-        sidebar: '320px',
-        logo: '240px',
-        'logo-sm': '48px',
-        sheet: '760px',
-        form: '400px',
-        card: '376px',
-        'image-preview': '120px',
-        'image-preview-sm': '200px',
-        'image-preview-circle': '120px',
-        'image-preview-circle-sm': '150px',
-        'button-sm': '14px',
-        popup: '480px',
-        'popup-sm': '520px',
-        'popup-md': '730px',
-        'popup-lg': '1228px'
+        sidebar: "320px",
+        logo: "240px",
+        "logo-sm": "48px",
+        sheet: "760px",
+        form: "400px",
+        card: "376px",
+        "image-preview": "120px",
+        "image-preview-sm": "200px",
+        "image-preview-circle": "120px",
+        "image-preview-circle-sm": "150px",
+        "button-sm": "14px",
+        popup: "480px",
+        "popup-sm": "520px",
+        "popup-md": "730px",
+        "popup-lg": "1228px",
       },
       height: {
-        footer: '88px',
-        logo: '110px',
+        footer: "88px",
+        logo: "110px",
         table: 384,
-        'logo-sm': '48px',
-        'image-card': '200px',
-        'image-preview': '90px',
-        'image-preview-sm': '150px',
-        'image-preview-circle': '120px',
-        'image-preview-circle-sm': '150px',
-        'button-sm': '14px'
+        "logo-sm": "48px",
+        "image-card": "200px",
+        "image-preview": "90px",
+        "image-preview-sm": "150px",
+        "image-preview-circle": "120px",
+        "image-preview-circle-sm": "150px",
+        "button-sm": "14px",
       },
       fontFamily: {
         title0: ['Finador-Black', 'sans-serif'],
@@ -148,55 +146,55 @@ module.exports = {
         '3/4': '75%',
       },
       maxWidth: {
-        card: '376px',
-        form: '400px',
-        sheet: '760px',
-        popup: '480px',
-        'popup-sm': '520px',
-        'popup-md': '730px',
-        'popup-lg': '1228px',
-        '3/4': '75%',
-        '9/10': '90%'
+        card: "376px",
+        form: "400px",
+        sheet: "760px",
+        popup: "480px",
+        "popup-sm": "520px",
+        "popup-md": "730px",
+        "popup-lg": "1228px",
+        "3/4": "75%",
+        "9/10": "90%",
       },
       maxHeight: {
-        dropdown: '317px',
-        header1: '376px',
-        form: '400px',
-        mailto: '128px'
-      }
-    }
+        dropdown: "317px",
+        header1: "376px",
+        form: "400px",
+        mailto: "128px",
+      },
+    },
   },
   variants: {
     extend: {
-      borderColor: ['active', 'hover', 'disabled'],
-      borderWidth: ['active', 'hover', 'disabled'],
-      ringColor: ['hover'],
-      ringWidth: ['hover'],
-      ringOpacity: ['hover'],
-      ringOffsetColor: ['hover'],
-      ringOffsetWidth: ['hover'],
-      opacity: ['active', 'disabled'],
-      padding: ['active'],
-      boxShadow: ['active']
-    }
+      borderColor: ["active", "hover", "disabled"],
+      borderWidth: ["active", "hover", "disabled"],
+      ringColor: ["hover"],
+      ringWidth: ["hover"],
+      ringOpacity: ["hover"],
+      ringOffsetColor: ["hover"],
+      ringOffsetWidth: ["hover"],
+      opacity: ["active", "disabled"],
+      padding: ["active"],
+      boxShadow: ["active"],
+    },
   },
   plugins: [
     plugin(function ({ addUtilities }) {
       const newUtilities = {
-        '.h-viewport': {
-          height: 'calc(var(--vh, 1vh) * 100)'
+        ".h-viewport": {
+          height: "calc(var(--vh, 1vh) * 100)",
         },
-        '.scrollbar-hide': {
+        ".scrollbar-hide": {
           /* Firefox */
-          'scrollbar-width': 'thin',
+          "scrollbar-width": "thin",
 
           /* Safari and Chrome */
-          '&::-webkit-scrollbar': {
-            display: 'none'
-          }
-        }
-      }
-      addUtilities(newUtilities)
-    })
-  ]
-}
+          "&::-webkit-scrollbar": {
+            display: "none",
+          },
+        },
+      };
+      addUtilities(newUtilities);
+    }),
+  ],
+};
