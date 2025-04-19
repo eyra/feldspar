@@ -17,9 +17,11 @@ import {
 } from "../../../../types/data_submission";
 import _ from "lodash";
 import { PromptContext } from "./factory";
+import { NumberIcon } from '../elements/number_icon'
 
 interface Props {
   table: PropsUITable & {
+    number: number;
     title: string;
     description?: string;
     deletedRowCount: number;
@@ -35,71 +37,60 @@ export const ConsentTable = forwardRef<ConsentTableHandle | null, Props>(
   ({ table, readOnly = false, context, onChange }, ref): JSX.Element => {
     const [currentTable, setCurrentTable] = React.useState<
       PropsUITable & {
+        number: number;
         title: string;
         description?: string;
         deletedRowCount: number;
       }
     >(table);
 
-    useImperativeHandle(ref, () => ({
-      getDataSubmissionData(): DataSubmissionData {
-        return {
-          [currentTable.id]: {
-            data: serializeTableData(currentTable),
-            metadata: {
-              deletedRowCount: currentTable.deletedRowCount,
-            },
-          },
-        };
-      },
-    }));
-
-    const handleChange = (id: string, rows: PropsUITableRow[]) => {
-      const newTable: PropsUITable & {
-        title: string;
-        deletedRowCount: number;
-      } = {
-        ...currentTable,
-        body: { __type__: "PropsUITableBody" as const, rows },
-        deletedRowCount:
-          currentTable.deletedRowCount +
-          (currentTable.body.rows.length - rows.length),
-      };
-
+    const handleChange = (rows: PropsUITableRow[], deletedCount: number) => {
       context.onDataSubmissionDataChanged(
-        currentTable.id,
-        serializeTableData(newTable)
+        table.id,
+        getDataSubmissionData(table.head, rows, deletedCount)
       );
-      setCurrentTable(newTable);
-      onChange(id, rows);
     };
 
     React.useEffect(() => {
       console.log("ConsentTable useEffect", currentTable);
       context.onDataSubmissionDataChanged(
-        currentTable.id,
-        serializeTableData(currentTable)
+        table.id,
+        getDataSubmissionData(table.head, table.body.rows, 0)
       );
     }, []);
 
-    
     return (
-      <div key={table.id} className="flex flex-col gap-4 mb-4">
-        <Title4 text={table.title} margin="" />
-        {table.description && <BodyLarge text={table.description} margin="" />}
-        <Table
-          {...currentTable}
-          readOnly={readOnly}
-          {...context}
-          onChange={handleChange}
-        />
+      <div key={table.id} className='flex flex-col gap-4 mb-4'>
+        <div className='flex flex-row gap-4 items-center'>
+          <NumberIcon number={table.number} />
+          <div className='pt-2px'>
+            <Title4 text={table.title} margin='' />
+          </div>
+        </div>
+        <Table {...table} readOnly={readOnly} locale={context.locale} onChange={handleChange} id={table.id} key={table.id} />
       </div>
     );
   }
 );
 
-function serializeTableData(table: PropsUITable): any[] {
-  return table.body.rows.map((row) => serializeRow(row, table.head));
+function getDataSubmissionData(
+  head: PropsUITableHead,
+  rows: PropsUITableRow[],
+  deletedRowCount: number
+): DataSubmissionData {
+  return {
+    data: serializeTableData(head, rows),
+    metadata: {
+      deletedRowCount,
+    },
+  };
+}
+
+function serializeTableData(
+  head: PropsUITableHead,
+  rows: PropsUITableRow[]
+): any[] {
+  return rows.map((row) => serializeRow(row, head));
 }
 
 function serializeRow(row: PropsUITableRow, head: PropsUITableHead): any {

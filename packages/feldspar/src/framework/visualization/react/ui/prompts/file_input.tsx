@@ -1,5 +1,6 @@
+
+import React, { JSX } from 'react'
 import { Weak } from '../../../../helpers'
-import * as React from 'react'
 import { Translatable } from '../../../../types/elements'
 import TextBundle from '../../../../text_bundle'
 import { Translator } from '../../../../translator'
@@ -7,7 +8,6 @@ import { ReactFactoryContext } from '../../factory'
 import { PropsUIPromptFileInput } from '../../../../types/prompts'
 import { PrimaryButton } from '../elements/button'
 import { BodyLarge, BodySmall } from '../elements/text'
-import { JSX } from 'react'
 
 type Props = Weak<PropsUIPromptFileInput> & ReactFactoryContext
 
@@ -48,10 +48,14 @@ export const FileInput = (props: Props): JSX.Element => {
         <div className='mt-8' />
         <div className='p-6 border-grey4 border-2 rounded'>
           <input ref={input} id='input' type='file' className='hidden' accept={extensions} onChange={handleSelect} />
-          <div className='flex flex-row gap-4 items-center'>
+          <div className='flex flex-col sm:flex-row gap-2 sm:gap-4 sm:items-center'>
             <BodyLarge text={selectedFile?.name ?? placeholder} margin='' color={selectedFile === undefined ? 'text-grey2' : 'textgrey1'} />
             <div className='flex-grow' />
-            <PrimaryButton onClick={handleClick} label={selectButton} color='bg-tertiary text-grey1' />
+            <div className='flex-wrap'>
+              <div className='flex flex-row'>
+                <PrimaryButton onClick={handleClick} label={selectButton} color='bg-tertiary text-grey1' />
+              </div>
+            </div>
           </div>
         </div>
         <div className='mt-4' />
@@ -113,8 +117,8 @@ const note = (): Translatable => {
 
 const placeholder = (): Translatable => {
   return new TextBundle()
-    .add('en', 'Choose a file')
-    .add('de', 'Eine Datei auswählen')
-    .add('it', 'Scegli un file')
-    .add('nl', 'Bestand kiezen')
+    .add('en', 'E.g. data.zip')
+    .add('de', 'Z.B. data.zip')
+    .add('it', 'Esempio: data.zip')
+    .add('nl', 'Voorbeeld: data.zip')
 }

@@ -1,380 +1,177 @@
-import _ from "lodash";
-import React from "react";
-import type { JSX, ReactElement } from "react";
-import { Weak } from "../../../../helpers";
-import TextBundle from "../../../../text_bundle";
-import { Translator } from "../../../../translator";
-import {
-  PropsUITable,
-  PropsUITableCell,
-  PropsUITableHead,
-  PropsUITableRow,
-} from "../../../../types/elements";
-import { ReactFactoryContext } from "../../factory";
-import { BackIconButton, ForwardIconButton, IconLabelButton } from "./button";
-import { CheckBox } from "./check_box";
-import { SearchBar } from "./search_bar";
-import { Caption, Label, Title3 } from "./text";
-import UndoSvg from "../../../../../assets/images/undo.svg";
-import DeleteSvg from "../../../../../assets/images/delete.svg";
-import { PageIcon } from "./page_icon";
-
-type Props = Weak<PropsUITable> & TableContext & ReactFactoryContext;
+import React from 'react'
+import { JSX } from 'react'
+import { Weak } from '../../../../helpers'
+import TextBundle from '../../../../text_bundle'
+import { Translator } from '../../../../translator'
+import { PropsUITable, PropsUITableRow } from '../../../../types/elements'
+import { ReactFactoryContext } from '../../factory'
+import { IconLabelButton } from './button'
+import { CheckBox } from './check_box'
+import { SearchBar } from './search_bar'
+import { Caption, Label, Title3 } from './text'
+import UndoSvg from '../../../../../assets/images/undo.svg'
+import DeleteSvg from '../../../../../assets/images/delete.svg'
+import { Pagination } from './pagination'
+import { TablePage } from './table_page'
+import { TableCards } from './table_cards'
+type Props = Weak<PropsUITable> & TableContext & ReactFactoryContext
 
 export interface TableContext {
-  onChange: (id: string, rows: PropsUITableRow[]) => void;
+  id: string
+  onChange: (rows: PropsUITableRow[], deletedCount: number) => void
 }
 
 interface Visibility {
-  search: boolean;
-  undo: boolean;
-  delete: boolean;
-  table: boolean;
-  noData: boolean;
-  noDataLeft: boolean;
-  noResults: boolean;
+  undo: boolean
+  delete: boolean
+  table: boolean
+  noData: boolean
+  noDataLeft: boolean
+  noResults: boolean
 }
 
 interface State {
-  edit: boolean;
-  page: number;
-  pageCount: number;
-  pageWindow: number[];
-  rows: PropsUITableRow[];
-  selected: string[];
-  deletedCount: number;
-  visibility: Visibility;
+  edit: boolean
+  desktopPage: number
+  desktopPageCount: number
+  mobilePage: number
+  mobilePageCount: number
+  desktopRows: PropsUITableRow[]
+  mobileRows: PropsUITableRow[]
+  selected: string[]
+  deletedCount: number
+  visibility: Visibility
 }
 
-export const Table = ({
-  id,
-  head,
-  body,
-  readOnly = false,
-  pageSize = 7,
-  locale,
-  onChange,
-}: Props): JSX.Element => {
-  const pageWindowLegSize = 3;
-
-  const query = React.useRef<string[]>([]);
-  const alteredRows = React.useRef<PropsUITableRow[]>(body.rows);
-  const filteredRows = React.useRef<PropsUITableRow[]>(alteredRows.current);
+export const Table = ({ id, head, body, readOnly = false, locale, onChange }: Props): JSX.Element => {
+  const query = React.useRef<string[]>([])
+  const alteredRows = React.useRef<PropsUITableRow[]>(body.rows)
+  const filteredRows = React.useRef<PropsUITableRow[]>(alteredRows.current)
+  const desktopPageSize = 7
+  const mobilePageSize = 1
 
   const initialState: State = {
     edit: false,
-    pageCount: getPageCount(),
-    page: 0,
-    pageWindow: updatePageWindow(0),
-    rows: updateRows(0),
+    desktopPage: 0,
+    desktopPageCount: getPageCount(desktopPageSize),
+    desktopRows: updateRows(0, desktopPageSize),
+    mobilePage: 0,
+    mobilePageCount: getPageCount(mobilePageSize),
+    mobileRows: updateRows(0, mobilePageSize),
     selected: [],
     deletedCount: 0,
     visibility: {
-      search: alteredRows.current.length > pageSize,
       delete: false,
       undo: false,
       table: filteredRows.current.length > 0,
       noData: filteredRows.current.length === 0,
       noDataLeft: false,
-      noResults: false,
-    },
-  };
-
-  const [state, setState] = React.useState<State>(initialState);
-
-  const copy = prepareCopy(locale);
-
-  function display(element: keyof Visibility): string {
-    return visible(element) ? "" : "hidden";
-  }
-
-  function visible(element: keyof Visibility): boolean {
-    if (typeof state.visibility[element] === "boolean") {
-      return state.visibility[element];
+      noResults: false
     }
-    return false;
   }
 
-  function updatePageWindow(currentPage: number): number[] {
-    const pageWindowSize = pageWindowLegSize * 2 + 1;
-    const pageCount = getPageCount();
+  const [state, setState] = React.useState<State>(initialState)
 
-    let range: number[] = [];
-    if (pageWindowSize >= pageCount && pageCount > 0) {
-      range = _.range(0, Math.min(pageCount, pageWindowSize));
-    } else if (pageWindowSize < pageCount) {
-      const maxIndex = pageCount - 1;
+  const copy = prepareCopy(locale)
 
-      let start: number;
-      let end: number;
+  function display (element: keyof Visibility): string {
+    return visible(element) ? '' : 'hidden'
+  }
 
-      if (currentPage < pageWindowLegSize) {
-        // begin
-        start = 0;
-        end = Math.min(pageCount, pageWindowSize);
-      } else if (maxIndex - currentPage <= pageWindowLegSize) {
-        // end
-        start = maxIndex - (pageWindowSize - 1);
-        end = maxIndex + 1;
-      } else {
-        // middle
-        start = currentPage - pageWindowLegSize;
-        end = currentPage + pageWindowLegSize + 1;
-      }
-      range = _.range(start, end);
+  function visible (element: keyof Visibility): boolean {
+    if (typeof state.visibility[element] === 'boolean') {
+      return state.visibility[element]
     }
-
-    return range;
+    return false
   }
 
-  function getPageCount(): number {
+  function getPageCount (pageSize: number): number {
     if (filteredRows.current.length === 0) {
-      return 0;
+      return 0
     }
 
-    return Math.ceil(filteredRows.current.length / pageSize);
+    return Math.ceil(filteredRows.current.length / pageSize)
   }
 
-  function updateRows(currentPage: number): PropsUITableRow[] {
-    const offset = currentPage * pageSize;
-    return filteredRows.current.slice(offset, offset + pageSize);
+  function updateRows (currentPage: number, pageSize: number): PropsUITableRow[] {
+    const offset = currentPage * pageSize
+    return filteredRows.current.slice(offset, offset + pageSize)
   }
 
-  function renderHeadRow(props: Weak<PropsUITableHead>): JSX.Element {
-    return (
-      <tr>
-        {state.edit ? renderHeadCheck() : ""}
-        {props.cells.map((cell, index) => renderHeadCell(cell, index))}
-      </tr>
-    );
-  }
-
-  function renderHeadCheck(): JSX.Element {
-    const selected =
-      state.selected.length > 0 && state.selected.length === state.rows.length;
-    return (
-      <td key="check-head" className="pl-4 w-10">
-        <CheckBox
-          id="-1"
-          selected={selected}
-          onSelect={() => handleSelectHead()}
-        />
-      </td>
-    );
-  }
-
-  function renderHeadCell(
-    props: Weak<PropsUITableCell>,
-    index: number
-  ): JSX.Element {
-    return (
-      <th key={`${index}`} className="h-12 px-4 text-left">
-        <div className="font-table-header text-table text-grey1">
-          {props.text}
-        </div>
-      </th>
-    );
-  }
-
-  function renderRows(): JSX.Element[] {
-    return state.rows.map((row, index) => renderRow(row, index));
-  }
-
-  function renderRow(row: PropsUITableRow, rowIndex: number): JSX.Element {
-    return (
-      <tr key={`${rowIndex}`} className="hover:bg-grey6">
-        {state.edit ? renderRowCheck(row.id) : ""}
-        {row.cells.map((cell, cellIndex) => renderRowCell(cell, cellIndex))}
-      </tr>
-    );
-  }
-
-  function renderRowCheck(rowId: string): JSX.Element {
-    const selected = state.selected.includes(rowId);
-    return (
-      <td key={`check-${rowId}`} className="pl-4">
-        <CheckBox
-          id={rowId}
-          selected={selected}
-          onSelect={() => handleSelectRow(rowId)}
-        />
-      </td>
-    );
-  }
-
-  function renderRowCell(
-    { text }: Weak<PropsUITableCell>,
-    cellIndex: number
-  ): JSX.Element {
-    const body = isValidHttpUrl(text)
-      ? renderRowLink(text)
-      : renderRowText(text);
-
-    return (
-      <td key={`${cellIndex}`} className="h-12 px-4">
-        {body}
-      </td>
-    );
-  }
-
-  function renderRowText(text: string): JSX.Element {
-    return <div className="font-table-row text-table text-grey1">{text}</div>;
-  }
-
-  function renderRowLink(href: string): JSX.Element {
-    return (
-      <div className="font-table-row text-table text-primary underline">
-        <a href={href} target="_blank" rel="noreferrer" title={href}>
-          {copy.link}
-        </a>
-      </div>
-    );
-  }
-
-  function isValidHttpUrl(value: string): boolean {
-    let url;
-    try {
-      url = new URL(value);
-    } catch (_) {
-      return false;
-    }
-    return url.protocol === "http:" || url.protocol === "https:";
-  }
-
-  function renderPageIcons(): JSX.Element {
-    return (
-      <div className="flex flex-row gap-2">
-        {state.pageWindow.map((page) => renderPageIcon(page))}
-      </div>
-    );
-  }
-
-  function renderPageIcon(index: number): JSX.Element {
-    return (
-      <PageIcon
-        key={`page-${index}`}
-        index={index + 1}
-        selected={state.page === index}
-        onClick={() => handleNewPage(index)}
-      />
-    );
-  }
-
-  function filterRows(): PropsUITableRow[] {
+  function filterRows (): PropsUITableRow[] {
     if (query.current.length === 0) {
-      return alteredRows.current;
+      return alteredRows.current
     }
-    return alteredRows.current.filter((row) => matchRow(row, query.current));
+    return alteredRows.current.filter((row) => matchRow(row, query.current))
   }
 
-  function matchRow(row: PropsUITableRow, query: string[]): boolean {
-    const rowText = row.cells.map((cell) => cell.text).join(" ");
-    return query.find((word) => !rowText.includes(word)) === undefined;
+  function matchRow (row: PropsUITableRow, query: string[]): boolean {
+    const rowText = row.cells.map((cell) => cell.text).join(' ')
+    return query.find((word) => !rowText.includes(word)) === undefined
   }
 
-  function handleSelectHead(): void {
-    const allRowsSelected = state.selected.length === state.rows.length;
-    if (allRowsSelected) {
-      setState((state) => {
-        return { ...state, selected: [] };
-      });
-    } else {
-      handleSelectAll();
-    }
-  }
-
-  function handleSelectRow(rowId: string): void {
+  function handleSelectedChange (selected: string[]): void {
     setState((state) => {
-      const selected = state.selected.slice(0);
-      const index = selected.indexOf(rowId);
-      if (index === -1) {
-        selected.push(rowId);
-      } else {
-        selected.splice(index, 1);
-      }
-      return { ...state, selected };
-    });
+      return { ...state, selected }
+    })
   }
 
-  function handleSelectAll(): void {
-    setState((state) => {
-      const selected = state.rows.map((row) => row.id);
-      return { ...state, selected };
-    });
+  function handleDeleteRow (rowId: string): void {
+    deleteRows([rowId])
   }
 
-  function handlePrevious(): void {
-    setState((state) => {
-      const page = state.page === 0 ? state.pageCount - 1 : state.page - 1;
-      const pageWindow = updatePageWindow(page);
-      const rows = updateRows(page);
-      return { ...state, page, pageWindow, rows };
-    });
+  function handleDeleteSelected (): void {
+    const currentSelectedRows = state.selected.slice(0)
+    if (currentSelectedRows.length === 0) return
+
+    deleteRows(currentSelectedRows)
   }
 
-  function handleNext(): void {
-    setState((state) => {
-      const page = state.page === state.pageCount - 1 ? 0 : state.page + 1;
-      const pageWindow = updatePageWindow(page);
-      const rows = updateRows(page);
-      return { ...state, page, pageWindow, rows };
-    });
-  }
+  function deleteRows (rows: String[]): void {
+    const newAlteredRows = alteredRows.current.slice(0)
 
-  function handleDeleteSelected(): void {
-    const currentSelectedRows = state.selected.slice(0);
-    if (currentSelectedRows.length === 0) return;
-
-    const newAlteredRows = alteredRows.current.slice(0);
-
-    for (const rowId of currentSelectedRows) {
-      const index = newAlteredRows.findIndex((row) => row.id === rowId);
+    for (const rowId of rows) {
+      const index = newAlteredRows.findIndex((row) => row.id === rowId)
       if (index !== -1) {
-        newAlteredRows.splice(index, 1);
+        newAlteredRows.splice(index, 1)
       }
     }
 
-    alteredRows.current = newAlteredRows;
-    filteredRows.current = filterRows();
+    alteredRows.current = newAlteredRows
+    filteredRows.current = filterRows()
 
     setState((state) => {
-      const pageCount = getPageCount();
-      const page = Math.max(0, Math.min(pageCount - 1, state.page));
-      const pageWindow = updatePageWindow(page);
-      const rows = updateRows(page);
-      const deletedCount = body.rows.length - alteredRows.current.length;
+      const desktopPageCount = getPageCount(desktopPageSize)
+      const desktopPage = Math.max(0, Math.min(desktopPageCount - 1, state.desktopPage))
+      const desktopRows = updateRows(desktopPage, desktopPageSize)
+      const mobilePageCount = getPageCount(mobilePageSize)
+      const mobilePage = Math.max(0, Math.min(mobilePageCount - 1, state.mobilePage))
+      const mobileRows = updateRows(mobilePage, mobilePageSize)
+      const deletedCount = body.rows.length - alteredRows.current.length
       const visibility = {
         ...state.visibility,
         undo: deletedCount > 0,
         table: filteredRows.current.length > 0,
         noData: false,
         noDataLeft: alteredRows.current.length === 0,
-        noResults:
-          alteredRows.current.length > 0 && filteredRows.current.length === 0,
-      };
-      return {
-        ...state,
-        page,
-        pageCount,
-        pageWindow,
-        rows,
-        deletedCount,
-        selected: [],
-        visibility,
-      };
-    });
+        noResults: alteredRows.current.length > 0 && filteredRows.current.length === 0
+      }
+      return { ...state, desktopPage, desktopPageCount, desktopRows, mobilePage, mobilePageCount, mobileRows, deletedCount, selected: [], visibility }
+    })
 
-    onChange(id, alteredRows.current);
+    onChange(alteredRows.current, state.deletedCount)
   }
 
-  function handleUndo(): void {
-    alteredRows.current = body.rows;
-    filteredRows.current = filterRows();
+  function handleUndo (): void {
+    alteredRows.current = body.rows
+    filteredRows.current = filterRows()
     setState((state) => {
-      const pageCount = getPageCount();
-      const page = Math.min(pageCount, state.page);
-      const pageWindow = updatePageWindow(page);
-      const rows = updateRows(state.page);
+      const desktopPageCount = getPageCount(desktopPageSize)
+      const desktopPage = Math.min(desktopPageCount, state.desktopPage)
+      const desktopRows = updateRows(desktopPage, desktopPageSize)
+      const mobilePageCount = getPageCount(mobilePageSize)
+      const mobilePage = Math.min(mobilePageCount, state.mobilePage)
+      const mobileRows = updateRows(mobilePage, mobilePageSize)
 
       const visibility = {
         ...state.visibility,
@@ -382,187 +179,201 @@ export const Table = ({
         table: filteredRows.current.length > 0,
         noData: false,
         noDataLeft: false,
-        noResults: filteredRows.current.length === 0,
-      };
-      return {
-        ...state,
-        page,
-        pageCount,
-        pageWindow,
-        rows,
-        deletedCount: 0,
-        selected: [],
-        visibility,
-      };
-    });
+        noResults: filteredRows.current.length === 0
+      }
+      return { ...state, desktopPage, desktopPageCount, desktopRows, mobilePage, mobilePageCount, mobileRows, deletedCount: 0, selected: [], visibility }
+    })
 
-    onChange(id, body.rows);
+    onChange(body.rows, 0)
   }
 
-  function handleSearch(newQuery: string[]): void {
-    query.current = newQuery;
-    filteredRows.current = filterRows();
+  function handleSearch (newQuery: string[]): void {
+    query.current = newQuery
+    filteredRows.current = filterRows()
     setState((state) => {
-      const pageCount = getPageCount();
-      const page = Math.min(pageCount, state.page);
-      const pageWindow = updatePageWindow(page);
-      const rows = updateRows(state.page);
+      const desktopPageCount = getPageCount(desktopPageSize)
+      const desktopPage = Math.min(desktopPageCount, state.desktopPage)
+      const desktopRows = updateRows(desktopPage, desktopPageSize)
+      const mobilePageCount = getPageCount(mobilePageSize)
+      const mobilePage = Math.min(mobilePageCount, state.mobilePage)
+      const mobileRows = updateRows(mobilePage, mobilePageSize)
       const visibility = {
         ...state.visibility,
         table: filteredRows.current.length > 0,
         noData: body.rows.length === 0,
         noDataLeft: body.rows.length > 0 && alteredRows.current.length === 0,
-        noResults:
-          body.rows.length > 0 &&
-          alteredRows.current.length > 0 &&
-          filteredRows.current.length === 0,
-      };
-      return { ...state, page, pageCount, pageWindow, rows, visibility };
-    });
+        noResults: body.rows.length > 0 && alteredRows.current.length > 0 && filteredRows.current.length === 0
+      }
+      return { ...state, desktopPage, desktopPageCount, desktopRows, mobilePage, mobilePageCount, mobileRows, visibility }
+    })
   }
 
-  function handleNewPage(page: number): void {
+  function handleDesktopPageChange (page: number): void {
     setState((state) => {
-      const rows = updateRows(page);
-      return { ...state, page, rows };
-    });
+      const desktopRows = updateRows(page, desktopPageSize)
+      return { ...state, desktopPage: page, desktopRows }
+    })
   }
 
-  function handleEditToggle(): void {
+  function handleMobilePageChange (page: number): void {
     setState((state) => {
-      const edit = !state.edit;
+      const mobileRows = updateRows(page, mobilePageSize)
+      return { ...state, mobilePage: page, mobileRows }
+    })
+  }
+
+  function handleEditToggle (): void {
+    setState((state) => {
+      const edit = !state.edit
       const visibility = {
         ...state.visibility,
-        delete: edit,
-      };
-      return { ...state, edit, visibility };
-    });
+        delete: edit
+      }
+      return { ...state, edit, visibility }
+    })
   }
 
   return (
     <>
-      <div className="flex flex-row gap-4 items-center">
-        <div
-          className={`flex flex-row items-center gap-2 mt-2 ${
-            body.rows.length <= pageSize ? "hidden" : ""
-          } `}
-        >
-          <BackIconButton onClick={handlePrevious} />
-          <div>{renderPageIcons()}</div>
-          <ForwardIconButton onClick={handleNext} />
+      <div className='flex flex-col gap-4'>
+        {/* Desktop header */}
+        <div className='hidden sm:block'>
+          <div className='flex flex-row gap-4 items-center'>
+            {/* Desktop pagination */}
+            <div className={`${body.rows.length <= desktopPageSize ? 'hidden' : ''} `}>
+              <Pagination pageCount={state.desktopPageCount} page={state.desktopPage} pageWindowLegSize={3} onChange={handleDesktopPageChange} />
+            </div>
+            <div className='flex-grow' />
+
+            {/* Desktop pages */}
+            <Caption text={copy.desktopPages} color='text-grey2' margin='' />
+
+            {/* Desktop search */}
+            <div>
+              <SearchBar placeholder={copy.searchPlaceholder} onSearch={(query) => handleSearch(query)} />
+            </div>
+          </div>
         </div>
-        <div className="flex-grow" />
-        <Caption text={copy.pages} color="text-grey2" margin="" />
-        <div className={`${display("search")}`}>
-          <SearchBar
-            placeholder={copy.searchPlaceholder}
-            onSearch={(query) => handleSearch(query)}
-          />
+
+        {/* Mobile header */}
+        <div className='block sm:hidden'>
+          <div className='flex flex-row gap-4'>
+            {/* Mobile search */}
+            <div className='w-full'>
+              <SearchBar placeholder={copy.searchPlaceholder} onSearch={(query) => handleSearch(query)} />
+            </div>
+          </div>
         </div>
-      </div>
-      <div
-        className={`flex flex-col gap-4 justify-center h-full ${display(
-          "table"
-        )}`}
-      >
-        <table className="text-grey1 table-fixed divide-y divide-grey4">
-          <thead>{renderHeadRow(head)}</thead>
-          <tbody className="divide-y divide-grey4">{renderRows()}</tbody>
-        </table>
-      </div>
-      <div
-        className={`flex flex-col justify-center items-center w-full h-table bg-grey6 ${display(
-          "noData"
-        )}`}
-      >
-        <Title3 text={copy.noData} color="text-grey3" margin="" />
-      </div>
-      <div
-        className={`flex flex-col justify-center items-center w-full h-table bg-grey6 ${display(
-          "noDataLeft"
-        )}`}
-      >
-        <Title3 text={copy.noDataLeft} color="text-grey3" margin="" />
-      </div>
-      <div
-        className={`flex flex-col justify-center items-center w-full h-table bg-grey6 ${display(
-          "noResults"
-        )}`}
-      >
-        <Title3 text={copy.noResults} color="text-grey3" margin="" />
-      </div>
-      <div
-        className={`flex flex-row items-center gap-6 mt-2 h-8 ${
-          body.rows.length === 0 ? "hidden" : ""
-        } `}
-      >
-        <div className="flex flex-row gap-4 items-center">
-          <CheckBox
-            id="edit"
-            selected={state.edit}
-            onSelect={handleEditToggle}
-          />
-          <Label text={copy.edit} margin="mt-1px" />
+
+        {/* Desktop body */}
+        {state.desktopRows.length > 0 && (
+          <div className='hidden sm:block'>
+            <div className={`flex flex-col ${display('table')}`}>
+              <TablePage head={head} rows={state.desktopRows} id={id} edit={state.edit} selected={state.selected} locale={locale} onChange={handleSelectedChange} />
+            </div>
+          </div>
+        )}
+
+        {/* Mobile body */}
+        {state.mobileRows.length > 0 && (
+          <div className='block sm:hidden'>
+            <TableCards head={head} rows={state.mobileRows} locale={locale} onDelete={handleDeleteRow} key={id} />
+          </div>
+        )}
+
+        {/* No data */}
+        <div className={`flex flex-col justify-center items-center w-full h-[200px] sm:h-table bg-grey6 ${display('noData')}`}>
+          <Title3 text={copy.noData} color='text-grey3' margin='' />
         </div>
-        <div className={`${display("delete")} mt-1px`}>
-          <IconLabelButton
-            label={copy.delete}
-            color="text-delete"
-            icon={DeleteSvg}
-            onClick={handleDeleteSelected}
-          />
+
+        {/* No data left */}
+        <div className={`flex flex-col justify-center items-center w-full h-[200px] sm:h-table bg-grey6 ${display('noDataLeft')}`}>
+          <Title3 text={copy.noDataLeft} color='text-grey3' margin='' />
         </div>
-        <div className="flex-grow" />
-        <Label text={copy.deleted} />
-        <div className={`${display("undo")}`}>
-          <IconLabelButton
-            label={copy.undo}
-            color="text-primary"
-            icon={UndoSvg}
-            onClick={handleUndo}
-          />
+
+        {/* No search results */}
+        <div className={`flex flex-col justify-center items-center w-full h-[200px] sm:h-table bg-grey6 ${display('noResults')}`}>
+          <Title3 text={copy.noResults} color='text-grey3' margin='' />
+        </div>
+
+        {/* Desktop footer */}
+        <div className='hidden sm:block'>
+          <div className={`flex flex-row items-center gap-6 mt-2 h-8 ${body.rows.length === 0 ? 'hidden' : ''} `}>
+            <div className='flex flex-row gap-4 items-center'>
+              <CheckBox id='edit' selected={state.edit} onSelect={handleEditToggle} />
+              <Label text={copy.edit} margin='mt-1px' />
+            </div>
+
+            {/* Delete selected */}
+            <div className={`${display('delete')} mt-1px`}>
+              <IconLabelButton label={copy.delete} color='text-delete' icon={DeleteSvg} onClick={handleDeleteSelected} />
+            </div>
+            <div className='flex-grow' />
+            {/* Number of deleted rows */}
+            <Label text={copy.deleted} />
+            {/* Undo button */}
+            <div className={`${display('undo')}`}>
+              <IconLabelButton label={copy.undo} color='text-primary' icon={UndoSvg} onClick={handleUndo} />
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile footer */}
+        <div className='block sm:hidden'>
+          <div className='flex flex-col gap-4'>
+            {state.deletedCount > 0 &&
+              <div className='flex flex-row gap-4 items-center'>
+                {/* Number of deleted rows */}
+                <Label text={copy.deleted} />
+                <div className='flex-grow' />
+                {/* Undo button */}
+                <div className={`${display('undo')}`}>
+                  <IconLabelButton label={copy.undo} color='text-primary' icon={UndoSvg} onClick={handleUndo} />
+                </div>
+              </div>}
+
+            <div className='flex flex-col gap-4 items-center'>
+              {/* Mobile pagination */}
+              <div className={`${body.rows.length <= mobilePageSize ? 'hidden' : ''} `}>
+                <Pagination pageCount={state.mobilePageCount} page={state.mobilePage} pageWindowLegSize={2} onChange={handleMobilePageChange} />
+              </div>
+              {/* Number of pages */}
+              <Caption text={copy.mobilePages} color='text-grey2' margin='' />
+            </div>
+          </div>
         </div>
       </div>
     </>
-  );
+  )
 
-  function prepareCopy(locale: string): Copy {
+  function prepareCopy (locale: string): Copy {
     return {
       edit: Translator.translate(editLabel, locale),
       undo: Translator.translate(undoLabel, locale),
       noData: Translator.translate(noDataLabel, locale),
       noDataLeft: Translator.translate(noDataLeftLabel, locale),
       noResults: Translator.translate(noResultsLabel, locale),
-      pages: Translator.translate(pagesLabel(state.pageCount), locale),
+      desktopPages: Translator.translate(pagesLabel(state.desktopPageCount), locale),
+      mobilePages: Translator.translate(pagesLabel(state.mobilePageCount), locale),
       delete: Translator.translate(deleteLabel, locale),
-      deleted: Translator.translate(
-        deletedLabel(body.rows.length - alteredRows.current.length),
-        locale
-      ),
-      searchPlaceholder: Translator.translate(searchPlaceholder, locale),
-      link: Translator.translate(link, locale),
-    };
+      deleted: Translator.translate(deletedLabel(body.rows.length - alteredRows.current.length), locale),
+      searchPlaceholder: Translator.translate(searchPlaceholder, locale)
+    }
   }
-};
-
-interface Copy {
-  edit: string;
-  undo: string;
-  noData: string;
-  noDataLeft: string;
-  noResults: string;
-  pages: string;
-  delete: string;
-  deleted: string;
-  searchPlaceholder: string;
-  link: String;
 }
 
-const link = new TextBundle()
-  .add("en", "Visit URL")
-  .add("de", "URL besuchen")
-  .add("it", "Visita URL")
-  .add("nl", "Bezoek URL");
+interface Copy {
+  edit: string
+  undo: string
+  noData: string
+  noDataLeft: string
+  noResults: string
+  desktopPages: string
+  mobilePages: string
+  delete: string
+  deleted: string
+  searchPlaceholder: string
+}
 
 const searchPlaceholder = new TextBundle()
   .add("en", "Search")
@@ -652,7 +463,7 @@ function multiplePagesLabel(amount: number): TextBundle {
     .add("nl", `${amount} pagina's`);
 }
 
-function pagesLabel(amount: number): TextBundle {
-  if (amount === 1) return singlePageLabel();
-  return multiplePagesLabel(amount);
+function pagesLabel (amount: number): TextBundle {
+  if (amount === 1) return singlePageLabel()
+  return multiplePagesLabel(amount)
 }

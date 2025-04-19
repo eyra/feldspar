@@ -20,7 +20,8 @@
     "dev:feldspar": "npm run dev -w @eyra/feldspar",
     "dev:demo": "npm run start -w @eyra/data-collector",
     "start": "npm run build:py && concurrently \"npm run start:py\" \"npm run dev:feldspar\" \"npm run dev:demo\"",
-    "clean": "npm run clean --workspaces && rm -rf node_modules"
+    "clean": "npm run clean --workspaces && rm -rf node_modules",
+    "release": "./release.sh"
   },
   "devDependencies": {
     "@playwright/test": "^1.51.0",

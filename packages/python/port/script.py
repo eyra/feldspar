@@ -191,6 +191,7 @@ def prompt_consent(data):
         data_frame = pd.DataFrame(data, columns=["filename", "compressed_size", "size"])
         data_table = props.PropsUIPromptConsentFormTable(
             "zip_content",
+            1,
             table_title,
             props.Translatable(
                 {
@@ -215,6 +216,7 @@ def prompt_consent(data):
     # Another table example
     jokes_table = props.PropsUIPromptConsentFormTable(
         "dad_jokes",
+        2,
         props.Translatable(
             {
                 "en": "Dad Jokes",
@@ -253,6 +255,7 @@ def prompt_consent(data):
             item
             for item in [
                 data_table,
+                jokes_table,
                 props.PropsUIPromptText(
                     title=props.Translatable(
                         {
@@ -271,7 +274,6 @@ def prompt_consent(data):
                         }
                     ),
                 ),
-                jokes_table,
                 props.PropsUIDataSubmissionButtons(
                     donate_question=props.Translatable(
                         {

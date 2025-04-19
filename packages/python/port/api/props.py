@@ -91,12 +91,15 @@ class PropsUIPromptConsentFormTable:
     """Table to be shown to the participant prior to data_submission
 
     Attributes:
-        id: a unique string to itentify the table after data_submission
+        id: a unique string to itentify the table after donation
+        number: the number of table in the list of tables
         title: title of the table
+        description: description of the table
         data_frame: table to be shown
     """
 
     id: str
+    number: int
     title: Translatable
     description: Translatable
     data_frame: pd.DataFrame
@@ -106,6 +109,7 @@ class PropsUIPromptConsentFormTable:
         dict = {}
         dict["__type__"] = "PropsUIPromptConsentFormTable"
         dict["id"] = self.id
+        dict["number"] = self.number
         dict["title"] = self.title.toDict()
         dict["description"] = self.description.toDict()
         dict["data_frame"] = self.data_frame.to_json()
