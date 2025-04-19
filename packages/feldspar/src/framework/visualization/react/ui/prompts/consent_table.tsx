@@ -57,7 +57,7 @@ export const ConsentTable = forwardRef<ConsentTableHandle | null, Props>(
     }, []);
 
     return (
-      <div key={table.id} className="flex flex-col gap-4 mb-4">
+      <div key={table.id} className="flex flex-col gap-4 mb-20">
         <Title4 text={table.title} margin="" />
         {table.description && <BodyLarge text={table.description} margin="" />}
         <Table
