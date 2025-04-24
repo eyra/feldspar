@@ -60,7 +60,7 @@ export const ConsentTable = forwardRef<ConsentTableHandle | null, Props>(
     }, []);
 
     return (
-      <div key={table.id} className='flex flex-col gap-4 mb-4'>
+      <div key={table.id} className='flex flex-col gap-4 mb-20'>
         <div className='flex flex-row gap-4 items-center'>
           <NumberIcon number={table.number} />
           <div className='pt-2px'>

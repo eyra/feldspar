@@ -2,6 +2,7 @@
 
 ## Types of Changes and How to Note Them
 
+* Fixed - Explicit loaded event is sent to ensure proper initialization (channel setup)
 * Added - For any new features that have been added since the last version was released
 * Changed - To note any changes to the software's existing functionality
 * Deprecated - To note any features that were once stable but are no longer and have thus been removed

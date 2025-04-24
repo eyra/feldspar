@@ -62,6 +62,11 @@ const FeldsparContent: React.FC<ScriptHostProps> = ({
 
     observer.observe(window.document.body);
 
+    // Send a message to the parent window indicating that the app has loaded. This is used
+    // to trigger the setup of the channel between the iframe and the parent window.
+    window.parent.postMessage({ action: 'app-loaded' }, '*')
+
+
     return () => {
       observer.disconnect();
       setTimeout(() => {

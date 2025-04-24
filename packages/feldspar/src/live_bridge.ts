@@ -3,6 +3,7 @@ import { Bridge } from './framework/types/modules'
 
 export class LiveBridge implements Bridge {
   port: MessagePort
+  static initialized = false
 
   constructor (port: MessagePort) {
     this.port = port
@@ -11,8 +12,9 @@ export class LiveBridge implements Bridge {
   static create (window: Window, callback: (bridge: Bridge, locale: string) => void): void {
     window.addEventListener('message', (event) => {
       console.log('MESSAGE RECEIVED', event)
-      // Skip webpack messages
-      if (event.data.action === 'live-init') {
+      // Ensure initialization happens only once
+      if (event.data.action === 'live-init' && !LiveBridge.initialized) {
+        LiveBridge.initialized = true
         const bridge = new LiveBridge(event.ports[0])
         const locale = event.data.locale
         console.log('LOCALE', locale)
