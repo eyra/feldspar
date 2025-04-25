@@ -11,6 +11,7 @@
 
 ## \#4 unreleased
 
+* Fixed - Explicit loaded event is sent to ensure proper initialization (channel setup)
 * Changed: Feldspar is now split into React component and app
 * Changed: Allow multiple block-types to interleave on a submission page
 * Added: end to end tests using Playwright
