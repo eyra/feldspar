@@ -9,6 +9,10 @@
 * Removed - This notes any features that have been deleted and removed from the software
 * Security - This acts as an invitation to users who want to upgrade and avoid any software vulnerabilities
 
+## \#5 UNRELEASED
+
+* TBD
+
 ## \#4 2025-05-02
 
 * Fixed - Explicit loaded event is sent to ensure proper initialization (channel setup)
