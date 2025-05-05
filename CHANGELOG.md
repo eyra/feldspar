@@ -19,7 +19,7 @@
 ## \#3 2025-04-08
 
 * Changed: layout to support mobile screens
-* Added: support for mible variant of a table using
+* Added: support for mobile variant of a table using
 
 ## \#2 2024-06-13
 
