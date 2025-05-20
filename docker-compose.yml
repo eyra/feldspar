@@ -1,0 +1,13 @@
+services:
+  feldspar:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: feldspar
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    volumes:
+      - /app/node_modules
+      - .:/app
+    command: sh -c "npm i && npm run start"
