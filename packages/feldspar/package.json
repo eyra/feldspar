@@ -20,7 +20,9 @@
     },
     "peerDependencies": {
         "react": "^19.0.0",
-        "react-dom": "^19.0.0"
+        "react-dom": "^19.0.0",
+        "tslib": "*",
+        "typescript": "*"
     },
     "dependencies": {
         "@types/lodash": "^4.17.14",
@@ -52,6 +54,7 @@
         "rollup-plugin-copy": "*",
         "rollup-plugin-dts": "*",
         "rollup-plugin-peer-deps-external": "*",
-        "tslib": "*"
+        "tslib": "*",
+        "typescript": "*"
     }
 }
