@@ -30,6 +30,14 @@ export const DataSubmissionPage = (props: Props): JSX.Element => {
     props.resolve?.({ __type__: "PayloadJSON", value: JSON.stringify(DataSubmissionDataObject) });
   }
 
+  function onCancel(): void {
+    console.log("onCancel");
+    props.resolve?.({
+      __type__: "PayloadFalse",
+      value: false
+    });
+  }
+
   function renderBodyItem(bodyItem: any, context: PromptContext): JSX.Element | null {
     for (const factory of promptFactories) {
       const element = factory.create(bodyItem, context);
@@ -41,7 +49,7 @@ export const DataSubmissionPage = (props: Props): JSX.Element => {
   }
 
   function renderBody(props: Props): JSX.Element[] {
-    const context = { locale: locale, resolve: props.resolve, onDataSubmissionDataChanged, onDonate};
+    const context = { locale: locale, resolve: props.resolve, onDataSubmissionDataChanged, onDonate, onCancel};
     const bodyItems = Array.isArray(props.body) ? props.body : [props.body];
 
     return bodyItems.map((item, index) => {
