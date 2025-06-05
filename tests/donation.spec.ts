@@ -27,15 +27,19 @@ async function setupTestWithFileUpload(page: Page): Promise<void> {
 /**
  * Helper to handle data submission and return the submitted data
  */
-async function submitDataAndGetResult(page: Page): Promise<string | null> {
-  const result = new Promise<string|null>((resolve) => {
+
+function setupRouteForDataSubmission(page: Page): Promise<string|null> {
+  return new Promise<string|null>((resolve) => {
     page.route('/data-submission', async route => {
       const json = {ok: true};
       await route.fulfill({ json });
       resolve(route.request().postData());
     });
   });
+}
 
+async function submitDataAndGetResult(page: Page): Promise<string | null> {
+  const result = setupRouteForDataSubmission(page);
   await page.getByText('Donate', { exact: true }).click();
   return result;
 }
@@ -95,3 +99,21 @@ test('can undo row removal before submission', async ({ page }) => {
   expect(submittedData).toEqual(expect.stringContaining("I don't always test my code"));
 });
 
+test('can cancel submission', async ({ page }) => {
+  await setupTestWithFileUpload(page);
+
+  // Toggle the adjust checkbox
+  await page.getByRole('checkbox').first().click();
+  
+  // Setup the route to capture the submission data
+  const result = setupRouteForDataSubmission(page);
+  await page.getByText('No', { exact: true }).click();
+  const submittedData = await result;
+
+  // The submitted data should not contain the previously deleted file
+  expect(submittedData).not.toEqual(expect.stringContaining("hello_world.txt"));
+  // The submitted data should also not contain the other table contents
+  expect(submittedData).not.toEqual(expect.stringContaining("I don't always test my code"));
+  // The submitted data should contain the cancellation message
+  expect(submittedData).toEqual(expect.stringContaining("data_submission declined"));
+});
