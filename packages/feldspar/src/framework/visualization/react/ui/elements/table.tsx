@@ -138,6 +138,7 @@ export const Table = ({ id, head, body, readOnly = false, locale, onChange }: Pr
     }
 
     alteredRows.current = newAlteredRows
+    const deletedCount = body.rows.length - alteredRows.current.length
     filteredRows.current = filterRows()
 
     setState((state) => {
@@ -147,7 +148,6 @@ export const Table = ({ id, head, body, readOnly = false, locale, onChange }: Pr
       const mobilePageCount = getPageCount(mobilePageSize)
       const mobilePage = Math.max(0, Math.min(mobilePageCount - 1, state.mobilePage))
       const mobileRows = updateRows(mobilePage, mobilePageSize)
-      const deletedCount = body.rows.length - alteredRows.current.length
       const visibility = {
         ...state.visibility,
         undo: deletedCount > 0,
@@ -159,7 +159,7 @@ export const Table = ({ id, head, body, readOnly = false, locale, onChange }: Pr
       return { ...state, desktopPage, desktopPageCount, desktopRows, mobilePage, mobilePageCount, mobileRows, deletedCount, selected: [], visibility }
     })
 
-    onChange(alteredRows.current, state.deletedCount)
+    onChange(alteredRows.current, deletedCount)
   }
 
   function handleUndo (): void {

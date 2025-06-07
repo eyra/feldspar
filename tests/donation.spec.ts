@@ -70,6 +70,10 @@ test('can remove rows from submission', async ({ page }) => {
   expect(submittedData).not.toEqual(expect.stringContaining("hello_world.txt"));
   // The submitted data should contain the other table contents
   expect(submittedData).toEqual(expect.stringContaining("I don't always test my code"));
+  // It should also contain the deleted row count
+  const parsedData = JSON.parse(submittedData!);
+  const data = JSON.parse(parsedData.data!);
+  expect(data.zip_content.metadata.deletedRowCount).toEqual(1);
 });
 
 test('can undo row removal before submission', async ({ page }) => {
