@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { PromptFactory, ReactFactoryContext } from '@eyra/feldspar';
 import { HelloWorld } from './component';
 import { PropsUIPromptHelloWorld } from './types';

@@ -87,8 +87,15 @@ const FeldsparContent: React.FC<ScriptHostProps> = ({
   );
 };
 
-export const ScriptHostComponent: React.FC<ScriptHostProps> = (props) => (
+export const ScriptHostComponent = React.memo<ScriptHostProps>((props) => (
   <VisualizationProvider>
     <FeldsparContent {...props} />
   </VisualizationProvider>
-);
+), (prevProps, nextProps) => {
+  // Don't re-render on factories change, since they always change every time 
+  // they are created, which would cause unnecessary re-renders.
+  return prevProps.workerUrl === nextProps.workerUrl &&
+         prevProps.standalone === nextProps.standalone &&
+         prevProps.locale === nextProps.locale &&
+         prevProps.className === nextProps.className;
+});
