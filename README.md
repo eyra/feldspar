@@ -65,6 +65,7 @@ def prompt_file(extensions):
         "en": "Please select your data export file.",
         "de": "Bitte wählen Sie Ihre Datenexportdatei aus.",
         "it": "Seleziona il tuo file di esportazione dati.",
+        "es": "Por favor, seleccione su archivo de exportación de datos.",
         "nl": "Selecteer uw data-exportbestand."
     })
     return props.PropsUIPromptFileInput(description, extensions)
