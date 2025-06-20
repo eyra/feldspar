@@ -18,5 +18,22 @@ ENV PATH="/root/.local/bin:$PATH"
 # Set working directory
 WORKDIR /app
 
+# Copy package.json files for dependency installation
+COPY package.json ./
+COPY packages/feldspar/package.json ./packages/feldspar/
+COPY packages/data-collector/package.json ./packages/data-collector/
+
+# Copy package lock for reliable installs
+COPY package-lock.json* ./
+
+# Copy postcss config
+COPY postcss.config.js ./
+
+# Ensure workspaces are configured properly
+COPY .npmrc* ./
+
+# Install all dependencies, including devDependencies
+RUN npm install
+
 # Expose port
 EXPOSE 3000

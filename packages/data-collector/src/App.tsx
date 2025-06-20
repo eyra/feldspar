@@ -6,7 +6,7 @@ function App() {
     <div className="App">
       <ScriptHostComponent
         workerUrl="./py_worker.js"
-        standalone={process.env.NODE_ENV !== "production"}
+        standalone={import.meta.env.DEV}
         factories={[
           new DataSubmissionPageFactory({
             promptFactories: [new HelloWorldFactory()],
