@@ -8,6 +8,10 @@ include = [{ path = "port/assets", format = ["sdist", "wheel"] }]
 [tool.poetry.dependencies]
 python = ">=3.10"
 pandas = "^1.5"
+numpy = "^1.24"
+beautifulsoup4 = "^4.12.2"
+python-dateutil = "^2.9.0.post0"
+
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.4.2"
