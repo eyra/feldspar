@@ -60,4 +60,5 @@ const donateButtonLabel = new TextBundle()
 
 const cancelButtonLabel = new TextBundle()
   .add("en", "No")
-  .add("nl", "Nee");
+  .add("nl", "Nee")
+  .add('de', "Nein");
