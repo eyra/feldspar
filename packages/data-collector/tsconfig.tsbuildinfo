@@ -1,0 +1,1 @@
+{"root":["./src/App.tsx","./src/index.tsx","./src/vite-env.d.ts","./src/components/donation/factory.tsx","./src/components/hello_world/component.tsx","./src/components/hello_world/factory.tsx","./src/components/hello_world/index.ts","./src/components/hello_world/types.ts","./src/factories/hello_world.tsx"],"errors":true,"version":"5.8.3"}
