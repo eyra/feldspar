@@ -19,14 +19,14 @@
         "clean": "rm -rf dist node_modules"
     },
     "peerDependencies": {
-        "react": "^19.0.0",
-        "react-dom": "^19.0.0",
+        "react": "*",
+        "react-dom": "*",
         "tslib": "*",
         "typescript": "*"
     },
     "dependencies": {
-        "@types/lodash": "^4.17.14",
-        "lodash": "^4.17.21"
+        "@types/lodash": "*",
+        "lodash": "*"
     },
     "exports": {
         ".": {
