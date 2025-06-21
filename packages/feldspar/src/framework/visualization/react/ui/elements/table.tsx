@@ -379,42 +379,49 @@ const searchPlaceholder = new TextBundle()
   .add("en", "Search")
   .add("de", "Suchen")
   .add("it", "Cerca")
+  .add("es", "Buscar")
   .add("nl", "Zoeken");
 
 const noDataLabel = new TextBundle()
   .add("en", "No data found")
   .add("de", "Keine Daten gefunden")
   .add("it", "Nessun dato trovato")
+  .add("es", "No se han encontrado datos")
   .add("nl", "Geen gegevens gevonden");
 
 const noDataLeftLabel = new TextBundle()
   .add("en", "All data removed")
   .add("de", "Alle Daten gelöscht")
   .add("it", "Tutti i dati rimossi")
+  .add("es", "Todos los datos han sido eliminados")
   .add("nl", "Alle gegevens verwijderd");
 
 const noResultsLabel = new TextBundle()
   .add("en", "No search results")
   .add("de", "Keine Suchergebnisse")
   .add("it", "Nessun risultato di ricerca")
+  .add("es", "No hay resultados de búsqueda")
   .add("nl", "Geen zoek resultaten");
 
 const editLabel = new TextBundle()
   .add("en", "Adjust")
   .add("de", "Anpassen")
   .add("it", "Regola")
+  .add("es", "Ajustar")
   .add("nl", "Aanpassen");
 
 const undoLabel = new TextBundle()
   .add("en", "Undo")
   .add("de", "Rückgängig machen")
   .add("it", "Annulla")
+  .add("es", "Deshacer")
   .add("nl", "Ongedaan maken");
 
 const deleteLabel = new TextBundle()
   .add("en", "Delete selected")
   .add("de", "Auswahl löschen")
   .add("it", "Elimina selezione")
+  .add("es", "Eliminar selección")
   .add("nl", "Verwijder selectie");
 
 function deletedNoneRowLabel(): TextBundle {
@@ -422,6 +429,7 @@ function deletedNoneRowLabel(): TextBundle {
     .add("en", "No adjustments")
     .add("de", "Keine Anpassungen")
     .add("it", "Nessuna modifica")
+    .add("es", "Sin ajustes")
     .add("nl", "Geen aanpassingen");
 }
 
@@ -430,6 +438,7 @@ function deletedRowLabel(amount: number): TextBundle {
     .add("en", `${amount} row deleted`)
     .add("de", `${amount} Zeile gelöscht`)
     .add("it", `${amount} Riga eliminata`)
+    .add("es", `${amount} fila eliminada`)
     .add("nl", `${amount} rij verwijderd`);
 }
 
@@ -438,6 +447,7 @@ function deletedRowsLabel(amount: number): TextBundle {
     .add("en", `${amount} rows deleted`)
     .add("de", `${amount} Zeilen gelöscht`)
     .add("it", `${amount} Righe eliminate`)
+    .add("es", `${amount} filas eliminadas`)
     .add("nl", `${amount} rijen verwijderd`);
 }
 
@@ -452,6 +462,7 @@ function singlePageLabel(): TextBundle {
     .add("en", "1 page")
     .add("de", "1 Seite")
     .add("it", "1 pagina")
+    .add("es", "1 página")
     .add("nl", "1 pagina");
 }
 
@@ -460,6 +471,7 @@ function multiplePagesLabel(amount: number): TextBundle {
     .add("en", `${amount} pages`)
     .add("de", `${amount} Seiten`)
     .add("it", `${amount} pagine`)
+    .add("es", `${amount} páginas`)
     .add("nl", `${amount} pagina's`);
 }
 

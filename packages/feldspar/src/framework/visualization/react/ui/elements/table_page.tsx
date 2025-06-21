@@ -154,4 +154,5 @@ const link = new TextBundle()
   .add("en", "Visit URL")
   .add("de", "URL besuchen")
   .add("it", "Visita URL")
+  .add("es", "Visite la URL")
   .add("nl", "Bezoek URL");

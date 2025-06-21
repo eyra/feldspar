@@ -27,6 +27,7 @@ def process(sessionId):
                             "en": "Demo",
                             "de": "Demo",
                             "it": "Demo",
+                            "es": "Demo",
                             "nl": "Demo",
                         }
                     )
@@ -91,6 +92,7 @@ def render_data_submission_page(body):
                 "en": "Data data donation demo",
                 "de": "Demonstration der Datenspende",
                 "it": "Dimostrazione di donazione dei dati",
+                "es": "Demostración de donación de datos",
                 "nl": "Data donatie demo",
             }
         )
@@ -108,6 +110,7 @@ def retry_confirmation():
             "en": "Unfortunately, we cannot process your file. Continue, if you are sure that you selected the right file. Try again to select a different file.",
             "de": "Leider können wir Ihre Datei nicht bearbeiten. Fahren Sie fort, wenn Sie sicher sind, dass Sie die richtige Datei ausgewählt haben. Versuchen Sie, eine andere Datei auszuwählen.",
             "it": "Purtroppo non possiamo elaborare il tuo file. Continua se sei sicuro di aver selezionato il file corretto. Prova a selezionare un file diverso.",
+            "es": "Lamentablemente, no podemos procesar su archivo. Continúe si está seguro de que ha seleccionado el archivo correcto. Intente seleccionar un archivo diferente.",
             "nl": "Helaas, kunnen we uw bestand niet verwerken. Weet u zeker dat u het juiste bestand heeft gekozen? Ga dan verder. Probeer opnieuw als u een ander bestand wilt kiezen.",
         }
     )
@@ -116,11 +119,12 @@ def retry_confirmation():
             "en": "Try again",
             "de": "Erneut versuchen",
             "it": "Riprova",
+            "es": "Inténtelo de nuevo",
             "nl": "Probeer opnieuw",
         }
     )
     cancel = props.Translatable(
-        {"en": "Continue", "de": "Weiter", "it": "Continua", "nl": "Verder"}
+        {"en": "Continue", "de": "Weiter", "it": "Continua", "es": "Continuar", "nl": "Verder"}
     )
     return props.PropsUIPromptConfirm(text, ok, cancel)
 
@@ -131,6 +135,7 @@ def prompt_file(extensions):
             "en": "Please select a zip file stored on your device.",
             "de": "Bitte wählen Sie eine ZIP-Datei auf Ihrem Gerät aus.",
             "it": "Seleziona un file ZIP memorizzato sul tuo dispositivo.",
+            "es": "Por favor, seleccione un archivo ZIP guardado en su dispositivo.",
             "nl": "Selecteer een ZIP-bestand dat op uw apparaat is opgeslagen.",
         }
     )
@@ -144,6 +149,7 @@ def prompt_extraction_message(message, percentage):
             "en": "One moment please. Information is now being extracted from the selected file.",
             "de": "Einen Moment bitte. Es werden nun Informationen aus der ausgewählten Datei extrahiert.",
             "it": "Un momento, per favore. Le informazioni vengono estratte dal file selezionato.",
+            "es": "Un momento, por favor. Se están extrayendo los datos del archivo seleccionado.",
             "nl": "Een moment geduld. Informatie wordt op dit moment uit het geselecteerde bestaand gehaald.",
         }
     )
@@ -181,6 +187,7 @@ def prompt_consent(data):
             "en": "Zip file contents",
             "de": "Inhalt der ZIP-Datei",
             "it": "Contenuto del file ZIP",
+            "es": "Contenido del archivo ZIP",
             "nl": "Inhoud van het ZIP-bestand",
         }
     )
@@ -198,6 +205,7 @@ def prompt_consent(data):
                     "en": "The table below shows the contents of the zip file you selected.",
                     "de": "Die Tabelle unten zeigt den Inhalt der ZIP-Datei, die Sie gewählt haben.",
                     "it": "La tabella qui sotto mostra il contenuto del file ZIP che ha scelto.",
+                    "es": "La tabla a continuación muestra el contenido del archivo ZIP que ha seleccionado.",
                     "nl": "De tabel hieronder laat de inhoud zien van het zip-bestand dat u heeft gekozen.",
                 }
             ),
@@ -208,6 +216,7 @@ def prompt_consent(data):
                         "en": "Compressed Size",
                         "de": "Komprimierte Größe",
                         "it": "Dimensione compressa",
+                        "es": "Tamaño comprimido",
                         "nl": "Gecomprimeerde grootte",
                     }
                 )
@@ -222,6 +231,7 @@ def prompt_consent(data):
                 "en": "Dad Jokes",
                 "de": "Vaterwitze",
                 "it": "Barzellette da papà",
+                "es": "Chistes de papá",
                 "nl": "Vadergrappen",
             }
         ),
@@ -230,6 +240,7 @@ def prompt_consent(data):
                 "en": "This is another table example.",
                 "de": "Das ist ein weiteres Tabellenbeispiel.",
                 "it": "Questo è un altro esempio di tabella.",
+                "es": "Este es otro ejemplo de tabla.",
                 "nl": "Dit is een ander tabelvoorbeeld.",
             }
         ),
@@ -262,6 +273,7 @@ def prompt_consent(data):
                             "en": "Recursion",
                             "de": "Rekursion",
                             "it": "Ricorsione",
+                            "es": "Recursividad",
                             "nl": "Recursie",
                         }
                     ),
@@ -270,6 +282,7 @@ def prompt_consent(data):
                             "en": "To understand what recursion is, you must first understand recursion.",
                             "de": "Um zu verstehen, was Rekursion ist, müssen Sie zuerst Rekursion verstehen.",
                             "it": "Per capire cos'è la ricorsione, devi prima capire la ricorsione.",
+                            "es": "Para entender qué es la recursividad, primero debe entender la recursividad.",
                             "nl": "Om te begrijpen wat recursie is, moet je eerst recursie begrijpen.",
                         }
                     ),
@@ -280,11 +293,12 @@ def prompt_consent(data):
                             "en": "Would you like to donate this data?",
                             "de": "Möchten Sie diese Daten spenden?",
                             "it": "Vuoi donare questi dati?",
+                            "es": "¿Le gustaría donar estos datos?",
                             "nl": "Wilt u deze gegevens doneren?",
                         }
                     ),
                     donate_button=props.Translatable(
-                        {"en": "Donate", "de": "Spenden", "it": "Dona", "nl": "Doneren"}
+                        {"en": "Donate", "de": "Spenden", "it": "Dona", "es": "Donar", "nl": "Doneren"}
                     ),
                 ),
             ]
