@@ -39,6 +39,7 @@ const title = new TextBundle()
   .add("en", "Thank you")
   .add("de", "Danke")
   .add("it", "Grazie")
+  .add("es", "Gracias")
   .add("nl", "Bedankt");
 
 const text = new TextBundle()
@@ -53,6 +54,10 @@ const text = new TextBundle()
   .add(
     "it",
     "Grazie per la tua partecipazione. Ora puoi chiudere la pagina o aggiornare per riavviare il flusso di donazione."
+  )
+  .add(
+  "es",
+  "Gracias por su participación. Ahora puede cerrar la página o actualizarla para reiniciar el flujo de donación de datos."
   )
   .add(
     "nl",
