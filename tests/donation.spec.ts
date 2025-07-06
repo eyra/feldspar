@@ -9,7 +9,7 @@ async function setupTestWithFileUpload(page: Page): Promise<void> {
   await page.goto('http://localhost:3000/');
  
   // Wait for the page to load with increased timeout
-  await expect(page.getByRole('heading', { name: 'Data donation demo' })).toBeVisible({ timeout: 30000 });
+  await expect(page.getByRole('heading', { name: 'Data donation flow example' })).toBeVisible({ timeout: 30000 });
   
   // Create a temporary file input for file upload
   const fileChooserPromise = page.waitForEvent('filechooser');
@@ -40,7 +40,7 @@ function setupRouteForDataSubmission(page: Page): Promise<string|null> {
 
 async function submitDataAndGetResult(page: Page): Promise<string | null> {
   const result = setupRouteForDataSubmission(page);
-  await page.getByText('Donate', { exact: true }).click();
+  await page.getByText('Yes, donate', { exact: true }).click();
   return result;
 }
 
@@ -69,7 +69,7 @@ test('can remove rows from submission', async ({ page }) => {
   // The submitted data should not contain the deleted file
   expect(submittedData).not.toEqual(expect.stringContaining("hello_world.txt"));
   // The submitted data should contain the other table contents
-  expect(submittedData).toEqual(expect.stringContaining("I don't always test my code"));
+  expect(submittedData).toEqual(expect.stringContaining("Device A"));
   // It should also contain the deleted row count
   const parsedData = JSON.parse(submittedData!);
   const data = JSON.parse(parsedData.data!);
@@ -100,7 +100,7 @@ test('can undo row removal before submission', async ({ page }) => {
   // The submitted data should contain the previously deleted file
   expect(submittedData).toEqual(expect.stringContaining("hello_world.txt"));
   // The submitted data should also contain the other table contents
-  expect(submittedData).toEqual(expect.stringContaining("I don't always test my code"));
+  expect(submittedData).toEqual(expect.stringContaining("Device A"));
 });
 
 test('can cancel submission', async ({ page }) => {
