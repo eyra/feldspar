@@ -1,3 +1,8 @@
+# Spotify Data Donation Script - GESIS
+
+This script was developed by Sina Chen, Barbara Binder, and Tessa Bartels at [GESIS – Leibniz Institute for the Social Sciences in Mannheim, Germany](https://www.gesis.org/home) for a data donation study within the [International Social Survey Programme (ISSP) 2024 – Digital Societies](https://www.gesis.org/issp/daten-und-dokumentation/digital-societies), carried out between June and September 2025. The repository is based on the Feldspar repository described below.
+
+
 # Feldspar
 
 Feldspar is an integration mechanism for building data donation applications that can be hosted on the [Next](https://next.eyra.co/) platform. It enables researchers to create custom data extraction and donation flows using Python and React.
