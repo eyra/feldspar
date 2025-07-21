@@ -5,6 +5,9 @@ on:
         description: "The name of the archive (ZIP)"
         value: ${{jobs.release.outputs.archive}}
 
+
+permissions:
+  contents: read
 jobs:
   release:
     runs-on: ubuntu-latest

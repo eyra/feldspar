@@ -1,13 +1,18 @@
 name: Release
 
 on: workflow_dispatch
-
+permissions: 
+  contents: read
+  packages: write
+  
 jobs:
   build_release:
     uses: ./.github/workflows/_build_release.yml
 
   tagged_release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: softprops/action-gh-release@v1
         with:
