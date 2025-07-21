@@ -14,7 +14,7 @@ jobs:
         with:
           node-version: lts/*
       - name: Install asdf & tools
-        uses: asdf-vm/actions/install@v3
+        uses: asdf-vm/actions/install@v4
       - name: Install dependencies
         run: npm install
       - name: Install Poetry
