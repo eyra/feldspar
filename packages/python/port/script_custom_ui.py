@@ -1,17 +1,20 @@
 # --------------------------------------------------------------------
 # Note to developers:
 #
-# This script (`script.py`) provides a basic data donation flow using
-# standard UI components available in Feldspar.
+# This script (`script_custom_ui.py`) demonstrates how to build a more
+# advanced data donation flow by using custom UI components.
 #
-# For a more advanced example that includes custom UI components
-# (e.g. a custom React-based component integrated with Python),
-# please refer to:
+# It extends the basic example in `script.py` by showing how to:
+# - Define your own UI component in React (TypeScript)
+# - Connect that component to Python via Feldspar’s integration
+# - Render and interact with custom UI elements from your script
 #
-#     `script_custom_ui.py`
+# Use this as a reference if your project requires bespoke interactions
+# or UI elements beyond the standard prompts provided by Feldspar.
 #
-# That script demonstrates how to define and use your own components
-# using Feldspar’s React integration and how to render them via Python.
+# For a simpler example using only standard components, see:
+#
+#     `script.py`
 # --------------------------------------------------------------------
 
 import port.api.props as props
@@ -34,7 +37,23 @@ def process(sessionId):
     while True:
         meta_data.append(("debug", f"{key}: prompt file"))
         promptFile = prompt_file("application/zip, text/plain")
-        fileResult = yield render_data_submission_page([promptFile])
+        fileResult = yield render_data_submission_page(
+            [
+                prompt_hello_world(),
+                props.PropsUIPromptText(
+                    text=props.Translatable(
+                        {
+                            "en": "The above text is an example of adding a simple component. In this case the hello_world component, located in data-collector/src/components.",
+                            "de": "Der obige Text ist ein Beispiel für das Hinzufügen einer einfachen Komponente. In diesem Fall die Komponente hello_world im Verzeichnis data-collector/src/components.",
+                            "it": "Il testo sopra è un esempio di come aggiungere un componente semplice. In questo caso, il componente hello_world situato in data-collector/src/components.",
+                            "es": "El texto anterior es un ejemplo de cómo añadir un componente simple. En este caso, el componente hello_world, ubicado en data-collector/src/components.",
+                            "nl": "De bovenstaande tekst is een voorbeeld van het toevoegen van een eenvoudige component. In dit geval de hello_world component, te vinden in data-collector/src/components.",
+                        }
+                    )
+                ),
+                promptFile,
+            ]
+        )
         if fileResult.__type__ == "PayloadString":
             # Extracting the zipfile
             meta_data.append(("debug", f"{key}: extracting file"))
@@ -254,7 +273,6 @@ def prompt_consent(data):
                 ),
             },
         )
-
     # A generic, illustrative second table for layout demonstration purposes
     metadata_table = props.PropsUIPromptConsentFormTable(
         "example_metadata",
@@ -316,7 +334,6 @@ def prompt_consent(data):
                 ),
             },
         )
-    
     # Construct and render the final consent page
     result = yield render_data_submission_page(
         [
@@ -325,6 +342,27 @@ def prompt_consent(data):
                 description,
                 data_table,
                 metadata_table,
+                # You can add an extra explanation block to the page
+                props.PropsUIPromptText(
+                    title=props.Translatable(
+                        {
+                            "en": "Consent",
+                            "de": "Einwilligung",
+                            "it": "Consenso",
+                            "es": "Consentimiento",
+                            "nl": "Toestemming",
+                        }
+                    ),
+                    text=props.Translatable(
+                        {
+                            "en": "If you choose to donate, the data presented above will be saved and shared with the researcher.",
+                            "de": "Wenn Sie sich entscheiden zu spenden, werden die oben dargestellten Daten gespeichert und mit der Forschungseinrichtung geteilt.",
+                            "it": "Se scegli di donare, i dati mostrati sopra verranno salvati e condivisi con il ricercatore.",
+                            "es": "Si decide donar, los datos presentados arriba se guardarán y se compartirán con el investigador.",
+                            "nl": "Als u ervoor kiest te doneren, worden de hierboven weergegeven gegevens opgeslagen en gedeeld met de onderzoeker.",
+                        }
+                    ),
+                ),
                 props.PropsUIDataSubmissionButtons(
                     donate_question=props.Translatable(
                         {
@@ -358,3 +396,7 @@ def donate(key, json_string):
 
 def exit(code, info):
     return CommandSystemExit(code, info)
+
+
+def prompt_hello_world():
+    return props.PropsUIPromptHelloWorld("'Hello World' text")
