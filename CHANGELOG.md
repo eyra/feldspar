@@ -11,7 +11,8 @@
 
 ## \#5 UNRELEASED
 
-* TBD
+* Switched to pnpm for package management
+* Switched to Vite for the frontend build system
 
 ## \#4 2025-05-02
 

@@ -1,26 +1,23 @@
 {
   "name": "feldspar-workspace",
   "private": true,
-  "workspaces": [
-    "packages/*"
-  ],
   "scripts": {
     "prepare": "husky install",
-    "build": "npm run build:py && npm run build -w packages/feldspar && npm run build -w packages/data-collector",
-    "dev": "npm run start --workspaces",
-    "test": "npm run test --workspaces",
+    "build": "pnpm run build:py && pnpm run --filter @eyra/feldspar build && pnpm run --filter @eyra/data-collector build",
+    "dev": "pnpm run --recursive dev",
+    "test": "pnpm run --recursive test",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:debug": "playwright test --debug",
     "test:e2e:report": "playwright show-report",
     "build:wheel": "cd packages/python && poetry build --format wheel",
     "build:install-wheel": "cp -R packages/python/dist/*.whl packages/data-collector/public",
-    "build:py": "npm run build:wheel && npm run build:install-wheel",
-    "start:py": "nodemon --ext py --exec \"npm run build:py\"",
-    "dev:feldspar": "npm run dev -w @eyra/feldspar",
-    "dev:demo": "npm run start -w @eyra/data-collector",
-    "start": "npm run build:py && npm run build -w packages/feldspar && concurrently \"npm run start:py\" \"npm run dev:feldspar\" \"npm run dev:demo\"",
-    "clean": "npm run clean --workspaces && rm -rf node_modules",
+    "build:py": "pnpm run build:wheel && pnpm run build:install-wheel",
+    "start:py": "nodemon --ext py --exec \"pnpm run build:py\"",
+    "dev:feldspar": "pnpm run --filter @eyra/feldspar dev",
+    "dev:demo": "pnpm run --filter @eyra/data-collector dev",
+    "start": "pnpm run build:py && pnpm run --filter @eyra/feldspar build && concurrently \"pnpm run start:py\" \"pnpm run dev:feldspar\" \"pnpm run dev:demo\"",
+    "clean": "pnpm run --recursive clean && rm -rf node_modules",
     "release": "./release.sh"
   },
   "devDependencies": {

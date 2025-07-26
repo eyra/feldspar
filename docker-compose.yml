@@ -13,7 +13,7 @@ services:
       - feldspar_node_modules:/app/packages/feldspar/node_modules
       - feldspar_dists:/app/packages/feldspar/dists
       - data_collector_node_modules:/app/packages/data-collector/node_modules
-    command: sh -c "npm i && npm run start"
+    command: sh -c "pnpm install && pnpm run build && pnpm run start"
 volumes:
   node_modules: {}
   feldspar_node_modules: {}
