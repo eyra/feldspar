@@ -19,14 +19,14 @@
         "clean": "rm -rf dist node_modules"
     },
     "peerDependencies": {
-        "react": "*",
-        "react-dom": "*",
-        "tslib": "*",
-        "typescript": "*"
+        "react": "19.1.0",
+        "react-dom": "19.1.0",
+        "tslib": "2.8.1",
+        "typescript": "5.8.3"
     },
     "dependencies": {
-        "@types/lodash": "*",
-        "lodash": "*"
+        "@types/lodash": "4.17.20",
+        "lodash": "4.17.21"
     },
     "exports": {
         ".": {
@@ -38,25 +38,25 @@
         }
     },
     "devDependencies": {
-        "@rollup/plugin-commonjs": "*",
-        "@rollup/plugin-json": "*",
-        "@rollup/plugin-node-resolve": "*",
-        "@rollup/plugin-terser": "*",
-        "@rollup/plugin-typescript": "*",
-        "@rollup/plugin-url": "*",
-        "@types/react": "*",
-        "@types/react-dom": "*",
-        "fdir": "*",
+        "@rollup/plugin-commonjs": "28.0.6",
+        "@rollup/plugin-json": "6.1.0",
+        "@rollup/plugin-node-resolve": "16.0.1",
+        "@rollup/plugin-terser": "0.4.4",
+        "@rollup/plugin-typescript": "12.1.4",
+        "@rollup/plugin-url": "8.0.2",
+        "@types/react": "19.1.8",
+        "@types/react-dom": "19.1.6",
+        "fdir": "6.4.6",
         "postcss": "^8.4.35",
         "postcss-cli": "^11.0.0",
         "postcss-import": "^16.0.1",
         "autoprefixer": "^10.4.18",
         "tailwindcss": "^3.4.1",
-        "rollup": "*",
-        "rollup-plugin-copy": "*",
-        "rollup-plugin-dts": "*",
-        "rollup-plugin-peer-deps-external": "*",
-        "tslib": "*",
-        "typescript": "*"
+        "rollup": "4.45.1",
+        "rollup-plugin-copy": "3.5.0",
+        "rollup-plugin-dts": "6.2.1",
+        "rollup-plugin-peer-deps-external": "2.2.4",
+        "tslib": "2.8.1",
+        "typescript": "5.8.3"
     }
 }
