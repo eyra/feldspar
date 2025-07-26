@@ -5,7 +5,7 @@
   "private": true,
   "homepage": ".",
   "dependencies": {
-    "@eyra/feldspar": "*",
+    "@eyra/feldspar": "workspace:*",
     "react": "*",
     "react-dom": "*"
   },

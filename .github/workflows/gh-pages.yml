@@ -20,7 +20,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "22"
-          cache: "npm"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -41,7 +45,7 @@ jobs:
           poetry build --format wheel
 
       - name: Install Node Dependencies
-        run: npm ci
+        run: pnpm install
 
       - name: Copy Python Wheel
         run: |
@@ -49,7 +53,7 @@ jobs:
           cp packages/python/dist/*.whl packages/data-collector/public/
 
       - name: Build App
-        run: npm run build
+        run: pnpm run build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4

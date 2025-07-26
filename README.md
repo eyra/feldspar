@@ -20,6 +20,7 @@ Feldspar enables researchers to:
 
 - Fork or clone this repo
 - Install [Node.js](https://nodejs.org/en)
+- Install [pnpm](https://pnpm.io/installation) (Fast, disk space efficient package manager)
 - Install [Python](https://www.python.org/) (Version 3.11 or higher)
 - Install [Poetry](https://python-poetry.org/)
 - Install [Earthly CLI](https://earthly.dev/get-earthly)
@@ -29,13 +30,13 @@ Feldspar enables researchers to:
 1. Install dependencies:
 
    ```sh
-   npm install
+   pnpm install
    ```
 
 2. Run the project locally with hot reloading (builds Python package and starts the development server):
 
    ```sh
-   npm run start
+   pnpm run start
    ```
 
 3. Access the application at [http://localhost:3000](http://localhost:3000)

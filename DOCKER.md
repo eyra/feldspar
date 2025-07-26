@@ -28,7 +28,7 @@ To run commands inside the running container:
 docker-compose -f docker-compose.dev.yml exec feldspar-dev bash
 ```
 
-This gives you a shell inside the container where you can run npm commands, tests, etc.
+This gives you a shell inside the container where you can run pnpm commands, tests, etc.
 
 ### Stopping the Development Environment
 
