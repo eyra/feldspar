@@ -21,7 +21,7 @@
     "release": "./release.sh"
   },
   "devDependencies": {
-    "@playwright/test": "1.54.1",
+    "@playwright/test": "1.54.2",
     "@types/node": "24.1.0",
     "concurrently": "9.2.0",
     "husky": "9.1.7",
