@@ -28,6 +28,6 @@
     "nodemon": "3.1.10"
   },
   "dependencies": {
-    "fdir": "6.4.6"
+    "fdir": "6.5.0"
   }
 }
