@@ -46,7 +46,7 @@
         "@rollup/plugin-url": "8.0.2",
         "@types/react": "19.1.10",
         "@types/react-dom": "19.1.7",
-        "fdir": "6.4.6",
+        "fdir": "6.5.0",
         "postcss": "^8.4.35",
         "postcss-cli": "^11.0.0",
         "postcss-import": "^16.0.1",
