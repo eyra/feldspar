@@ -9,6 +9,15 @@
 * Removed - This notes any features that have been deleted and removed from the software
 * Security - This acts as an invitation to users who want to upgrade and avoid any software vulnerabilities
 
+## \#6 UNRELEASED
+
+* ...
+
+## \#5 2025-09-10
+
+* Switched to pnpm for package management
+* Switched to Vite for the frontend build system
+
 ## \#4 2025-05-02
 
 * Fixed - Explicit loaded event is sent to ensure proper initialization (channel setup)

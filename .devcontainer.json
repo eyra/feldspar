@@ -1,0 +1,7 @@
+{
+  "name": "Feldspar",
+  "dockerComposeFile": "./docker-compose.yml",
+  "service": "feldspar",
+  "workspaceFolder": "/app",
+  "shutdownAction": "stopCompose"
+}
