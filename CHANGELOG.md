@@ -17,6 +17,9 @@
 
 * Switched to pnpm for package management
 * Switched to Vite for the frontend build system
+* Added Spanish language
+* Changed: split script.py into a default basic version in script.py and an advanced version script_custom_ui.py
+* Added renovate
 
 ## \#4 2025-05-02
 
