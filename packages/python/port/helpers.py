@@ -1,4 +1,6 @@
 import sys
+import json
+import pandas as pd
 from dataclasses import dataclass
 from typing import Any, Generator
 
@@ -14,112 +16,88 @@ def create_prompt_value(value: str) -> PromptValue:
     return PromptValue("PayloadString", value)
 
 
-def run_generator_with_prompt(flow: Generator, prompt_type: str, prompt_value: Any) -> Any:
-    """Run generator expecting a specific prompt type.
-
-    Args:
-        flow: The generator to run
-        prompt_type: Expected prompt type (e.g., "PayloadString")
-        prompt_value: The value to send when prompt is expected
-
-    Returns:
-        The final response from the generator
-    """
-    # Get initial outputs
-    expect(flow, "CommandSystemDonate")
-    expect(flow, "CommandSystemDonate")
-
-    # Create prompt object with the specified type
-    prompt = PromptValue(prompt_type, prompt_value)
-
-    # Send the prompt and get response
-    return flow.send(prompt)
-
-import sys
-from dataclasses import dataclass
-from typing import Any, Generator
+def _get_translation(obj: dict, default: str = '') -> str:
+    """Extract English translation from a nested object."""
+    return obj.get('translations', {}).get('en', default)
 
 
-@dataclass
-class PromptValue:
-    __type__: str
-    value: str
+def _render_prompt_text(component: dict) -> None:
+    """Render a PropsUIPromptText component."""
+    text = _get_translation(component.get('text', {}))
+    print(f"\n📝 {text}")
 
 
-def create_prompt_value(value: str) -> PromptValue:
-    """Create a PromptValue dataclass instance."""
-    return PromptValue("PayloadString", value)
+def _render_consent_form_table(component: dict) -> None:
+    """Render a PropsUIPromptConsentFormTable component."""
+    title = _get_translation(component.get('title', {}))
+    description = _get_translation(component.get('description', {}))
+
+    print(f"\n📊 {title}")
+    print(f"   {description}")
+
+    df_json = component.get('data_frame', '{}')
+    df_data = json.loads(df_json)
+    df = pd.DataFrame(df_data)
+
+    if not df.empty:
+        total_rows = len(df)
+        df_display = df.head(10)
+
+        print(f"   Data ({total_rows} rows):")
+        df_str = df_display.to_string(index=False)
+        for line in df_str.split('\n'):
+            print(f"   {line}")
+
+        if total_rows > 10:
+            print(f"   ... and {total_rows - 10} more rows")
+
+
+def _render_submission_buttons(component: dict) -> None:
+    """Render a PropsUIDataSubmissionButtons component."""
+    question = _get_translation(component.get('donateQuestion', {}))
+    button = _get_translation(component.get('donateButton', {}))
+    print(f"\n❓ {question}")
+    print(f"   [🎁 {button}]")
+
+
+def _render_ui_component(component: dict) -> None:
+    """Render a single UI component based on its type."""
+    comp_type = component.get('__type__', 'Unknown')
+
+    if comp_type == 'PropsUIPromptText':
+        _render_prompt_text(component)
+    elif comp_type == 'PropsUIPromptConsentFormTable':
+        _render_consent_form_table(component)
+    elif comp_type == 'PropsUIDataSubmissionButtons':
+        _render_submission_buttons(component)
+
+
+def _render_data_submission_page(page: dict) -> None:
+    """Render a data submission page with its components."""
+    print(f"\n🎯 Instagram Data Donation Page")
+    body = page.get('body', [])
+    for component in body:
+        _render_ui_component(component)
 
 
 def pretty_print_response(response: Any) -> None:
-    """Pretty print a response object with nice formatting.
-
-    Args:
-        response: The response object to print
-    """
-    if isinstance(response, dict):
-        resp_type = response.get('__type__', 'Unknown')
-
-        if resp_type == 'CommandUIRender':
-            page = response.get('page', {})
-            if page.get('__type__') == 'PropsUIPageDataSubmission':
-                print(f"\n🎯 Instagram Data Donation Page")
-
-                # Print body components
-                body = page.get('body', [])
-
-                for component in body:
-                    comp_type = component.get('__type__', 'Unknown')
-
-                    if comp_type == 'PropsUIPromptText':
-                        text = component.get('text', {}).get('translations', {}).get('en', '')
-                        print(f"\n📝 {text}")
-
-                    elif comp_type == 'PropsUIPromptConsentFormTable':
-                        title = component.get('title', {}).get('translations', {}).get('en', '')
-                        description = component.get('description', {}).get('translations', {}).get('en', '')
-                        table_id = component.get('id', '')
-
-                        print(f"\n📊 {title}")
-                        print(f"   {description}")
-
-                        # Parse and display the data frame
-                        import json
-                        import pandas as pd
-                        df_json = component.get('data_frame', '{}')
-                        df_data = json.loads(df_json)
-                        df = pd.DataFrame(df_data)
-
-                        if not df.empty:
-                            total_rows = len(df)
-                            df_display = df.head(10)  # Show first 10 rows
-
-                            print(f"   Data ({total_rows} rows):")
-                            # Convert to string representation with proper spacing
-                            df_str = df_display.to_string(index=False)
-                            for line in df_str.split('\n'):
-                                print(f"   {line}")
-
-                            # Add summary if truncated
-                            if total_rows > 10:
-                                print(f"   ... and {total_rows - 10} more rows")
-
-                    elif comp_type == 'PropsUIDataSubmissionButtons':
-                        question = component.get('donateQuestion', {}).get('translations', {}).get('en', '')
-                        button = component.get('donateButton', {}).get('translations', {}).get('en', '')
-                        print(f"\n❓ {question}")
-                        print(f"   [🎁 {button}]")
-
-        elif resp_type == 'CommandSystemDonate':
-            print(f"\n🚀 {resp_type}")
-
-        elif resp_type == 'CommandSystemExit':
-            print(f"\n✅ {resp_type}: {response.get('message', 'No message')}")
-
-        else:
-            print(f"\n🔧 {resp_type}")
-    else:
+    """Pretty print a response object with nice formatting."""
+    if not isinstance(response, dict):
         print(f"\n📋 {response}")
+        return
+
+    resp_type = response.get('__type__', 'Unknown')
+
+    if resp_type == 'CommandUIRender':
+        page = response.get('page', {})
+        if page.get('__type__') == 'PropsUIPageDataSubmission':
+            _render_data_submission_page(page)
+    elif resp_type == 'CommandSystemDonate':
+        print(f"\n🚀 {resp_type}")
+    elif resp_type == 'CommandSystemExit':
+        print(f"\n✅ {resp_type}: {response.get('message', 'No message')}")
+    else:
+        print(f"\n🔧 {resp_type}")
 
 
 def expect(flow: Generator, expected_type: str) -> Any:
