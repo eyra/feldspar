@@ -41,6 +41,25 @@ Feldspar enables researchers to:
 
 3. Access the application at [http://localhost:3000](http://localhost:3000)
 
+## Running the Python Script Directly
+
+You can test the Python data processing script directly from the command line without starting the full web application:
+
+```sh
+cd packages/python
+python -m port.main <path-to-zip-file>
+```
+
+For example:
+```sh
+python -m port.main ~/Downloads/instagram_data.zip
+```
+
+This will run the data extraction script and display the results in the terminal, which is useful for:
+- Testing your data processing logic
+- Debugging extraction scripts
+- Quick validation of data files
+
 ## Customizing the Python Code
 
 The core of Feldspar's functionality is in the Python script at `packages/python/port/script.py`. This script defines the flow of the data donation process.
