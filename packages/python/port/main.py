@@ -19,6 +19,6 @@ class ScriptWrapper(Generator):
         raise StopIteration
 
 
-def start(sessionId):
-    script = process(sessionId)
+def start(data):
+    script = process(data)
     return ScriptWrapper(script)

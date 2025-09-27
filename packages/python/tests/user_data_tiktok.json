@@ -1,0 +1,115 @@
+{
+  "Activity": {
+    "Video Browsing History": {
+      "VideoList": [
+        {
+          "Date": "2024-12-20 15:20:38",
+          "Link": "https://www.tiktokv.com/share/video/1111111111111111111/"
+        },
+        {
+          "Date": "2024-12-20 18:21:38",
+          "Link": "https://www.tiktokv.com/share/video/2222222222222222222/"
+        }
+      ]
+    }
+  },
+  "Ads and data": {
+    "Ad Interests": {
+      "AdInterestCategories": ""
+    },
+    "Instant Form Ads Responses": {
+      "ResponsesList": null
+    },
+    "Off TikTok Activity": {
+      "OffTikTokActivityDataList": null
+    }
+  },
+  "Direct Messages": {
+    "Chat History": {
+      "ChatHistory": {}
+    }
+  },
+  "App Settings": {
+    "Block": {
+      "App": 1,
+      "BlockList": [
+        {
+          "Date": "2023-09-04 21:10:55",
+          "UserName": "blockeduser1"
+        },
+        {
+          "Date": "2023-09-03 20:48:13",
+          "UserName": "blockeduser2"
+        }
+      ]
+    },
+    "Settings": {
+      "App": 1,
+      "SettingsMap": {
+        "Allow DownLoad": "Everyone",
+        "Allow Others to Find Me": "Disabled",
+        "App Language": "English",
+        "Content Preferences": {
+          "Keyword filters": null,
+          "Video Languages Preferences": []
+        },
+        "Private Account": "Disabled",
+        "Who Can View Videos I Liked": "Myself"
+      }
+    }
+  },
+  "Comment": {
+    "Comments": {
+      "App": 1,
+      "CommentsList": [
+        {
+          "date": "2023-10-31 08:04:12",
+          "comment": "Great post! 📚",
+          "photo": "N/A",
+          "url": ""
+        }
+      ]
+    }
+  },
+  "Profile": {
+    "Profile Information": {
+      "App": 1,
+      "ProfileMap": {
+        "bioDescription": "Test account bio",
+        "birthDate": "01-Jan-2000",
+        "emailAddress": "test@example.com",
+        "likesReceived": "100",
+        "profilePhoto": "https://example.com/profile.jpg",
+        "userName": "testuser123"
+      }
+    }
+  },
+  "Video": {
+    "Videos": {
+      "VideoList": [
+        {
+          "Date": "2023-12-01 13:25:05",
+          "Link": "https://video.example.com/test1",
+          "Likes": "32",
+          "WhoCanView": "Everyone",
+          "AllowComments": "Yes",
+          "Sound": "Test Sound 1",
+          "Location": "",
+          "Title": "",
+          "AddYoursText": "N/A"
+        },
+        {
+          "Date": "2023-11-28 11:30:50",
+          "Link": "https://video.example.com/test2",
+          "Likes": "23",
+          "WhoCanView": "Everyone",
+          "AllowComments": "Yes",
+          "Sound": "Test Sound 2",
+          "Location": "",
+          "Title": "",
+          "AddYoursText": "N/A"
+        }
+      ]
+    }
+  }
+}

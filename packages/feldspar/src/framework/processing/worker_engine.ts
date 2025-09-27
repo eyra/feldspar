@@ -3,14 +3,16 @@ import { CommandSystemEvent, isCommand, Response } from '../types/commands'
 
 export default class WorkerProcessingEngine  {
   sessionId: String
+  locale: String
   worker: Worker
   commandHandler: CommandHandler
 
   resolveInitialized!: () => void
   resolveContinue!: () => void
 
-  constructor (sessionId: string, worker: Worker, commandHandler: CommandHandler) {
+  constructor (sessionId: string, locale: string, worker: Worker, commandHandler: CommandHandler) {
     this.sessionId = sessionId
+    this.locale = locale
     this.commandHandler = commandHandler
     this.worker = worker
     this.worker.onerror = console.log
@@ -74,7 +76,13 @@ export default class WorkerProcessingEngine  {
   }
 
   firstRunCycle (): void {
-    this.worker.postMessage({ eventType: 'firstRunCycle', sessionId: this.sessionId })
+    this.worker.postMessage({
+      eventType: 'firstRunCycle',
+      data: {
+        sessionId: this.sessionId,
+        locale: this.locale
+      }
+    })
   }
 
   nextRunCycle (response: Response): void {

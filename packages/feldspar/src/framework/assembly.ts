@@ -10,11 +10,11 @@ export default class Assembly {
   visualizationEngine: ReactEngine;
   router: CommandRouter
 
-  constructor(worker: Worker, bridge: Bridge, factories: PageFactory[] = []) {
+  constructor(worker: Worker, bridge: Bridge, locale: string = "de", factories: PageFactory[] = []) {
     const sessionId = String(Date.now())
     const visualizationFactory = new ReactFactory(factories);
     this.visualizationEngine = new ReactEngine(visualizationFactory);
     this.router = new CommandRouter(bridge, this.visualizationEngine)
-    this.processingEngine = new WorkerProcessingEngine(sessionId, worker, this.router);
+    this.processingEngine = new WorkerProcessingEngine(sessionId, locale, worker, this.router);
   }
 }
