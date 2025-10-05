@@ -1,0 +1,246 @@
+import port.api.props as props
+from port.api.assets import *
+from port.api.commands import CommandUIRender
+
+import pandas as pd
+
+
+class PageRenderer():
+
+    def render_page(self, body):
+        header = props.PropsUIHeader(
+            props.Translatable(
+                {
+                    "en": "Youtube Data donation",
+                    "de": "Youtube-Datenspende",
+                    "it": "Donazione dati Youtube",
+                    "es": "Donación de datos de Youtube",
+                    "nl": "Youtube-datadonatie",
+                }
+            )
+        )
+        page = props.PropsUIPageDataSubmission("Zip", header, body)
+        return CommandUIRender(page)
+
+
+    def retry_confirmation_page(self):
+        text = props.Translatable(
+            {
+                "en": "Unfortunately, we cannot process your file. Continue, if you are sure that you selected the right file. Try again to select a different file.",
+                "de": "Leider können wir Ihre Datei nicht bearbeiten. Fahren Sie fort, wenn Sie sicher sind, dass Sie die richtige Datei ausgewählt haben. Versuchen Sie, eine andere Datei auszuwählen.",
+                "it": "Purtroppo non possiamo elaborare il tuo file. Continua se sei sicuro di aver selezionato il file corretto. Prova a selezionare un file diverso.",
+                "es": "Lamentablemente, no podemos procesar su archivo. Continúe si está seguro de que ha seleccionado el archivo correcto. Intente seleccionar un archivo diferente.",
+                "nl": "Helaas, kunnen we uw bestand niet verwerken. Weet u zeker dat u het juiste bestand heeft gekozen? Ga dan verder. Probeer opnieuw als u een ander bestand wilt kiezen.",
+            }
+        )
+        ok = props.Translatable(
+            {
+                "en": "Try again",
+                "de": "Erneut versuchen",
+                "it": "Riprova",
+                "es": "Inténtelo de nuevo",
+                "nl": "Probeer opnieuw",
+            }
+        )
+        cancel = props.Translatable(
+            {"en": "Continue", "de": "Weiter", "it": "Continua", "es": "Continuar", "nl": "Verder"}
+        )
+        return self.render_page([props.PropsUIPromptConfirm(text, ok, cancel)])
+
+
+    def prompt_file_page(self, extensions):
+        description = props.Translatable(
+            {
+                "en": f"Pick the file that you received from Youtube. In the next step, the data that is required for research is extracted from your file. This may take a while, thank you for your patience.",
+                "de": f"Wählen Sie die Datei aus, die Sie von Youtube erhalten haben. Im nächsten Schritt werden die für die Forschung benötigten Daten aus Ihrer Datei extrahiert. Dies kann einige Zeit in Anspruch nehmen – vielen Dank für Ihre Geduld.",
+                "it": f"Seleziona il file che hai ricevuto da Youtube. Nel passaggio successivo, i dati richiesti per la ricerca verranno estratti dal tuo file. Questo potrebbe richiedere un po’ di tempo, grazie per la pazienza.",
+                "nl": f"Klik op ‘Kies bestand’ om het bestand dat u van Youtube ontvangen hebt te kiezen. Als u op 'Verder' klikt worden de gegevens die nodig zijn voor het onderzoek uit uw bestand gehaald. Dit kan soms even duren. Een moment geduld a.u.b.",
+            }
+        )
+
+        return self.render_page([props.PropsUIPromptFileInput(description, extensions)])
+
+
+    def prompt_extraction_message_page(self, message, percentage):
+        description = props.Translatable(
+            {
+                "en": "One moment please. Information is now being extracted from the selected file.",
+                "de": "Einen Moment bitte. Es werden nun Informationen aus der ausgewählten Datei extrahiert.",
+                "it": "Un momento, per favore. Le informazioni vengono estratte dal file selezionato.",
+                "es": "Un momento, por favor. Se están extrayendo los datos del archivo seleccionado.",
+                "nl": "Een moment geduld. Informatie wordt op dit moment uit het geselecteerde bestaand gehaald.",
+            }
+        )
+
+        return self.render_page([props.PropsUIPromptProgress(description, message, percentage)])
+
+
+    def prompt_consent_generator(self, data):
+        description = props.PropsUIPromptText(
+            text=props.Translatable(
+                {
+                    "en": "Please review your data below. Use the search fields to find specific information. You can remove any data you prefer not to share. Thank you for supporting this research project!",
+                    "de": "Bitte überprüfen Sie Ihre Daten unten. Verwenden Sie die Suchfelder, um bestimmte Informationen zu finden. Sie können alle Daten entfernen, die Sie nicht teilen möchten. Vielen Dank für Ihre Unterstützung dieses Forschungsprojekts!",
+                    "it": "Controlla i tuoi dati qui sotto. Usa i campi di ricerca per trovare informazioni specifiche. Puoi rimuovere qualsiasi dato che preferisci non condividere. Grazie per il tuo supporto a questo progetto di ricerca!",
+                    "es": "Revise sus datos a continuación. Utilice los campos de búsqueda para encontrar información específica. Puede eliminar cualquier dato que prefiera no compartir. ¡Gracias por apoyar este proyecto de investigación!",
+                    "nl": "Bekijk hieronder uw gegevens. Gebruik de zoekvelden om specifieke informatie te vinden. U kunt gegevens verwijderen die u liever niet deelt. Bedankt voor uw steun aan dit onderzoeksproject!",
+                }
+            )
+        )
+
+        table_title = props.Translatable(
+            {
+                "en": "Zip file contents",
+                "de": "Inhalt der ZIP-Datei",
+                "it": "Contenuto del file ZIP",
+                "es": "Contenido del archivo ZIP",
+                "nl": "Inhoud van het ZIP-bestand",
+            }
+        )
+
+        # Show data table if extracted data is available
+        data_table = None
+        if data is not None:
+            data_frame = pd.DataFrame(data, columns=["filename", "compressed_size", "size"])
+            data_table = props.PropsUIPromptConsentFormTable(
+                "zip_content",
+                1,
+                table_title,
+                props.Translatable(
+                    {
+                        "en": "The table below shows the contents of the zip file you selected.",
+                        "de": "Die Tabelle unten zeigt den Inhalt der ZIP-Datei, die Sie gewählt haben.",
+                        "it": "La tabella qui sotto mostra il contenuto del file ZIP che ha scelto.",
+                        "es": "La tabla a continuación muestra el contenido del archivo ZIP que ha seleccionado.",
+                        "nl": "De tabel hieronder laat de inhoud zien van het zip-bestand dat u heeft gekozen.",
+                    }
+                ),
+                data_frame,
+                headers={
+                    "filename": props.Translatable(
+                        {
+                            "en": "Filename",
+                            "de": "Dateiname",
+                            "it": "Nome del file",
+                            "es": "Nombre del archivo",
+                            "nl": "Bestandsnaam",
+                        }
+                    ),
+                    "compressed_size": props.Translatable(
+                        {
+                            "en": "Compressed Size",
+                            "de": "Komprimierte Größe",
+                            "it": "Dimensione compressa",
+                            "es": "Tamaño comprimido",
+                            "nl": "Gecomprimeerde grootte",
+                        }
+                    ),
+                    "size": props.Translatable(
+                        {
+                            "en": "Uncompressed Size",
+                            "de": "Dekomprimierte Größe",
+                            "it": "Dimensione non compressa",
+                            "es": "Tamaño descomprimido",
+                            "nl": "Ongecomprimeerde grootte",
+                        }
+                    ),
+                },
+            )
+
+        # A generic, illustrative second table for layout demonstration purposes
+        metadata_table = props.PropsUIPromptConsentFormTable(
+            "example_metadata",
+            2,
+            props.Translatable(
+                {
+                    "en": "Example Metadata Table",
+                    "de": "Beispieltabelle für Metadaten",
+                    "it": "Tabella di metadati di esempio",
+                    "es": "Tabla de metadatos de ejemplo",
+                    "nl": "Voorbeeld van metagegevens tabel",
+                }
+            ),
+            props.Translatable(
+                {
+                    "en": "This example table is included only to demonstrate that multiple tables can be shown. Its content is static and unrelated to your uploaded file.",
+                    "de": "Diese Beispieltabelle zeigt, dass mehrere Tabellen angezeigt werden können. Ihr Inhalt ist statisch und steht in keinem Zusammenhang mit Ihrer hochgeladenen Datei.",
+                    "it": "Questa tabella di esempio è inclusa solo per mostrare che è possibile visualizzare più tabelle. Il contenuto è statico e non è collegato al file caricato.",
+                    "es": "Esta tabla de ejemplo se incluye solo para mostrar que se pueden mostrar varias tablas. Su contenido es estático y no está relacionado con su archivo cargado.",
+                    "nl": "Deze voorbeeldtabel laat alleen zien dat er meerdere tabellen kunnen worden getoond. De inhoud is statisch en staat los van het geüploade bestand.",
+
+                }
+            ),
+            pd.DataFrame(
+                [
+                    ["participant-001", "Device A", "2025-06-01"],
+                    ["participant-002", "Device B", "2025-06-02"],
+                    ["participant-003", "Device C", "2025-06-03"],
+                ],
+                columns=["Participant ID", "Device", "Date"],
+            ),
+            headers={
+                    "Participant ID": props.Translatable(
+                        {
+                            "en": "Participant ID",
+                            "de": "Teilnehmer-ID",
+                            "it": "ID partecipante",
+                            "es": "ID del participante",
+                            "nl": "Deelnemer-ID",
+                        }
+                    ),
+                    "Device": props.Translatable(
+                        {
+                            "en": "Device",
+                            "de": "Gerät",
+                            "it": "Dispositivo",
+                            "es": "Dispositivo",
+                            "nl": "Apparaat",
+                        }
+                    ),
+                    "Date": props.Translatable(
+                        {
+                            "en": "Date",
+                            "de": "Datum",
+                            "it": "Data",
+                            "es": "Fecha",
+                            "nl": "Datum",
+                        }
+                    ),
+                },
+            )
+
+        # Construct and render the final consent page
+        result = yield self.render_page(
+            [
+                item
+                for item in [
+                    description,
+                    data_table,
+                    metadata_table,
+                    props.PropsUIDataSubmissionButtons(
+                        donate_question=props.Translatable(
+                            {
+                                "en": "Would you like to donate the above data?",
+                                "de": "Möchten Sie die obenstehenden Daten spenden?",
+                                "it": "Vuoi donare i dati sopra indicati?",
+                                "es": "¿Le gustaría donar los datos anteriores?",
+                                "nl": "Wilt u de bovenstaande gegevens doneren?",
+                            }
+                        ),
+                        donate_button=props.Translatable(
+                            {
+                                "en": "Yes, donate",
+                                "de": "Ja, spenden",
+                                "it": "Sì, dona",
+                                "es": "Sí, donar",
+                                "nl": "Ja, doneer",
+                            }
+                        ),
+                    ),
+                ]
+                if item is not None
+            ]
+        )
+        return result
+
+
