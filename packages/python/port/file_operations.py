@@ -1,5 +1,6 @@
 import zipfile
 
+
 def get_zipfile(filename):
     try:
         return zipfile.ZipFile(filename)
@@ -16,9 +17,6 @@ def get_files(zipfile_ref):
 
 def extract_file(zipfile_ref, filename):
     try:
-        info = zipfile_ref.getinfo(filename)
-        return (filename, info.compress_size, info.file_size)
+        return filename, zipfile_ref.read(filename)
     except zipfile.error:
         return None
-
-

@@ -5,7 +5,7 @@ from port.api.commands import CommandUIRender
 import pandas as pd
 
 
-class PageRenderer():
+class PageRenderer:
 
     def render_page(self, body):
         header = props.PropsUIHeader(
@@ -22,15 +22,14 @@ class PageRenderer():
         page = props.PropsUIPageDataSubmission("Zip", header, body)
         return CommandUIRender(page)
 
-
-    def retry_confirmation_page(self):
+    def retry_confirmation_page(self, error_message=""):
         text = props.Translatable(
             {
-                "en": "Unfortunately, we cannot process your file. Continue, if you are sure that you selected the right file. Try again to select a different file.",
-                "de": "Leider können wir Ihre Datei nicht bearbeiten. Fahren Sie fort, wenn Sie sicher sind, dass Sie die richtige Datei ausgewählt haben. Versuchen Sie, eine andere Datei auszuwählen.",
-                "it": "Purtroppo non possiamo elaborare il tuo file. Continua se sei sicuro di aver selezionato il file corretto. Prova a selezionare un file diverso.",
-                "es": "Lamentablemente, no podemos procesar su archivo. Continúe si está seguro de que ha seleccionado el archivo correcto. Intente seleccionar un archivo diferente.",
-                "nl": "Helaas, kunnen we uw bestand niet verwerken. Weet u zeker dat u het juiste bestand heeft gekozen? Ga dan verder. Probeer opnieuw als u een ander bestand wilt kiezen.",
+                "en": f"Unfortunately, we cannot process your file. Continue, if you are sure that you selected the right file. Try again to select a different file. ({error_message})",
+                "de": f"Leider können wir Ihre Datei nicht bearbeiten. Fahren Sie fort, wenn Sie sicher sind, dass Sie die richtige Datei ausgewählt haben. Versuchen Sie, eine andere Datei auszuwählen. ({error_message})",
+                "it": f"Purtroppo non possiamo elaborare il tuo file. Continua se sei sicuro di aver selezionato il file corretto. Prova a selezionare un file diverso. ({error_message})",
+                "es": f"Lamentablemente, no podemos procesar su archivo. Continúe si está seguro de que ha seleccionado el archivo correcto. Intente seleccionar un archivo diferente. ({error_message})",
+                "nl": f"Helaas, kunnen we uw bestand niet verwerken. Weet u zeker dat u het juiste bestand heeft gekozen? Ga dan verder. Probeer opnieuw als u een ander bestand wilt kiezen. ({error_message})",
             }
         )
         ok = props.Translatable(
@@ -43,10 +42,15 @@ class PageRenderer():
             }
         )
         cancel = props.Translatable(
-            {"en": "Continue", "de": "Weiter", "it": "Continua", "es": "Continuar", "nl": "Verder"}
+            {
+                "en": "Continue",
+                "de": "Weiter",
+                "it": "Continua",
+                "es": "Continuar",
+                "nl": "Verder",
+            }
         )
         return self.render_page([props.PropsUIPromptConfirm(text, ok, cancel)])
-
 
     def prompt_file_page(self, extensions):
         description = props.Translatable(
@@ -60,7 +64,6 @@ class PageRenderer():
 
         return self.render_page([props.PropsUIPromptFileInput(description, extensions)])
 
-
     def prompt_extraction_message_page(self, message, percentage):
         description = props.Translatable(
             {
@@ -72,10 +75,13 @@ class PageRenderer():
             }
         )
 
-        return self.render_page([props.PropsUIPromptProgress(description, message, percentage)])
+        return self.render_page(
+            [props.PropsUIPromptProgress(description, message, percentage)]
+        )
 
-
-    def prompt_consent_generator(self, data):
+    def prompt_consent_generator(
+        self, search_history=[], search_watch_history=[], watch_history=[]
+    ):
         description = props.PropsUIPromptText(
             text=props.Translatable(
                 {
@@ -88,125 +94,114 @@ class PageRenderer():
             )
         )
 
-        table_title = props.Translatable(
+        headers = {
+            "title": props.Translatable(
+                {
+                    "en": "Title",
+                    "de": "Titel",
+                    "it": "Titolo",
+                    "es": "Título",
+                    "nl": "Titel",
+                }
+            ),
+            "titleUrl": props.Translatable(
+                {
+                    "en": "URL",
+                    "de": "URL",
+                    "it": "URL",
+                    "es": "URL",
+                    "nl": "URL",
+                }
+            ),
+            "time": props.Translatable(
+                {
+                    "en": "Time",
+                    "de": "Zeit",
+                    "it": "Ora",
+                    "es": "Hora",
+                    "nl": "Tijd",
+                }
+            ),
+        }
+
+        table_description = props.Translatable(
             {
-                "en": "Zip file contents",
-                "de": "Inhalt der ZIP-Datei",
-                "it": "Contenuto del file ZIP",
-                "es": "Contenido del archivo ZIP",
-                "nl": "Inhoud van het ZIP-bestand",
+                "en": "The table below shows the contents of the zip file you selected.",
+                "de": "Die Tabelle unten zeigt den Inhalt der ZIP-Datei, die Sie gewählt haben.",
+                "it": "La tabella qui sotto mostra il contenuto del file ZIP che ha scelto.",
+                "es": "La tabla a continuación muestra el contenido del archivo ZIP que ha seleccionado.",
+                "nl": "De tabel hieronder laat de inhoud zien van het zip-bestand dat u heeft gekozen.",
             }
         )
 
         # Show data table if extracted data is available
-        data_table = None
-        if data is not None:
-            data_frame = pd.DataFrame(data, columns=["filename", "compressed_size", "size"])
-            data_table = props.PropsUIPromptConsentFormTable(
-                "zip_content",
+        search_data_table = None
+        if len(search_history) > 0:
+            data_frame = pd.DataFrame(
+                search_history, columns=["title", "titleUrl", "time"]
+            )
+            search_data_table = props.PropsUIPromptConsentFormTable(
+                "search_data",
                 1,
-                table_title,
                 props.Translatable(
                     {
-                        "en": "The table below shows the contents of the zip file you selected.",
-                        "de": "Die Tabelle unten zeigt den Inhalt der ZIP-Datei, die Sie gewählt haben.",
-                        "it": "La tabella qui sotto mostra il contenuto del file ZIP che ha scelto.",
-                        "es": "La tabla a continuación muestra el contenido del archivo ZIP que ha seleccionado.",
-                        "nl": "De tabel hieronder laat de inhoud zien van het zip-bestand dat u heeft gekozen.",
+                        "en": "Search history data",
+                        "de": "Suchverlauf-Daten",
+                        "it": "Dati della cronologia delle ricerche",
+                        "es": "Datos del historial de búsquedas",
+                        "nl": "Gegevens zoekgeschiedenis",
                     }
                 ),
+                table_description,
                 data_frame,
-                headers={
-                    "filename": props.Translatable(
-                        {
-                            "en": "Filename",
-                            "de": "Dateiname",
-                            "it": "Nome del file",
-                            "es": "Nombre del archivo",
-                            "nl": "Bestandsnaam",
-                        }
-                    ),
-                    "compressed_size": props.Translatable(
-                        {
-                            "en": "Compressed Size",
-                            "de": "Komprimierte Größe",
-                            "it": "Dimensione compressa",
-                            "es": "Tamaño comprimido",
-                            "nl": "Gecomprimeerde grootte",
-                        }
-                    ),
-                    "size": props.Translatable(
-                        {
-                            "en": "Uncompressed Size",
-                            "de": "Dekomprimierte Größe",
-                            "it": "Dimensione non compressa",
-                            "es": "Tamaño descomprimido",
-                            "nl": "Ongecomprimeerde grootte",
-                        }
-                    ),
-                },
+                headers,
             )
 
-        # A generic, illustrative second table for layout demonstration purposes
-        metadata_table = props.PropsUIPromptConsentFormTable(
-            "example_metadata",
-            2,
-            props.Translatable(
-                {
-                    "en": "Example Metadata Table",
-                    "de": "Beispieltabelle für Metadaten",
-                    "it": "Tabella di metadati di esempio",
-                    "es": "Tabla de metadatos de ejemplo",
-                    "nl": "Voorbeeld van metagegevens tabel",
-                }
-            ),
-            props.Translatable(
-                {
-                    "en": "This example table is included only to demonstrate that multiple tables can be shown. Its content is static and unrelated to your uploaded file.",
-                    "de": "Diese Beispieltabelle zeigt, dass mehrere Tabellen angezeigt werden können. Ihr Inhalt ist statisch und steht in keinem Zusammenhang mit Ihrer hochgeladenen Datei.",
-                    "it": "Questa tabella di esempio è inclusa solo per mostrare che è possibile visualizzare più tabelle. Il contenuto è statico e non è collegato al file caricato.",
-                    "es": "Esta tabla de ejemplo se incluye solo para mostrar que se pueden mostrar varias tablas. Su contenido es estático y no está relacionado con su archivo cargado.",
-                    "nl": "Deze voorbeeldtabel laat alleen zien dat er meerdere tabellen kunnen worden getoond. De inhoud is statisch en staat los van het geüploade bestand.",
+        # Show data table if extracted data is available
+        search_watch_data_table = None
+        if len(search_watch_history) > 0:
+            data_frame = pd.DataFrame(
+                search_watch_history, columns=["title", "titleUrl", "time"]
+            )
+            search_watch_data_table = props.PropsUIPromptConsentFormTable(
+                "search_data",
+                1,
+                props.Translatable(
+                    {
+                        "en": "Search-watch history data",
+                        "de": "Suchsehverlauf-Daten",
+                        "it": "Dati della cronologia delle ricerche-visualizzazioni",
+                        "es": "Datos del historial de búsquedas-reproducciones",
+                        "nl": "Gegevens zoek-kijkgeschiedenis",
+                    }
+                ),
+                table_description,
+                data_frame,
+                headers,
+            )
 
-                }
-            ),
-            pd.DataFrame(
-                [
-                    ["participant-001", "Device A", "2025-06-01"],
-                    ["participant-002", "Device B", "2025-06-02"],
-                    ["participant-003", "Device C", "2025-06-03"],
-                ],
-                columns=["Participant ID", "Device", "Date"],
-            ),
-            headers={
-                    "Participant ID": props.Translatable(
-                        {
-                            "en": "Participant ID",
-                            "de": "Teilnehmer-ID",
-                            "it": "ID partecipante",
-                            "es": "ID del participante",
-                            "nl": "Deelnemer-ID",
-                        }
-                    ),
-                    "Device": props.Translatable(
-                        {
-                            "en": "Device",
-                            "de": "Gerät",
-                            "it": "Dispositivo",
-                            "es": "Dispositivo",
-                            "nl": "Apparaat",
-                        }
-                    ),
-                    "Date": props.Translatable(
-                        {
-                            "en": "Date",
-                            "de": "Datum",
-                            "it": "Data",
-                            "es": "Fecha",
-                            "nl": "Datum",
-                        }
-                    ),
-                },
+        # Show data table if extracted data is available
+        watch_data_table = None
+        if len(watch_history) > 0:
+            data_frame = pd.DataFrame(
+                watch_history, columns=["title", "titleUrl", "time"]
+            )
+
+            watch_data_table = props.PropsUIPromptConsentFormTable(
+                "watch_data",
+                1,
+                props.Translatable(
+                    {
+                        "en": "Watch history data",
+                        "de": "Sehverlauf-Daten",
+                        "it": "Dati della cronologia delle visualizzazioni",
+                        "es": "Datos del historial de reproducciones",
+                        "nl": "Gegevens kijkgeschiedenis",
+                    }
+                ),
+                table_description,
+                data_frame,
+                headers,
             )
 
         # Construct and render the final consent page
@@ -215,8 +210,9 @@ class PageRenderer():
                 item
                 for item in [
                     description,
-                    data_table,
-                    metadata_table,
+                    search_data_table,
+                    search_watch_data_table,
+                    watch_data_table,
                     props.PropsUIDataSubmissionButtons(
                         donate_question=props.Translatable(
                             {
@@ -242,5 +238,3 @@ class PageRenderer():
             ]
         )
         return result
-
-

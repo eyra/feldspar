@@ -1,62 +1,72 @@
 from port.api.assets import *
 from port.api.commands import CommandSystemDonate, CommandSystemExit
 from port.rendering import PageRenderer
-import port.file_operations as file_operations
+from port.parsers import YoutubeHistoryParser
+from port.parsers import ParseResult
 
-import logging
-import pandas as pd
+import port.file_operations as file_operations
 import json
 
-logger = logging.getLogger(__name__)
 
 def process(sessionId):
     key = "zip-youtube"
     page_renderer = PageRenderer()
+    file_parser = YoutubeHistoryParser()
 
-    # --- File selection & extraction loop ---
+    # File selection & extraction loop
     while True:
-        file_result = yield page_renderer.prompt_file_page("application/zip, text/plain")
+        file_result = yield page_renderer.prompt_file_page(
+            "application/zip, text/plain"
+        )
 
-        if getattr(file_result, "__type__", None) != "PayloadString":
-            yield page_renderer.retry_confirmation_page()
-            continue
+        try:
+            assert (
+                getattr(file_result, "__type__", None) == "PayloadString"
+            ), "Invalid payload type"
 
-        zip_ref = file_operations.get_zipfile(file_result.value)
-        if not zip_ref:
-            yield page_renderer.retry_confirmation_page()
-            continue
+            zip_ref = file_operations.get_zipfile(file_result.value)
+            assert zip_ref, "Failed to open zip file"
+            files = file_operations.get_files(zip_ref)
+            assert files, "No files found in the zip archive"
 
-        files = file_operations.get_files(zip_ref)
-        if not files:
-            yield page_renderer.retry_confirmation_page()
-            continue
+            extracted_files = []
+            for i, filename in enumerate(files, start=1):
+                yield page_renderer.prompt_extraction_message_page(
+                    f"Extracting file: {filename}", (i * 100) / len(files)
+                )
+                extracted_files.append(file_operations.extract_file(zip_ref, filename))
 
-        extraction_result = []
-        total = len(files)
-        for i, filename in enumerate(files, start=1):
-            yield page_renderer.prompt_extraction_message_page(
-                f"Extracting file: {filename}", (i * 100) / total
-            )
-            extraction_result.append(file_operations.extract_file(zip_ref, filename))
+            file_parser.parse_files(extracted_files)
+            assert (
+                file_parser.parse_result == ParseResult.JSON_PARSED
+            ), file_parser.parse_result
+            file_parser.process_histories()
+            assert (
+                file_parser.parse_result == ParseResult.JSON_PROCESSED
+            ), file_parser.parse_result
 
-        if extraction_result:
-            break
+            break  # Exit loop on success
 
-        yield page_renderer.retry_confirmation_page()
+        except AssertionError as e:
+            yield page_renderer.retry_confirmation_page(str(e))
 
     # --- Consent & donation flow ---
-    for prompt in page_renderer.prompt_consent_generator(extraction_result):
-        result = yield prompt
+    for page in page_renderer.prompt_consent_generator(
+        file_parser.search_history,
+        file_parser.search_watch_history,
+        file_parser.watch_history,
+    ):
+        result = yield page
         rtype = getattr(result, "__type__", None)
 
         if rtype == "PayloadJSON":
-            meta_frame = pd.DataFrame([], columns=["type", "message"])
             data = json.loads(result.value)
-            data["meta"] = meta_frame.to_json()
             yield donate(f"{sessionId}-{key}", json.dumps(data))
 
         elif rtype == "PayloadFalse":
-            yield donate(f"{sessionId}-{key}", json.dumps({"status": "data_submission declined"}))
+            yield donate(
+                f"{sessionId}-{key}", json.dumps({"status": "data_submission declined"})
+            )
 
 
 def donate(key, json_string):
