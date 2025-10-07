@@ -393,6 +393,12 @@ def extract_summary_data(data, locale="en"):
                 "Profile Information",
                 "ProfileMap",
                 "likesReceived",
+            ) or cast_number(
+                data,
+                "Profile",
+                "Profile Info",
+                "ProfileMap",
+                "likesReceived",
             ),
             count_items(data, "Video", "Videos", "VideoList")
             or count_items(data, "Post", "Posts", "VideoList"),

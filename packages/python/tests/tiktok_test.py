@@ -242,6 +242,40 @@ def test_extract_direct_messages():
     assert 1 in messages.data_frame["Anonymous ID"].values
 
 
+def test_extract_tiktok_data_alternate_profile_structure():
+    """Test extraction with alternate profile structure (Profile Info vs Profile Information)"""
+    test_data = {
+        "Profile": {
+            "Profile Info": {
+                "ProfileMap": {"userName": "testuser", "likesReceived": 250}
+            }
+        },
+        "Activity": {
+            "Follower List": {"FansList": []},
+            "Following List": {"Following": []},
+            "Like List": {"ItemFavoriteList": []},
+            "Video Browsing History": {"VideoList": []},
+        },
+        "Video": {"Videos": {"VideoList": []}},
+        "Comment": {"Comments": {"CommentsList": []}},
+        "Direct Messages": {"Chat History": {"ChatHistory": {}}},
+    }
+
+    test_zip = create_test_zip(test_data)
+    result = extract_tiktok_data(test_zip, "en")
+
+    # Check if summary data is present and contains the likes
+    summary_data = next((r for r in result if r.id == "tiktok_summary"), None)
+    assert summary_data is not None
+    assert summary_data.title is not None
+    assert len(summary_data.data_frame) > 0
+
+    # Verify that likes received from alternate structure are correctly extracted
+    likes_row = summary_data.data_frame[summary_data.data_frame["Description"] == "Likes received"]
+    assert len(likes_row) == 1
+    assert likes_row.iloc[0]["Number"] == 250
+
+
 def test_extract_tiktok_data_with_locale():
     """Test extraction with different locales to verify translation functionality"""
     test_data = {
