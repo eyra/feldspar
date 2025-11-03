@@ -920,7 +920,7 @@ class DataDonationProcessor:
         )
         prompt_file = props.PropsUIPromptFileInput(description, self.mime_types)
         file_result = yield render_donation_page(self.platform, [prompt_file])
-        if file_result.__type__ != "PayloadString":
+        if file_result.__type__ != "PayloadFile":
             self.log(f"skip to next step")
             raise SkipToNextStep()
         return file_result

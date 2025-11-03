@@ -1,6 +1,7 @@
 from collections.abc import Generator
 from port.script import process
 from port.api.commands import CommandSystemExit
+from port.api.file_utils import AsyncFileAdapter
 
 
 class ScriptWrapper(Generator):
@@ -8,6 +9,10 @@ class ScriptWrapper(Generator):
         self.script = script
 
     def send(self, data):
+        # Automatically wrap JS file readers with AsyncFileAdapter
+        if data and getattr(data, '__type__', None) == "PayloadFile":
+            data.value = AsyncFileAdapter(data.value)
+
         try:
             command = self.script.send(data)
         except StopIteration:
