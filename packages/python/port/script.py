@@ -35,30 +35,48 @@ def process(sessionId):
         meta_data.append(("debug", f"{key}: prompt file"))
         promptFile = prompt_file("application/zip, text/plain")
         fileResult = yield render_data_submission_page([promptFile])
-        if fileResult.__type__ == "PayloadString":
-            # Extracting the zipfile
-            meta_data.append(("debug", f"{key}: extracting file"))
-            extraction_result = []
-            zipfile_ref = get_zipfile(fileResult.value)
-            print(zipfile_ref, fileResult.value)
-            files = get_files(zipfile_ref)
-            fileCount = len(files)
-            for index, filename in enumerate(files):
-                percentage = ((index + 1) / fileCount) * 100
-                promptMessage = prompt_extraction_message(
-                    f"Extracting file: {filename}", percentage
-                )
-                yield render_data_submission_page(promptMessage)
-                file_extraction_result = extract_file(zipfile_ref, filename)
-                extraction_result.append(file_extraction_result)
 
-            if len(extraction_result) >= 0:
-                meta_data.append(
-                    ("debug", f"{key}: extraction successful, go to consent form")
-                )
-                data = extraction_result
-                break
+        if fileResult.__type__ == "PayloadFile":
+            meta_data.append(("debug", f"{key}: extracting file"))
+            try:
+                zipfile_ref = zipfile.ZipFile(fileResult.value)
+            except zipfile.error as e:
+                print(f"Error opening zipfile: {e}")
+                zipfile_ref = "invalid"
+
+            if zipfile_ref and zipfile_ref != "invalid":
+                # Extracting the zipfile
+                extraction_result = []
+                files = get_files(zipfile_ref)
+                fileCount = len(files)
+                for index, filename in enumerate(files):
+                    percentage = ((index + 1) / fileCount) * 100
+                    promptMessage = prompt_extraction_message(
+                        f"Extracting file: {filename}", percentage
+                    )
+                    yield render_data_submission_page(promptMessage)
+                    file_extraction_result = extract_file(zipfile_ref, filename)
+                    extraction_result.append(file_extraction_result)
+
+                if len(extraction_result) >= 0:
+                    meta_data.append(
+                        ("debug", f"{key}: extraction successful, go to consent form")
+                    )
+                    data = extraction_result
+                    break
+                else:
+                    meta_data.append(
+                        ("debug", f"{key}: prompt confirmation to retry file selection")
+                    )
+                    retry_result = yield render_data_submission_page(retry_confirmation())
+                    if retry_result.__type__ == "PayloadTrue":
+                        meta_data.append(("debug", f"{key}: skip due to invalid file"))
+                        continue
+                    else:
+                        meta_data.append(("debug", f"{key}: retry prompt file"))
+                        break
             else:
+                # Invalid file, ask for retry
                 meta_data.append(
                     ("debug", f"{key}: prompt confirmation to retry file selection")
                 )
@@ -157,13 +175,6 @@ def prompt_extraction_message(message, percentage):
     )
 
     return props.PropsUIPromptProgress(description, message, percentage)
-
-
-def get_zipfile(filename):
-    try:
-        return zipfile.ZipFile(filename)
-    except zipfile.error:
-        return "invalid"
 
 
 def get_files(zipfile_ref):
