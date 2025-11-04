@@ -3,7 +3,7 @@ import json
 import zipfile
 import io
 from datetime import datetime
-from port.script import extract_tiktok_data, ExtractionResult
+from port.script import extract_tiktok_data, ExtractionResult, get_json_data_from_file
 
 
 def create_test_zip(data):
@@ -142,11 +142,12 @@ def test_extract_videos_viewed():
     assert all(
         col in videos_viewed.data_frame.columns for col in ["Date", "Timeslot", "Link"]
     )
+    # Data is sorted newest first, so the 18:21 video should be first
     assert (
         videos_viewed.data_frame.iloc[0]["Link"]
-        == "https://www.tiktokv.com/share/video/1111111111111111111/"
+        == "https://www.tiktokv.com/share/video/2222222222222222222/"
     )
-    assert videos_viewed.data_frame.iloc[0]["Date"] == "2024-12-20 15:20:38"
+    assert videos_viewed.data_frame.iloc[0]["Date"] == "2024-12-20 18:21:38"
 
 
 def test_extract_session_info():
@@ -328,3 +329,76 @@ def test_extract_tiktok_data_with_locale():
     result_unsupported = extract_tiktok_data(test_zip_unsupported, "fr")
     summary_unsupported = next((r for r in result_unsupported if r.id == "tiktok_summary"), None)
     assert "Followers" in summary_unsupported.data_frame["Description"].values  # Should fall back to English
+
+
+def test_get_json_data_from_file_with_zip_file_like_object():
+    """Test that get_json_data_from_file correctly detects zip files without loading entire file as JSON"""
+    test_data = {
+        "Profile": {"Profile Information": {"ProfileMap": {"userName": "testuser"}}}
+    }
+    zip_buffer = create_test_zip(test_data)
+
+    result = get_json_data_from_file(zip_buffer)
+
+    assert len(result) == 1
+    assert result[0].get("Profile", {}).get("Profile Information", {}).get("ProfileMap", {}).get("userName") == "testuser"
+
+
+def test_get_json_data_from_file_with_json_file_like_object():
+    """Test that get_json_data_from_file correctly handles plain JSON file-like objects"""
+    test_data = {
+        "Profile": {"Profile Information": {"ProfileMap": {"userName": "testuser"}}}
+    }
+    json_buffer = io.StringIO(json.dumps(test_data))
+
+    result = get_json_data_from_file(json_buffer)
+
+    assert len(result) == 1
+    assert result[0].get("Profile", {}).get("Profile Information", {}).get("ProfileMap", {}).get("userName") == "testuser"
+
+
+def test_get_json_data_from_file_with_large_zip_memory_efficiency():
+    """Test that large zip files don't get loaded into memory as JSON first"""
+    # Create a large-ish test data structure
+    test_data = {
+        "Profile": {"Profile Information": {"ProfileMap": {"userName": "testuser"}}},
+        "Activity": {
+            "Video Browsing History": {
+                "VideoList": [
+                    {"Date": "2024-12-20 15:20:38", "Link": f"https://example.com/video/{i}"}
+                    for i in range(1000)
+                ]
+            }
+        }
+    }
+
+    zip_buffer = create_test_zip(test_data)
+
+    # This should not attempt to load the zip file as JSON first
+    # If it does, it would fail or be very slow
+    result = get_json_data_from_file(zip_buffer)
+
+    assert len(result) == 1
+    assert result[0].get("Profile", {}).get("Profile Information", {}).get("ProfileMap", {}).get("userName") == "testuser"
+    assert len(result[0].get("Activity", {}).get("Video Browsing History", {}).get("VideoList", [])) == 1000
+
+
+def test_get_json_data_from_file_with_invalid_file():
+    """Test that get_json_data_from_file handles invalid files gracefully"""
+    invalid_buffer = io.BytesIO(b"This is not JSON or a ZIP file")
+
+    result = get_json_data_from_file(invalid_buffer)
+
+    assert result == []
+
+
+def test_get_json_data_from_file_with_empty_zip():
+    """Test that get_json_data_from_file handles empty zip files"""
+    empty_zip = io.BytesIO()
+    with zipfile.ZipFile(empty_zip, "w", zipfile.ZIP_DEFLATED) as zf:
+        pass  # Create empty zip
+    empty_zip.seek(0)
+
+    result = get_json_data_from_file(empty_zip)
+
+    assert result == []

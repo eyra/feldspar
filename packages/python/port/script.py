@@ -291,20 +291,26 @@ def get_json_data_from_zip(zip_file):
 
 def get_json_data_from_file(file_):
     # TikTok exports can be a single JSON file or a zipped JSON file
+    # Check file type first to avoid loading large zip files as JSON
     try:
+        # Check if it's a zip file first using zipfile.is_zipfile()
+        # This is memory efficient as it only reads the file header
+        is_zip = zipfile.is_zipfile(file_)
+
+        # Reset file pointer for file-like objects after is_zipfile check
+        if hasattr(file_, "seek"):
+            file_.seek(0)
+
+        if is_zip:
+            return get_json_data_from_zip(file_)
+
+        # Otherwise treat as JSON
         if hasattr(file_, "read"):  # If it's a file-like object
-            try:
-                return [load_tiktok_data(file_)]
-            except (json.decoder.JSONDecodeError, UnicodeDecodeError):
-                file_.seek(0)  # Reset file pointer
-                return get_json_data_from_zip(file_)
+            return [load_tiktok_data(file_)]
         else:  # If it's a file path
             with open(file_) as f:
-                try:
-                    return [load_tiktok_data(f)]
-                except (json.decoder.JSONDecodeError, UnicodeDecodeError) as e:
-                    return get_json_data_from_zip(file_)
-    except (IOError, json.JSONDecodeError):
+                return [load_tiktok_data(f)]
+    except (IOError, json.JSONDecodeError) as e:
         return []
 
 
