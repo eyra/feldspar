@@ -273,7 +273,8 @@ def get_sessions(timestamps):
 
 def load_tiktok_data(json_file):
     data = json.load(json_file, object_hook=CaseInsensitiveDict)
-    if not get_user_name(data):
+    username = get_user_name(data)
+    if not username:
         raise IOError("Unsupported file type")
     return data
 
@@ -329,7 +330,10 @@ def get_user_name(data):
     username = get_in(data, "Profile", "Profile Information", "ProfileMap", "userName")
     if username is not None:
         return username
-    return get_in(data, "Profile", "Profile Info", "ProfileMap", "userName")
+    username2 = get_in(data, "Profile", "Profile Info", "ProfileMap", "userName")
+    if username2 is not None:
+        return username2
+    return get_in(data, "Profile And Settings", "Profile Info", "ProfileMap", "userName")
 
 
 def get_chat_history(data):
@@ -390,9 +394,11 @@ def extract_summary_data(data, locale="en"):
         ],
         "Number": [
             count_items(data, "Activity", "Follower List", "FansList")
-            or count_items(data, "Your Activity", "Follower", "FansList"),
+            or count_items(data, "Your Activity", "Follower", "FansList")
+            or cast_number(data, "Profile And Settings", "Profile Info", "ProfileMap", "followerCount"),
             count_items(data, "Activity", "Following List", "Following")
-            or count_items(data, "Your Activity", "Following", "Following"),
+            or count_items(data, "Your Activity", "Following", "Following")
+            or cast_number(data, "Profile And Settings", "Profile Info", "ProfileMap", "followingCount"),
             cast_number(
                 data,
                 "Profile",
@@ -405,11 +411,18 @@ def extract_summary_data(data, locale="en"):
                 "Profile Info",
                 "ProfileMap",
                 "likesReceived",
+            ) or cast_number(
+                data,
+                "Profile And Settings",
+                "Profile Info",
+                "ProfileMap",
+                "likesReceived",
             ),
             count_items(data, "Video", "Videos", "VideoList")
             or count_items(data, "Post", "Posts", "VideoList"),
             count_items(data, "Activity", "Like List", "ItemFavoriteList")
-            or count_items(data, "Your Activity", "Like List", "ItemFavoriteList"),
+            or count_items(data, "Your Activity", "Like List", "ItemFavoriteList")
+            or count_items(data, "Likes and Favorites", "Like List", "ItemFavoriteList"),
             count_items(data, "Comment", "Comments", "CommentsList"),
             sent_count,
             received_count,
@@ -615,6 +628,7 @@ def extract_comments_and_likes(data):
         get_date_filtered_items(
             get_list(data, "Activity", "Like List", "ItemFavoriteList")
             or get_list(data, "Your Activity", "Like List", "ItemFavoriteList")
+            or get_list(data, "Likes and Favorites", "Like List", "ItemFavoriteList")
         )
     )
     likes_given_counts = get_count_by_date_key(likes_given, hourly_key)
