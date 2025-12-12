@@ -6,8 +6,8 @@
   "homepage": ".",
   "dependencies": {
     "@eyra/feldspar": "workspace:*",
-    "react": "19.2.2",
-    "react-dom": "19.2.2"
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
   },
   "devDependencies": {
     "@types/react": "^19.2.6",
