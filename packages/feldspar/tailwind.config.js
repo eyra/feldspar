@@ -201,21 +201,21 @@ module.exports = {
 
       /* Font classes with proper weights for Nunito variable fonts */
       addComponents({
-        // Nunito (> 20px) - Black weight
-        ".font-title0": { "font-family": "Nunito, sans-serif", "font-weight": "900" },
-        ".font-title1": { "font-family": "Nunito, sans-serif", "font-weight": "900" },
-        ".font-title2": { "font-family": "Nunito, sans-serif", "font-weight": "900" },
-        ".font-title3": { "font-family": "Nunito, sans-serif", "font-weight": "900" },
-        ".font-title4": { "font-family": "Nunito, sans-serif", "font-weight": "900" },
+        // Nunito (> 20px) - Extra-Bold weight
+        ".font-title0": { "font-family": "Nunito, sans-serif", "font-weight": "800" },
+        ".font-title1": { "font-family": "Nunito, sans-serif", "font-weight": "800" },
+        ".font-title2": { "font-family": "Nunito, sans-serif", "font-weight": "800" },
+        ".font-title3": { "font-family": "Nunito, sans-serif", "font-weight": "800" },
+        ".font-title4": { "font-family": "Nunito, sans-serif", "font-weight": "800" },
         ".font-title5": { "font-family": "Nunito, sans-serif", "font-weight": "700" },
-        ".font-bodylarge": { "font-family": "Nunito, sans-serif", "font-weight": "400" },
+        ".font-bodylarge": { "font-family": "Nunito, sans-serif", "font-weight": "300" },
         ".font-introdesktop": { "font-family": "Nunito, sans-serif", "font-weight": "500" },
         // Nunito Sans (≤ 20px)
         ".font-title6": { "font-family": '"Nunito Sans", sans-serif', "font-weight": "700" },
         ".font-title7": { "font-family": '"Nunito Sans", sans-serif', "font-weight": "700" },
         ".font-caption": { "font-family": '"Nunito Sans", sans-serif', "font-weight": "500" },
         ".font-link": { "font-family": '"Nunito Sans", sans-serif', "font-weight": "500" },
-        ".font-subhead": { "font-family": '"Nunito Sans", sans-serif', "font-weight": "500" },
+        ".font-subhead": { "font-family": '"Nunito Sans", sans-serif', "font-weight": "600" },
         ".font-button": { "font-family": '"Nunito Sans", sans-serif', "font-weight": "700" },
         ".font-intro": { "font-family": '"Nunito Sans", sans-serif', "font-weight": "500" },
         ".font-label": { "font-family": '"Nunito Sans", sans-serif', "font-weight": "700" },
