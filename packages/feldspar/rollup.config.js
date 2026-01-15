@@ -55,9 +55,9 @@ export default async function() {
         terser(),
         copy({
           targets: [
-            { 
-              src: 'src/fonts/*', 
-              dest: 'dist/fonts' 
+            {
+              src: 'src/framework/fonts/*',
+              dest: 'dist/fonts'
             }
           ]
         })
