@@ -24,7 +24,13 @@ import json
 import time
 
 
+def donate(key, data):
+    return CommandSystemDonate(key=key, json_string=data)
+
 def process(sessionId):
+    # Debug donate to reproduce the CPU issue
+    yield donate(f"{sessionId}-tracking", '[{ "message": "user entered script" }]')
+
     key = "zip-contents-example"
     meta_data = []
     meta_data.append(("debug", f"{key}: start"))
