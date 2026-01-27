@@ -19,8 +19,8 @@
         "clean": "rm -rf dist node_modules"
     },
     "peerDependencies": {
-        "react": "19.2.3",
-        "react-dom": "19.2.3",
+        "react": "19.2.4",
+        "react-dom": "19.2.4",
         "tslib": "2.8.1",
         "typescript": "5.9.3"
     },
@@ -44,7 +44,7 @@
         "@rollup/plugin-terser": "0.4.4",
         "@rollup/plugin-typescript": "12.3.0",
         "@rollup/plugin-url": "8.0.2",
-        "@types/react": "19.2.9",
+        "@types/react": "19.2.10",
         "@types/react-dom": "19.2.3",
         "fdir": "6.5.0",
         "postcss": "^8.4.35",
