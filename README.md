@@ -90,6 +90,14 @@ def process(sessionId):
     content = read_asset("my_file.txt")
 ```
 
+### Data Frame Size limits
+
+Row limits for data frames in the Props UI:
+- Consent Table: default maximum of 10,000 rows (configurable)
+- UI hard cap: 50,000 rows (cannot be exceeded)
+
+For larger datasets, pre-aggregate or sample before display, and review your informed consent and privacy guidelines.
+
 ### Adding Dependencies
 
 If you need additional Python packages, add them to `packages/python/pyproject.toml` in the `tool.poetry.dependencies` section.

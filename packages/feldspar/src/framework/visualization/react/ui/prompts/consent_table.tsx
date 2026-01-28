@@ -33,6 +33,8 @@ interface Props {
 
 export interface ConsentTableHandle extends DataSubmissionProvider {}
 
+const MAX_ROWS = 50000;
+
 export const ConsentTable = forwardRef<ConsentTableHandle | null, Props>(
   ({ table, readOnly = false, context, onChange }, ref): JSX.Element => {
     const [currentTable, setCurrentTable] = React.useState<
@@ -42,7 +44,7 @@ export const ConsentTable = forwardRef<ConsentTableHandle | null, Props>(
         description?: string;
         deletedRowCount: number;
       }
-    >(table);
+    >(truncatedTable(table));
 
     const handleChange = (rows: PropsUITableRow[], deletedCount: number) => {
       context.onDataSubmissionDataChanged(
@@ -53,25 +55,62 @@ export const ConsentTable = forwardRef<ConsentTableHandle | null, Props>(
 
     React.useEffect(() => {
       console.log("ConsentTable useEffect", currentTable);
+      const { truncatedRows, truncatedRowCount } = truncateRows(table.body.rows ?? []);
+      if (truncatedRowCount > 0) {
+        console.warn(`ConsentTable "${table.id}" initial data exceeds ${MAX_ROWS} rows. Truncating.`);
+      }
+
+      setCurrentTable(truncatedTable(table));
+
       context.onDataSubmissionDataChanged(
         table.id,
-        getDataSubmissionData(table.head, table.body.rows, 0)
+        getDataSubmissionData(table.head, truncatedRows, truncatedRowCount)
       );
-    }, []);
+    }, [table]);
 
     return (
       <div key={table.id} className='flex flex-col gap-4 mb-20'>
         <div className='flex flex-row gap-4 items-center'>
-          <NumberIcon number={table.number} />
+          <NumberIcon number={currentTable.number} />
           <div className='pt-2px'>
-            <Title4 text={table.title} margin='' />
+            <Title4 text={currentTable.title} margin='' />
           </div>
         </div>
-        <Table {...table} readOnly={readOnly} locale={context.locale} onChange={handleChange} id={table.id} key={table.id} />
+        <Table
+          {...currentTable}
+          readOnly={readOnly}
+          locale={context.locale}
+          onChange={handleChange}
+          id={currentTable.id}
+          key={currentTable.id}
+        />
       </div>
     );
   }
 );
+
+function truncatedTable(
+  t: PropsUITable & {
+    number: number;
+    title: string;
+    description?: string;
+    deletedRowCount: number;
+  }
+) {
+  const rows = t.body?.rows ?? [];
+  const { truncatedRows, truncatedRowCount } = truncateRows(rows);
+  return {
+    ...t,
+    body: { ...t.body, rows: truncatedRows },
+    deletedRowCount: (t.deletedRowCount ?? 0) + truncatedRowCount,
+  };
+}
+
+function truncateRows(rows: PropsUITableRow[]) {
+  const truncatedRowCount = Math.max(0, rows.length - MAX_ROWS);
+  const truncatedRows = rows.slice(0, MAX_ROWS);
+  return { truncatedRows, truncatedRowCount };
+}
 
 function getDataSubmissionData(
   head: PropsUITableHead,
@@ -90,7 +129,8 @@ function serializeTableData(
   head: PropsUITableHead,
   rows: PropsUITableRow[]
 ): any[] {
-  return rows.map((row) => serializeRow(row, head));
+  const limited = rows.slice(0, MAX_ROWS);
+  return limited.map((row) => serializeRow(row, head));
 }
 
 function serializeRow(row: PropsUITableRow, head: PropsUITableHead): any {

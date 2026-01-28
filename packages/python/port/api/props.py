@@ -90,12 +90,16 @@ class PropsUIPromptConfirm:
 class PropsUIPromptConsentFormTable:
     """Table to be shown to the participant prior to data_submission
 
+    It is truncated to a maximum number of rows to avoid overloading the UI.
+
     Attributes:
         id: a unique string to itentify the table after donation
         number: the number of table in the list of tables
         title: title of the table
         description: description of the table
         data_frame: table to be shown
+        data_frame_max_size: maximum size of the table (in rows)
+        headers: optional headers for the table columns
     """
 
     id: str
@@ -103,7 +107,14 @@ class PropsUIPromptConsentFormTable:
     title: Translatable
     description: Translatable
     data_frame: pd.DataFrame
+    data_frame_max_size: int = 10000
     headers: Optional[dict[str, Translatable]] = None
+
+    def __post_init__(self):
+        if self.data_frame_max_size < 1:
+            self.data_frame_max_size = 1
+        if len(self.data_frame) > self.data_frame_max_size:
+            self.data_frame = self.data_frame.head(self.data_frame_max_size).reset_index(drop=True)
 
     def toDict(self):
         dict = {}

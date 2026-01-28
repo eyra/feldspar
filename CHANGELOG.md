@@ -12,6 +12,7 @@
 ## \#6 UNRELEASED
 
 * ...
+* Added maximum data frame sizes to both the API and UI
 
 ## \#5 2025-09-10
 
@@ -30,7 +31,7 @@
 
 ## \#3 2025-04-08
 
-* Changed: layout to support mobile screens (enables mobile friendly data donation) 
+* Changed: layout to support mobile screens (enables mobile friendly data donation)
 * Added: support for mobile variant of a table using cards (used for data donation consent screen)
 
 ## \#2 2024-06-13
