@@ -157,8 +157,8 @@ def prompt_file(extensions):
             "nl": "Selecteer een ZIP-bestand dat op uw apparaat is opgeslagen.",
         }
     )
-    
-    
+
+
 
     return props.PropsUIPromptFileInput(description, extensions)
 
@@ -206,7 +206,7 @@ def prompt_consent(data):
             }
         )
     )
-    
+
     table_title = props.Translatable(
         {
             "en": "Zip file contents",
@@ -286,7 +286,7 @@ def prompt_consent(data):
                 "it": "Questa tabella di esempio è inclusa solo per mostrare che è possibile visualizzare più tabelle. Il contenuto è statico e non è collegato al file caricato.",
                 "es": "Esta tabla de ejemplo se incluye solo para mostrar que se pueden mostrar varias tablas. Su contenido es estático y no está relacionado con su archivo cargado.",
                 "nl": "Deze voorbeeldtabel laat alleen zien dat er meerdere tabellen kunnen worden getoond. De inhoud is statisch en staat los van het geüploade bestand.",
-  
+
             }
         ),
         pd.DataFrame(
@@ -326,8 +326,9 @@ def prompt_consent(data):
                     }
                 ),
             },
+            data_frame_max_size=5000,  # default is 10000, limit or expand as required by expected data
         )
-    
+
     # Construct and render the final consent page
     result = yield render_data_submission_page(
         [
@@ -348,7 +349,7 @@ def prompt_consent(data):
                     ),
                     donate_button=props.Translatable(
                         {
-                            "en": "Yes, donate", 
+                            "en": "Yes, donate",
                             "de": "Ja, spenden",
                             "it": "Sì, dona",
                             "es": "Sí, donar",
