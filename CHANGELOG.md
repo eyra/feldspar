@@ -9,10 +9,10 @@
 * Removed - This notes any features that have been deleted and removed from the software
 * Security - This acts as an invitation to users who want to upgrade and avoid any software vulnerabilities
 
-## \#6 UNRELEASED
+## \#6 2026-01-28
 
-* ...
 * Added maximum data frame sizes to both the API and UI
+* Fixed case-insensitive search in consent table
 
 ## \#5 2025-09-10
 
