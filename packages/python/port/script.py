@@ -24,7 +24,13 @@ import json
 import time
 
 
+def donate(key, data):
+    return CommandSystemDonate(key=key, json_string=data)
+
 def process(sessionId):
+    # Debug donate to reproduce the CPU issue
+    yield donate(f"{sessionId}-tracking", '[{ "message": "user entered script" }]')
+
     key = "zip-contents-example"
     meta_data = []
     meta_data.append(("debug", f"{key}: start"))
@@ -173,8 +179,8 @@ def prompt_file(extensions):
             "lt": "Prašome pasirinkti ZIP failą, saugomą jūsų įrenginyje.",
         }
     )
-    
-    
+
+
 
     return props.PropsUIPromptFileInput(description, extensions)
 
@@ -226,7 +232,7 @@ def prompt_consent(data):
             }
         )
     )
-    
+
     table_title = props.Translatable(
         {
             "en": "Zip file contents",
@@ -366,8 +372,9 @@ def prompt_consent(data):
                     }
                 ),
             },
+            data_frame_max_size=5000,  # default is 10000, limit or expand as required by expected data
         )
-    
+
     # Construct and render the final consent page
     result = yield render_data_submission_page(
         [
@@ -390,7 +397,7 @@ def prompt_consent(data):
                     ),
                     donate_button=props.Translatable(
                         {
-                            "en": "Yes, donate", 
+                            "en": "Yes, donate",
                             "de": "Ja, spenden",
                             "it": "Sì, dona",
                             "es": "Sí, donar",
