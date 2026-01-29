@@ -98,6 +98,8 @@ const continueButtonLabel = (): Translatable => {
     .add('it', 'Continua')
     .add('es', 'Continuar')
     .add('nl', 'Verder')
+    .add('ro', 'Continuați')
+    .add('lt', 'Tęsti')
 }
 
 const selectButtonLabel = (): Translatable => {
@@ -107,6 +109,8 @@ const selectButtonLabel = (): Translatable => {
     .add('it', 'Scegli file')
     .add('es', 'Elegir archivo')
     .add('nl', 'Kies bestand')
+    .add('ro', 'Alegeți fișier')
+    .add('lt', 'Pasirinkti failą')
 }
 
 const note = (): Translatable => {
@@ -116,6 +120,8 @@ const note = (): Translatable => {
     .add('it', 'Nota: Il processo per estrarre i dati corretti dal file viene eseguito sul Suo dispositivo. Nessun dato viene ancora memorizzato o inviato.')
     .add('es', 'Nota: El proceso para extraer los datos correctos del archivo se realiza en su propio dispositivo. Aún no se almacena ni se envía ningún dato.')
     .add('nl', 'Let op: Het proces om de juiste gegevens uit het bestand te halen wordt uitgevoerd op uw eigen apparaat. Er worden nog geen gegevens opgeslagen of verzonden.')
+    .add('ro', 'Notă: Procesul de extragere a datelor corecte din fișier se realizează pe propriul dvs. dispozitiv. Nu sunt stocate sau trimise încă date.')
+    .add('lt', 'Pastaba: Tinkamų duomenų išgavimas iš failo atliekamas jūsų įrenginyje. Duomenys dar nėra saugomi ar siunčiami.')
 }
 
 const placeholder = (): Translatable => {
@@ -125,4 +131,6 @@ const placeholder = (): Translatable => {
     .add('it', 'Esempio: data.zip')
     .add('es', 'Ejemplo: data.zip')
     .add('nl', 'Voorbeeld: data.zip')
+    .add('ro', 'Ex. data.zip')
+    .add('lt', 'Pvz. data.zip')
 }

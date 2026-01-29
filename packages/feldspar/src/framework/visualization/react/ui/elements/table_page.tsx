@@ -155,4 +155,6 @@ const link = new TextBundle()
   .add("de", "URL besuchen")
   .add("it", "Visita URL")
   .add("es", "Visite la URL")
-  .add("nl", "Bezoek URL");
+  .add("nl", "Bezoek URL")
+  .add("ro", "Vizitați URL-ul")
+  .add("lt", "Aplankyti URL");
