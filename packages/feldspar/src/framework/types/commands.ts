@@ -43,7 +43,8 @@ export type PayloadResolved =
   PayloadTrue |
   PayloadString |
   PayloadFile |
-  PayloadJSON
+  PayloadJSON |
+  PayloadResponseSystemDonate
 
 export interface PayloadVoid {
   __type__: 'PayloadVoid'
@@ -71,6 +72,16 @@ export interface PayloadJSON {
 }
 export function isPayloadJSON (arg: any): arg is PayloadJSON {
   return isInstanceOf<PayloadJSON>(arg, 'PayloadJSON', ['value'])
+}
+
+export interface PayloadResponseSystemDonate {
+  __type__: 'PayloadResponseSystemDonate'
+  value: {
+    success: boolean
+    key: string
+    status: number
+    error?: string
+  }
 }
 
 export type Command =
