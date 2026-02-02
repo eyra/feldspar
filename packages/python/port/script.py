@@ -103,10 +103,24 @@ def process(sessionId):
             meta_frame = pd.DataFrame(meta_data, columns=["type", "message"])
             data_submission_data = json.loads(result.value)
             data_submission_data["meta"] = meta_frame.to_json()
-            yield donate(f"{sessionId}-{key}", json.dumps(data_submission_data))
+            donate_result = yield donate(f"{sessionId}-{key}", json.dumps(data_submission_data))
+
+            # Check if donation failed
+            if donate_result.__type__ == "PayloadResponseSystemDonate":
+                if not donate_result.value.success:
+                    error_msg = getattr(donate_result.value, "error", "Unknown error")
+                    meta_data.append(("error", f"{key}: donation failed - {error_msg}"))
+                    yield render_error_page(error_msg)
+
         if result.__type__ == "PayloadFalse":
             value = json.dumps('{"status" : "data_submission declined"}')
-            yield donate(f"{sessionId}-{key}", value)
+            donate_result = yield donate(f"{sessionId}-{key}", value)
+
+            # Check if donation failed
+            if donate_result.__type__ == "PayloadResponseSystemDonate":
+                if not donate_result.value.success:
+                    error_msg = getattr(donate_result.value, "error", "Unknown error")
+                    yield render_error_page(error_msg)
 
 
 def render_data_submission_page(body):
@@ -412,6 +426,12 @@ def prompt_consent(data):
         ]
     )
     return result
+
+
+def render_error_page(error_message):
+    """Render an error page when donation fails"""
+    page = props.PropsUIPageError(message=error_message)
+    return CommandUIRender(page)
 
 
 def donate(key, json_string):
