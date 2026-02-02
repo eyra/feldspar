@@ -30,7 +30,7 @@ export default class CommandRouter implements CommandHandler {
         __type__: 'Response',
         command,
         payload: {
-          __type__: 'PayloadResponseSystemDonate',
+          __type__: 'PayloadResponse',
           value: result
         }
       }

@@ -106,7 +106,7 @@ def process(sessionId):
             donate_result = yield donate(f"{sessionId}-{key}", json.dumps(data_submission_data))
 
             # Check if donation failed
-            if donate_result.__type__ == "PayloadResponseSystemDonate":
+            if donate_result.__type__ == "PayloadResponse":
                 if not donate_result.value.success:
                     error_msg = getattr(donate_result.value, "error", "Unknown error")
                     meta_data.append(("error", f"{key}: donation failed - {error_msg}"))
@@ -117,7 +117,7 @@ def process(sessionId):
             donate_result = yield donate(f"{sessionId}-{key}", value)
 
             # Check if donation failed
-            if donate_result.__type__ == "PayloadResponseSystemDonate":
+            if donate_result.__type__ == "PayloadResponse":
                 if not donate_result.value.success:
                     error_msg = getattr(donate_result.value, "error", "Unknown error")
                     yield render_error_page(error_msg)
