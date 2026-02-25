@@ -5,7 +5,7 @@ on:
     branches:
       - 'milestone/*'
       - 'develop'
-      - 'main'
+      - 'master'
 
 permissions:
   contents: write
