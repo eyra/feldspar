@@ -106,8 +106,8 @@ export const Table = ({ id, head, body, readOnly = false, locale, onChange }: Pr
   }
 
   function matchRow (row: PropsUITableRow, query: string[]): boolean {
-    const rowText = row.cells.map((cell) => cell.text).join(' ')
-    return query.find((word) => !rowText.includes(word)) === undefined
+    const rowText = row.cells.map((cell) => cell.text.toLowerCase()).join(' ')
+    return query.find((word) => !rowText.includes(word.toLowerCase())) === undefined
   }
 
   function handleSelectedChange (selected: string[]): void {

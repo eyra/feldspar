@@ -57,24 +57,28 @@ function unwrap(response) {
   });
 }
 
-function copyFileToPyFS(file, resolve) {
-  directoryName = `/file-input`;
-  pathStats = self.pyodide.FS.analyzePath(directoryName);
-  if (!pathStats.exists) {
-    self.pyodide.FS.mkdir(directoryName);
-  } else {
-    self.pyodide.FS.unmount(directoryName);
-  }
-  self.pyodide.FS.mount(
-    self.pyodide.FS.filesystems.WORKERFS,
-    {
-      files: [file],
+function createAsyncFileReader(file) {
+  // Use FileReaderSync for synchronous reading in worker
+  const fileReaderSync = new FileReaderSync();
+
+  return {
+    readSlice: (start, end) => {
+      // Synchronous slice reading
+      const blob = file.slice(start, end);
+      return fileReaderSync.readAsArrayBuffer(blob);
     },
-    directoryName
-  );
+    size: file.size,
+    name: file.name,
+  };
+}
+
+function copyFileToPyFS(file, resolve) {
+  // Create a file reader and pass it directly to Python
+  const reader = createAsyncFileReader(file);
+
   resolve({
-    __type__: "PayloadString",
-    value: directoryName + "/" + file.name,
+    __type__: "PayloadFile",
+    value: reader,
   });
 }
 
