@@ -19,14 +19,12 @@ export const PrimaryButton = ({ label, spinning = false, enabled = true, color =
   return (
     <div role="button" className='relative'>
       <div className={`flex flex-col items-center leading-none font-button text-button rounded ${enabled ? 'cursor-pointer active:shadow-top4px' : ''} ${color}`} onClick={onClick}>
-        <div id='confirm-button' className={`pt-15px pb-15px pr-4 pl-4 ${enabled ? 'active:pt-4 active:pb-14px' : ''} ${spinning ? 'opacity-0' : ''}`}>
+        <div id='confirm-button' className={`pt-15px pb-15px pr-4 pl-4 ${enabled ? 'active:pt-4 active:pb-14px' : ''} ${spinning ? 'hidden' : ''}`}>
           {label}
         </div>
       </div>
-      <div className={`absolute top-0 h-full w-full flex flex-col justify-center items-center ${spinning ? '' : 'hidden'}`}>
-        <div className='w-5 h-5'>
-          <Spinner color={spinnerColor(color)} spinning={spinning} />
-        </div>
+      <div className={`h-full w-full flex flex-col justify-center items-center ${spinning ? '' : 'hidden'}`}>
+        <Spinner color={spinnerColor(color)} spinning={spinning} />
       </div>
     </div>
   )

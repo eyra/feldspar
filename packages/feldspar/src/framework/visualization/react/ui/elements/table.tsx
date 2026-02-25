@@ -380,49 +380,63 @@ const searchPlaceholder = new TextBundle()
   .add("de", "Suchen")
   .add("it", "Cerca")
   .add("es", "Buscar")
-  .add("nl", "Zoeken");
+  .add("nl", "Zoeken")
+  .add("ro", "Căutați")
+  .add("lt", "Ieškoti");
 
 const noDataLabel = new TextBundle()
   .add("en", "No data found")
   .add("de", "Keine Daten gefunden")
   .add("it", "Nessun dato trovato")
   .add("es", "No se han encontrado datos")
-  .add("nl", "Geen gegevens gevonden");
+  .add("nl", "Geen gegevens gevonden")
+  .add("ro", "Nu s-au găsit date")
+  .add("lt", "Duomenų nerasta");
 
 const noDataLeftLabel = new TextBundle()
   .add("en", "All data removed")
   .add("de", "Alle Daten gelöscht")
   .add("it", "Tutti i dati rimossi")
   .add("es", "Todos los datos han sido eliminados")
-  .add("nl", "Alle gegevens verwijderd");
+  .add("nl", "Alle gegevens verwijderd")
+  .add("ro", "Toate datele au fost eliminate")
+  .add("lt", "Visi duomenys pašalinti");
 
 const noResultsLabel = new TextBundle()
   .add("en", "No search results")
   .add("de", "Keine Suchergebnisse")
   .add("it", "Nessun risultato di ricerca")
   .add("es", "No hay resultados de búsqueda")
-  .add("nl", "Geen zoek resultaten");
+  .add("nl", "Geen zoek resultaten")
+  .add("ro", "Nu există rezultate de căutare")
+  .add("lt", "Paieškos rezultatų nėra");
 
 const editLabel = new TextBundle()
   .add("en", "Adjust")
   .add("de", "Anpassen")
   .add("it", "Regola")
   .add("es", "Ajustar")
-  .add("nl", "Aanpassen");
+  .add("nl", "Aanpassen")
+  .add("ro", "Ajustați")
+  .add("lt", "Koreguoti");
 
 const undoLabel = new TextBundle()
   .add("en", "Undo")
   .add("de", "Rückgängig machen")
   .add("it", "Annulla")
   .add("es", "Deshacer")
-  .add("nl", "Ongedaan maken");
+  .add("nl", "Ongedaan maken")
+  .add("ro", "Anulați")
+  .add("lt", "Atšaukti");
 
 const deleteLabel = new TextBundle()
   .add("en", "Delete selected")
   .add("de", "Auswahl löschen")
   .add("it", "Elimina selezione")
   .add("es", "Eliminar selección")
-  .add("nl", "Verwijder selectie");
+  .add("nl", "Verwijder selectie")
+  .add("ro", "Ștergeți selecția")
+  .add("lt", "Ištrinti pasirinktus");
 
 function deletedNoneRowLabel(): TextBundle {
   return new TextBundle()
@@ -430,7 +444,9 @@ function deletedNoneRowLabel(): TextBundle {
     .add("de", "Keine Anpassungen")
     .add("it", "Nessuna modifica")
     .add("es", "Sin ajustes")
-    .add("nl", "Geen aanpassingen");
+    .add("nl", "Geen aanpassingen")
+    .add("ro", "Fără ajustări")
+    .add("lt", "Be koregavimų");
 }
 
 function deletedRowLabel(amount: number): TextBundle {
@@ -439,7 +455,9 @@ function deletedRowLabel(amount: number): TextBundle {
     .add("de", `${amount} Zeile gelöscht`)
     .add("it", `${amount} Riga eliminata`)
     .add("es", `${amount} fila eliminada`)
-    .add("nl", `${amount} rij verwijderd`);
+    .add("nl", `${amount} rij verwijderd`)
+    .add("ro", `${amount} rând șters`)
+    .add("lt", `${amount} eilutė ištrinta`);
 }
 
 function deletedRowsLabel(amount: number): TextBundle {
@@ -448,7 +466,9 @@ function deletedRowsLabel(amount: number): TextBundle {
     .add("de", `${amount} Zeilen gelöscht`)
     .add("it", `${amount} Righe eliminate`)
     .add("es", `${amount} filas eliminadas`)
-    .add("nl", `${amount} rijen verwijderd`);
+    .add("nl", `${amount} rijen verwijderd`)
+    .add("ro", `${amount} rânduri șterse`)
+    .add("lt", `${amount} eilutės ištrintos`);
 }
 
 function deletedLabel(amount: number): TextBundle {
@@ -463,7 +483,9 @@ function singlePageLabel(): TextBundle {
     .add("de", "1 Seite")
     .add("it", "1 pagina")
     .add("es", "1 página")
-    .add("nl", "1 pagina");
+    .add("nl", "1 pagina")
+    .add("ro", "1 pagină")
+    .add("lt", "1 puslapis");
 }
 
 function multiplePagesLabel(amount: number): TextBundle {
@@ -472,7 +494,9 @@ function multiplePagesLabel(amount: number): TextBundle {
     .add("de", `${amount} Seiten`)
     .add("it", `${amount} pagine`)
     .add("es", `${amount} páginas`)
-    .add("nl", `${amount} pagina's`);
+    .add("nl", `${amount} pagina's`)
+    .add("ro", `${amount} pagini`)
+    .add("lt", `${amount} puslapiai`);
 }
 
 function pagesLabel (amount: number): TextBundle {

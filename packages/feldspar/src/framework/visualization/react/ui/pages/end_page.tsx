@@ -40,7 +40,9 @@ const title = new TextBundle()
   .add("de", "Danke")
   .add("it", "Grazie")
   .add("es", "Gracias")
-  .add("nl", "Bedankt");
+  .add("nl", "Bedankt")
+  .add("ro", "Vă mulțumim")
+  .add("lt", "Ačiū");
 
 const text = new TextBundle()
   .add(
@@ -62,4 +64,12 @@ const text = new TextBundle()
   .add(
     "nl",
     "Hartelijk dank voor uw deelname. U kunt deze pagina nu sluiten of de pagina verversen om de flow nogmaals te doorlopen."
+  )
+  .add(
+    "ro",
+    "Vă mulțumim pentru participare. Acum puteți închide pagina sau o puteți reîmprospăta pentru a reporni fluxul de trimitere a datelor."
+  )
+  .add(
+    "lt",
+    "Ačiū už dalyvavimą. Dabar galite uždaryti puslapį arba jį atnaujinti, kad iš naujo paleistumėte duomenų pateikimo srautą."
   );
