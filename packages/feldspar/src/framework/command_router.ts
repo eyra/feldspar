@@ -1,5 +1,5 @@
-import { Command, Response, isCommandSystem, isCommandSystemExit, isCommandUI, CommandUI, CommandSystem } from './types/commands'
-import { CommandHandler, Bridge } from './types/modules'
+import { Command, Response, isCommandSystem, isCommandSystemDonate, isCommandSystemExit, isCommandUI, CommandUI, CommandSystem } from './types/commands'
+import { CommandHandler, Bridge, ResponseSystemDonate } from './types/modules'
 import ReactEngine from './visualization/react/engine'
 
 export default class CommandRouter implements CommandHandler {
@@ -12,48 +12,59 @@ export default class CommandRouter implements CommandHandler {
   }
 
   async onCommand (command: Command): Promise<Response> {
-    return await new Promise<Response>((resolve, reject) => {
-      if (isCommandSystem(command)) {
-        this.onCommandSystem(command, resolve)
-      } else if (isCommandUI(command)) {
-        this.onCommandUI(command, resolve)
-      } else {
-        reject(new TypeError('[CommandRouter] Unknown command' + JSON.stringify(command)))
-      }
-    })
-  }
-
-  onCommandSystem (command: CommandSystem, resolve: (response: Response) => void): void {
-    this.bridge.send(command)
-
-    if (isCommandSystemExit(command)) {
-      console.log('[CommandRouter] Application exit')
+    if (isCommandSystem(command)) {
+      return this.onCommandSystem(command)
+    } else if (isCommandUI(command)) {
+      return this.onCommandUI(command)
     } else {
-      resolve({ __type__: 'Response', command, payload: { __type__: 'PayloadVoid', value: undefined } })
+      throw new TypeError('[CommandRouter] Unknown command' + JSON.stringify(command))
     }
   }
 
-  onCommandUI (command: CommandUI, resolve: (response: Response) => void): void {
-    this.visualizationEngine.render(command)
-      .then((response) => {
-        if (!response || !response.__type__) {
-          console.error('[CommandRouter] Invalid response:', response);
-          resolve({ 
-            __type__: 'Response', 
-            command, 
-            payload: { __type__: 'PayloadVoid', value: undefined } 
-          });
-        } else {
-          resolve(response);
+  async onCommandSystem (command: CommandSystem): Promise<Response> {
+    // For donate commands, wait for the actual result
+    if (isCommandSystemDonate(command)) {
+      const result = await this.bridge.send(command) as ResponseSystemDonate
+      console.log('[CommandRouter] Donate result:', result)
+      return {
+        __type__: 'Response',
+        command,
+        payload: {
+          __type__: 'PayloadResponse',
+          value: result
         }
-      })
-      .catch((error) => {
-        console.error('[CommandRouter] Error:', error);
-        resolve({ 
-          __type__: 'Response', 
-          command, 
-          payload: { __type__: 'PayloadVoid', value: undefined } 
-        });
-      });
+      }
+    }
+
+    // For other system commands
+    await this.bridge.send(command)
+
+    if (isCommandSystemExit(command)) {
+      console.log('[CommandRouter] Application exit')
+    }
+
+    return { __type__: 'Response', command, payload: { __type__: 'PayloadVoid', value: undefined } }
+  }
+
+  async onCommandUI (command: CommandUI): Promise<Response> {
+    try {
+      const response = await this.visualizationEngine.render(command)
+      if (!response || !response.__type__) {
+        console.error('[CommandRouter] Invalid response:', response)
+        return {
+          __type__: 'Response',
+          command,
+          payload: { __type__: 'PayloadVoid', value: undefined }
+        }
+      }
+      return response
+    } catch (error) {
+      console.error('[CommandRouter] Error:', error)
+      return {
+        __type__: 'Response',
+        command,
+        payload: { __type__: 'PayloadVoid', value: undefined }
+      }
+    }
   }
 }
