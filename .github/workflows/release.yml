@@ -7,6 +7,9 @@ on:
       - 'develop'
       - 'main'
 
+permissions:
+  contents: write
+
 jobs:
   test-and-release:
     runs-on: ubuntu-latest
@@ -61,13 +64,19 @@ jobs:
           BRANCH=${GITHUB_REF_NAME//\//-}
           TIMESTAMP=$(date '+%Y-%m-%d')
           RELEASE_NAME="${REPO_NAME}_${BRANCH}_${TIMESTAMP}_${BUILD_NR}.zip"
+          TAG_NAME="${BRANCH}-${BUILD_NR}"
 
           cd packages/data-collector/dist
           zip -r ../../../${RELEASE_NAME} .
           echo "RELEASE_NAME=${RELEASE_NAME}" >> $GITHUB_ENV
+          echo "TAG_NAME=${TAG_NAME}" >> $GITHUB_ENV
+          echo "BRANCH=${BRANCH}" >> $GITHUB_ENV
 
-      - name: Upload release artifact
-        uses: actions/upload-artifact@v4
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ env.TAG_NAME }}
           name: ${{ env.RELEASE_NAME }}
-          path: ${{ env.RELEASE_NAME }}
+          files: ${{ env.RELEASE_NAME }}
+          prerelease: ${{ env.BRANCH != 'main' }}
+          generate_release_notes: true
