@@ -1,5 +1,6 @@
 import { CommandSystem, isCommandSystem } from './framework/types/commands'
 import { Bridge } from './framework/types/modules'
+import { LogEntry } from './framework/logging'
 
 export class LiveBridge implements Bridge {
   port: MessagePort
@@ -30,6 +31,15 @@ export class LiveBridge implements Bridge {
     } else {
       this.log('error', 'received unknown command', command)
     }
+  }
+
+  sendLogs (entries: LogEntry[]): void {
+    entries.forEach(entry => {
+      this.port.postMessage({
+        __type__: 'monitor:log',
+        json_string: JSON.stringify(entry),
+      })
+    })
   }
 
   private log (level: 'info' | 'error', ...message: any[]): void {

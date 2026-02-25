@@ -1,5 +1,6 @@
-import { CommandSystem, CommandSystemDonate, CommandSystemExit, isCommandSystemDonate, isCommandSystemExit } from './framework/types/commands'
+import { CommandSystem, CommandSystemDonate, CommandSystemExit, isCommandSystemDonate, isCommandSystemExit, isCommandSystemLog } from './framework/types/commands'
 import { Bridge } from './framework/types/modules'
+import { LogEntry } from './framework/logging'
 
 export default class FakeBridge implements Bridge {
   send (command: CommandSystem): void {
@@ -7,6 +8,8 @@ export default class FakeBridge implements Bridge {
       this.handleDataSubmission(command)
     } else if (isCommandSystemExit(command)) {
       this.handleExit(command)
+    } else if (isCommandSystemLog(command)) {
+      console.log('[FakeBridge] received log command: ' + JSON.stringify(command))
     } else {
       console.log('[FakeBridge] received unknown command: ' + JSON.stringify(command))
     }
@@ -36,5 +39,14 @@ export default class FakeBridge implements Bridge {
 
   handleExit (command: CommandSystemExit): void {
     console.log(`[FakeBridge] received exit: ${command.code}=${command.info}`)
+  }
+
+  sendLogs (entries: LogEntry[]): void {
+    entries.forEach(entry => {
+      console.log(`[FakeBridge] Sending monitor:log:`, {
+        __type__: 'monitor:log',
+        json_string: JSON.stringify(entry),
+      })
+    })
   }
 }
