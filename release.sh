@@ -10,6 +10,10 @@ cd ../..
 echo "Running JS unit tests..."
 pnpm test
 
+echo "Running pre-commit hooks..."
+unset NODE_ENV
+.husky/pre-commit
+
 # Build and package
 echo "Building..."
 NAME=${PWD##*/}
