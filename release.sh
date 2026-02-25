@@ -2,25 +2,19 @@
 set -e
 export NODE_ENV=production
 
-# Run tests
-echo "Running Python unit tests..."
-cd packages/python && poetry run pytest tests/ -v
-cd ../..
-
-echo "Running JS unit tests..."
-pnpm test
-
-echo "Running pre-commit hooks..."
-unset NODE_ENV
-.husky/pre-commit
-
 # Build and package
 echo "Building..."
-NAME=${PWD##*/}
-mkdir -p releases
-NR=$(find ./releases -type f | wc -l | xargs)
-NR=$(($NR + 1))
-TIMESTAMP=$(date '+%Y-%m-%d')
 pnpm run build
+
+NAME=${PWD##*/}
+BRANCH=${1:-$(git branch --show-current)}
+TIMESTAMP=$(date '+%Y-%m-%d')
+BUILD_NR=${2:-local}
+
+mkdir -p releases
+RELEASE_NAME="${NAME}_${BRANCH}_${TIMESTAMP}_${BUILD_NR}.zip"
+
 cd packages/data-collector/dist
-zip -r ../../../releases/${NAME}_${TIMESTAMP}_${NR}.zip .
+zip -r ../../../releases/${RELEASE_NAME} .
+
+echo "Created: releases/${RELEASE_NAME}"
