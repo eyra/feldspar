@@ -64,7 +64,7 @@ jobs:
           BRANCH=${GITHUB_REF_NAME//\//-}
           TIMESTAMP=$(date '+%Y-%m-%d')
           RELEASE_NAME="${REPO_NAME}_${BRANCH}_${TIMESTAMP}_${BUILD_NR}.zip"
-          TAG_NAME="${BRANCH}-${BUILD_NR}"
+          TAG_NAME="${BRANCH}_${TIMESTAMP}_${BUILD_NR}"
 
           cd packages/data-collector/dist
           zip -r ../../../${RELEASE_NAME} .
