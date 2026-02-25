@@ -18,6 +18,7 @@ import {
 import _ from "lodash";
 import { PromptContext } from "./factory";
 import { NumberIcon } from '../elements/number_icon'
+import { truncateRows, MAX_ROWS } from '../../../../utils/truncation'
 
 interface Props {
   table: PropsUITable & {
@@ -32,8 +33,6 @@ interface Props {
 }
 
 export interface ConsentTableHandle extends DataSubmissionProvider {}
-
-const MAX_ROWS = 50000;
 
 export const ConsentTable = forwardRef<ConsentTableHandle | null, Props>(
   ({ table, readOnly = false, context, onChange }, ref): JSX.Element => {
@@ -104,12 +103,6 @@ function truncatedTable(
     body: { ...t.body, rows: truncatedRows },
     deletedRowCount: (t.deletedRowCount ?? 0) + truncatedRowCount,
   };
-}
-
-function truncateRows(rows: PropsUITableRow[]) {
-  const truncatedRowCount = Math.max(0, rows.length - MAX_ROWS);
-  const truncatedRows = rows.slice(0, MAX_ROWS);
-  return { truncatedRows, truncatedRowCount };
 }
 
 function getDataSubmissionData(
