@@ -58,7 +58,7 @@ jobs:
           REPO_NAME: ${{ github.event.repository.name }}
           BUILD_NR: ${{ github.run_number }}
         run: |
-          BRANCH=${GITHUB_REF_NAME}
+          BRANCH=${GITHUB_REF_NAME//\//-}
           TIMESTAMP=$(date '+%Y-%m-%d')
           RELEASE_NAME="${REPO_NAME}_${BRANCH}_${TIMESTAMP}_${BUILD_NR}.zip"
 
