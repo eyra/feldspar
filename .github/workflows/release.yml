@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - 'milestone/*'
+      - 'feature/*'
       - 'develop'
       - 'master'
 
