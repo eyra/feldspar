@@ -39,3 +39,16 @@ class CommandSystemExit:
         dict["code"] = self.code
         dict["info"] = self.info
         return dict
+
+
+class CommandSystemLog:
+    __slots__ = "json_string"
+
+    def __init__(self, json_string):
+        self.json_string = json_string
+
+    def toDict(self):
+        dict = {}
+        dict["__type__"] = "CommandSystemLog"
+        dict["json_string"] = self.json_string
+        return dict

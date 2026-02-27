@@ -16,7 +16,7 @@
 
 import port.api.props as props
 from port.api.assets import *
-from port.api.commands import CommandSystemDonate, CommandSystemExit, CommandUIRender
+from port.api.commands import CommandSystemDonate, CommandSystemExit, CommandSystemLog, CommandUIRender
 
 import pandas as pd
 import zipfile
@@ -27,7 +27,18 @@ import time
 def donate(key, data):
     return CommandSystemDonate(key=key, json_string=data)
 
+
+def log(level, message, **context):
+    payload = json.dumps({"level": level, "message": message, **context})
+    return CommandSystemLog(json_string=payload)
+
+
 def process(sessionId):
+    # Test logs at all levels
+    yield log("debug", "Script initializing", sessionId=sessionId, pythonVersion="3.14")
+    yield log("info", "Script started", sessionId=sessionId)
+    yield log("warn", "Test warning: this is a fake warning for testing", sessionId=sessionId)
+
     # Debug donate to reproduce the CPU issue
     yield donate(f"{sessionId}-tracking", '[{ "message": "user entered script" }]')
 
@@ -43,10 +54,12 @@ def process(sessionId):
         fileResult = yield render_data_submission_page([promptFile])
 
         if fileResult.__type__ == "PayloadFile":
+            yield log("info", "File selected", sessionId=sessionId, key=key)
             meta_data.append(("debug", f"{key}: extracting file"))
             try:
                 zipfile_ref = zipfile.ZipFile(fileResult.value)
             except zipfile.error as e:
+                yield log("error", "Failed to open zipfile", sessionId=sessionId, error=str(e))
                 print(f"Error opening zipfile: {e}")
                 zipfile_ref = "invalid"
 
@@ -65,6 +78,10 @@ def process(sessionId):
                     extraction_result.append(file_extraction_result)
 
                 if len(extraction_result) >= 0:
+                    yield log("info", "Extraction successful", sessionId=sessionId, key=key, fileCount=len(extraction_result))
+                    yield log("debug", "Processing extracted files", sessionId=sessionId, files=len(extraction_result))
+                    # Fake error for testing error logging
+                    yield log("error", "Test error: this is a fake error for testing AppSignal", sessionId=sessionId, errorCode="TEST_001")
                     meta_data.append(
                         ("debug", f"{key}: extraction successful, go to consent form")
                     )
@@ -99,12 +116,14 @@ def process(sessionId):
     for prompt in prompt_consent(data):
         result = yield prompt
         if result.__type__ == "PayloadJSON":
+            yield log("info", "Consent given, donating data", sessionId=sessionId, key=key)
             meta_data.append(("debug", f"{key}: donate consent data"))
             meta_frame = pd.DataFrame(meta_data, columns=["type", "message"])
             data_submission_data = json.loads(result.value)
             data_submission_data["meta"] = meta_frame.to_json()
             yield donate(f"{sessionId}-{key}", json.dumps(data_submission_data))
         if result.__type__ == "PayloadFalse":
+            yield log("info", "Consent declined", sessionId=sessionId, key=key)
             value = json.dumps('{"status" : "data_submission declined"}')
             yield donate(f"{sessionId}-{key}", value)
 

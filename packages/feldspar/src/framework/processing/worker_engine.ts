@@ -1,5 +1,5 @@
 import { CommandHandler } from '../types/modules'
-import { CommandSystemEvent, isCommand, Response } from '../types/commands'
+import { CommandSystemEvent, CommandSystemLog, isCommand, Response } from '../types/commands'
 
 export default class WorkerProcessingEngine  {
   sessionId: String
@@ -25,6 +25,15 @@ export default class WorkerProcessingEngine  {
 
   sendSystemEvent (name: string): void {
     const command: CommandSystemEvent = { __type__: 'CommandSystemEvent', name }
+    this.commandHandler.onCommand(command).then(
+      () => {},
+      () => {}
+    )
+  }
+
+  sendLog (level: string, message: string, context: Record<string, unknown> = {}): void {
+    const payload = JSON.stringify({ level, message, ...context })
+    const command: CommandSystemLog = { __type__: 'CommandSystemLog', json_string: payload }
     this.commandHandler.onCommand(command).then(
       () => {},
       () => {}
@@ -58,6 +67,7 @@ export default class WorkerProcessingEngine  {
 
     waitForInitialization.then(
       () => {
+        this.sendLog('info', 'Feldspar app initialized', { sessionId: this.sessionId })
         this.sendSystemEvent('initialized')
         this.firstRunCycle()
       },

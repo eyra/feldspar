@@ -8,6 +8,7 @@ pnpm run build
 
 NAME=${PWD##*/}
 BRANCH=${1:-$(git branch --show-current)}
+BRANCH=${BRANCH//\//-}
 TIMESTAMP=$(date '+%Y-%m-%d')
 BUILD_NR=${2:-local}
 
