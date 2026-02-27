@@ -62,11 +62,11 @@ export const IconButton = ({ icon, onClick }: Weak<PropsUIButtonIcon>): JSX.Elem
   return (
     <div role="button" className='active:pt-5px active:pb-3px focus:outline-none cursor-pointer w-6 h-6' onClick={onClick}>
       <div className='flex flex-col items-center h-full w-full'>
-        <div className='flex-grow' />
+        <div className='grow' />
         <div>
           <img className='-mt-2px' src={icon} />
         </div>
-        <div className='flex-grow' />
+        <div className='grow' />
       </div>
     </div>
   )
