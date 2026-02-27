@@ -47,7 +47,7 @@
         "@types/jest": "29.5.14",
         "@types/react": "19.2.14",
         "@types/react-dom": "19.2.3",
-        "autoprefixer": "^10.4.18",
+        "autoprefixer": "^10.4.27",
         "fdir": "6.5.0",
         "jest": "29.7.0",
         "postcss": "^8.4.35",
