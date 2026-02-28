@@ -16,39 +16,39 @@
 
 import port.api.props as props
 from port.api.assets import *
-from port.api.commands import CommandSystemDonate, CommandSystemExit, CommandSystemLog, CommandUIRender
+from port.api.commands import CommandSystemDonate, CommandSystemExit, CommandUIRender
 
+import logging
 import pandas as pd
 import zipfile
 import json
 import time
 
+logger = logging.getLogger(__name__)
+
 
 def donate(key, data):
     return CommandSystemDonate(key=key, json_string=data)
 
-def log(level, message):
-    return CommandSystemLog(level=level, message=message)
-
 def process(sessionId):
-    yield log("info", "user entered script")
+    logger.info("user entered script")
 
     key = "zip-contents-example"
-    yield log("debug", f"{key}: start")
+    logger.debug(f"{key}: start")
 
     # STEP 1: select the file
     data = None
     while True:
-        yield log("debug", f"{key}: prompt file")
+        logger.debug(f"{key}: prompt file")
         promptFile = prompt_file("application/zip, text/plain")
         fileResult = yield render_data_submission_page([promptFile])
 
         if fileResult.__type__ == "PayloadFile":
-            yield log("debug", f"{key}: extracting file")
+            logger.debug(f"{key}: extracting file")
             try:
                 zipfile_ref = zipfile.ZipFile(fileResult.value)
             except zipfile.error as e:
-                yield log("error", f"{key}: error opening zipfile: {e}")
+                logger.error(f"{key}: error opening zipfile: {e}")
                 zipfile_ref = "invalid"
 
             if zipfile_ref and zipfile_ref != "invalid":
@@ -66,35 +66,35 @@ def process(sessionId):
                     extraction_result.append(file_extraction_result)
 
                 if len(extraction_result) >= 0:
-                    yield log("debug", f"{key}: extraction successful, go to consent form")
+                    logger.debug(f"{key}: extraction successful, go to consent form")
                     data = extraction_result
                     break
                 else:
-                    yield log("debug", f"{key}: prompt confirmation to retry file selection")
+                    logger.debug(f"{key}: prompt confirmation to retry file selection")
                     retry_result = yield render_data_submission_page(retry_confirmation())
                     if retry_result.__type__ == "PayloadTrue":
-                        yield log("debug", f"{key}: skip due to invalid file")
+                        logger.debug(f"{key}: skip due to invalid file")
                         continue
                     else:
-                        yield log("debug", f"{key}: retry prompt file")
+                        logger.debug(f"{key}: retry prompt file")
                         break
             else:
                 # Invalid file, ask for retry
-                yield log("debug", f"{key}: prompt confirmation to retry file selection")
+                logger.debug(f"{key}: prompt confirmation to retry file selection")
                 retry_result = yield render_data_submission_page(retry_confirmation())
                 if retry_result.__type__ == "PayloadTrue":
-                    yield log("debug", f"{key}: skip due to invalid file")
+                    logger.debug(f"{key}: skip due to invalid file")
                     continue
                 else:
-                    yield log("debug", f"{key}: retry prompt file")
+                    logger.debug(f"{key}: retry prompt file")
                     break
 
     # STEP 2: ask for consent
-    yield log("debug", f"{key}: prompt consent")
+    logger.debug(f"{key}: prompt consent")
     for prompt in prompt_consent(data):
         result = yield prompt
         if result.__type__ == "PayloadJSON":
-            yield log("debug", f"{key}: donate consent data")
+            logger.debug(f"{key}: donate consent data")
             yield donate(f"{sessionId}-{key}", result.value)
         if result.__type__ == "PayloadFalse":
             value = json.dumps('{"status" : "data_submission declined"}')

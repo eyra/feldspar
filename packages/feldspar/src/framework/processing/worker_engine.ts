@@ -1,6 +1,6 @@
 import { CommandHandler } from '../types/modules'
-import { CommandSystemEvent, isCommand, isCommandSystemLog, Response } from '../types/commands'
-import { Logger, LogLevel } from '../logging'
+import { CommandSystemEvent, isCommand, Response } from '../types/commands'
+import { Logger } from '../logging'
 
 export default class WorkerProcessingEngine {
   sessionId: String
@@ -103,10 +103,7 @@ export default class WorkerProcessingEngine {
   }
 
   handleRunCycle (command: any): void {
-    if (isCommandSystemLog(command)) {
-      this.logger?.log(command.level as LogLevel, command.message)
-      this.nextRunCycle({ __type__: 'Response', command, payload: { __type__: 'PayloadVoid', value: undefined } })
-    } else if (isCommand(command)) {
+    if (isCommand(command)) {
       this.commandHandler.onCommand(command).then(
         (response) => this.nextRunCycle(response),
         () => {}
