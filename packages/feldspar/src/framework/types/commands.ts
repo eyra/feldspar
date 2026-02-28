@@ -84,10 +84,11 @@ export function isCommand (arg: any): arg is Command {
 export type CommandSystem =
   CommandSystemDonate |
   CommandSystemEvent |
-  CommandSystemExit
+  CommandSystemExit |
+  CommandSystemLog
 
 export function isCommandSystem (arg: any): arg is CommandSystem {
-  return isCommandSystemDonate(arg) || isCommandSystemEvent(arg) || isCommandSystemExit(arg)
+  return isCommandSystemDonate(arg) || isCommandSystemEvent(arg) || isCommandSystemExit(arg) || isCommandSystemLog(arg)
 }
 
 export interface CommandSystemEvent {
@@ -112,6 +113,15 @@ export type CommandUI =
 
 export function isCommandUI (arg: any): arg is CommandUI {
   return isCommandUIRender(arg)
+}
+
+export interface CommandSystemLog {
+  __type__: 'CommandSystemLog'
+  level: string
+  message: string
+}
+export function isCommandSystemLog (arg: any): arg is CommandSystemLog {
+  return isInstanceOf<CommandSystemLog>(arg, 'CommandSystemLog', ['level', 'message'])
 }
 
 export interface CommandSystemDonate {

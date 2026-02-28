@@ -9,6 +9,7 @@ import {
   useVisualization,
 } from "../framework/visualization/react/context";
 import { PageFactory } from "../framework/visualization/react/factories/base";
+import { LogLevel } from "../framework/logging";
 
 export interface ScriptHostProps {
   workerUrl: string;
@@ -16,6 +17,7 @@ export interface ScriptHostProps {
   standalone?: boolean;
   className?: string;
   factories?: PageFactory[];
+  logLevel?: LogLevel;
 }
 
 const FeldsparContent: React.FC<ScriptHostProps> = ({
@@ -24,6 +26,7 @@ const FeldsparContent: React.FC<ScriptHostProps> = ({
   standalone = false,
   className,
   factories = [],
+  logLevel = "info",
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const assemblyRef = useRef<Assembly | null>(null);
@@ -37,7 +40,7 @@ const FeldsparContent: React.FC<ScriptHostProps> = ({
     workerRef.current = worker;
 
     const run = (bridge: Bridge, selectedLocale: string = locale) => {
-      const assembly = new Assembly(worker, bridge, factories);
+      const assembly = new Assembly(worker, bridge, factories, logLevel);
       assembly.visualizationEngine.start(
         containerRef.current!,
         selectedLocale,
@@ -78,7 +81,7 @@ const FeldsparContent: React.FC<ScriptHostProps> = ({
         }
       }, 0);
     };
-  }, [workerUrl, locale, standalone, setState, factories]);
+  }, [workerUrl, locale, standalone, setState, factories, logLevel]);
 
   return (
     <div ref={containerRef} className={className}>

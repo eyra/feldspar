@@ -26,6 +26,21 @@ class CommandSystemDonate:
         return dict
 
 
+class CommandSystemLog:
+    __slots__ = "level", "message"
+
+    def __init__(self, level, message):
+        self.level = level
+        self.message = message
+
+    def toDict(self):
+        dict = {}
+        dict["__type__"] = "CommandSystemLog"
+        dict["level"] = self.level
+        dict["message"] = self.message
+        return dict
+
+
 class CommandSystemExit:
     __slots__ = "code", "info"
 
