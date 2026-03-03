@@ -7,7 +7,7 @@ echo "Building..."
 pnpm run build
 
 NAME=${PWD##*/}
-BRANCH=${1:-$(git branch --show-current)}
+BRANCH=${1:-$(git branch --show-current | tr '/' '-')}
 TIMESTAMP=$(date '+%Y-%m-%d')
 BUILD_NR=${2:-local}
 

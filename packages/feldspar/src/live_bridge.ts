@@ -37,7 +37,9 @@ export class LiveBridge implements Bridge {
     entries.forEach(entry => {
       this.port.postMessage({
         __type__: 'CommandSystemLog',
-        json_string: JSON.stringify(entry),
+        level: entry.level,
+        message: entry.message,
+        json_string: JSON.stringify({ level: entry.level, message: entry.message }),
       })
     })
   }

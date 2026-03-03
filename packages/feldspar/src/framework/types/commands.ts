@@ -119,9 +119,11 @@ export interface CommandSystemLog {
   __type__: 'CommandSystemLog'
   level: string
   message: string
+  /** @deprecated Temporary for backwards compatibility, will be removed in future */
+  json_string: string
 }
 export function isCommandSystemLog (arg: any): arg is CommandSystemLog {
-  return isInstanceOf<CommandSystemLog>(arg, 'CommandSystemLog', ['level', 'message'])
+  return isInstanceOf<CommandSystemLog>(arg, 'CommandSystemLog', ['level', 'message', 'json_string'])
 }
 
 export interface CommandSystemDonate {

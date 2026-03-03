@@ -34,11 +34,14 @@ class CommandSystemLog:
         self.message = message
 
     def toDict(self):
-        dict = {}
-        dict["__type__"] = "CommandSystemLog"
-        dict["level"] = self.level
-        dict["message"] = self.message
-        return dict
+        import json
+        return {
+            "__type__": "CommandSystemLog",
+            "level": self.level,
+            "message": self.message,
+            # TODO: json_string is temporary for backwards compatibility, remove in future
+            "json_string": json.dumps({"level": self.level, "message": self.message}),
+        }
 
 
 class CommandSystemExit:

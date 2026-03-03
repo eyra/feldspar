@@ -45,7 +45,9 @@ export default class FakeBridge implements Bridge {
     entries.forEach(entry => {
       console.log(`[FakeBridge] Sending CommandSystemLog:`, {
         __type__: 'CommandSystemLog',
-        json_string: JSON.stringify(entry),
+        level: entry.level,
+        message: entry.message,
+        json_string: JSON.stringify({ level: entry.level, message: entry.message }),
       })
     })
   }
