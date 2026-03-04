@@ -31,14 +31,23 @@ onmessage = (event) => {
 
 function runCycle(payload) {
   console.log("[ProcessingWorker] runCycle " + JSON.stringify(payload));
-  scriptEvent = pyScript.send(payload);
-  self.postMessage({
-    eventType: "runCycleDone",
-    scriptEvent: scriptEvent.toJs({
-      create_proxies: false,
-      dict_converter: Object.fromEntries,
-    }),
-  });
+  try {
+    scriptEvent = pyScript.send(payload);
+    self.postMessage({
+      eventType: "runCycleDone",
+      scriptEvent: scriptEvent.toJs({
+        create_proxies: false,
+        dict_converter: Object.fromEntries,
+      }),
+    });
+  } catch (error) {
+    console.error("[ProcessingWorker] Error in runCycle:", error);
+    self.postMessage({
+      eventType: "error",
+      error: error.toString(),
+      stack: error.stack || "",
+    });
+  }
 }
 
 function unwrap(response) {

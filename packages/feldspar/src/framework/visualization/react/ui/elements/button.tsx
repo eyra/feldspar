@@ -17,13 +17,11 @@ function spinnerColor (buttonColor: string): string {
 
 export const PrimaryButton = ({ label, spinning = false, enabled = true, color = 'bg-primary text-white', onClick }: Weak<PropsUIButtonPrimary>): JSX.Element => {
   return (
-    <div role="button" className='relative'>
-      <div className={`flex flex-col items-center leading-none font-button text-button rounded ${enabled ? 'cursor-pointer active:shadow-top4px' : ''} ${color}`} onClick={onClick}>
-        <div id='confirm-button' className={`pt-15px pb-15px pr-4 pl-4 ${enabled ? 'active:pt-4 active:pb-14px' : ''} ${spinning ? 'hidden' : ''}`}>
-          {label}
-        </div>
+    <div role="button" className={`relative flex flex-col items-center leading-none font-button text-button rounded ${enabled ? 'cursor-pointer active:shadow-top4px' : ''} ${color}`} onClick={onClick}>
+      <div id='confirm-button' className={`pt-15px pb-15px pr-4 pl-4 ${enabled ? 'active:pt-4 active:pb-14px' : ''} ${spinning ? 'invisible' : ''}`}>
+        {label}
       </div>
-      <div className={`h-full w-full flex flex-col justify-center items-center ${spinning ? '' : 'hidden'}`}>
+      <div className={`absolute inset-0 flex items-center justify-center ${spinning ? '' : 'hidden'}`}>
         <Spinner color={spinnerColor(color)} spinning={spinning} />
       </div>
     </div>

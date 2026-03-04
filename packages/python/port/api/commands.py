@@ -26,6 +26,24 @@ class CommandSystemDonate:
         return dict
 
 
+class CommandSystemLog:
+    __slots__ = "level", "message"
+
+    def __init__(self, level, message):
+        self.level = level
+        self.message = message
+
+    def toDict(self):
+        import json
+        return {
+            "__type__": "CommandSystemLog",
+            "level": self.level,
+            "message": self.message,
+            # TODO: json_string is temporary for backwards compatibility, remove in future
+            "json_string": json.dumps({"level": self.level, "message": self.message}),
+        }
+
+
 class CommandSystemExit:
     __slots__ = "code", "info"
 
