@@ -7,9 +7,9 @@ import * as path from 'path';
 async function setupTestWithFileUpload(page: Page): Promise<void> {
   // Navigate to the local development server
   await page.goto('http://localhost:3000/');
- 
-  // Wait for the page to load with increased timeout
-  await expect(page.getByRole('heading', { name: 'Data donation flow example' })).toBeVisible({ timeout: 30000 });
+
+  // Wait for Pyodide to initialize and render the page (can take a while on CI)
+  await expect(page.getByRole('heading', { name: 'Data donation flow example' })).toBeVisible({ timeout: 90000 });
   
   // Create a temporary file input for file upload
   const fileChooserPromise = page.waitForEvent('filechooser');
