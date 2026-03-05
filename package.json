@@ -14,9 +14,9 @@
     "build:install-wheel": "cp -R packages/python/dist/*.whl packages/data-collector/public",
     "build:py": "pnpm run build:wheel && pnpm run build:install-wheel",
     "start:py": "nodemon --ext py --exec \"pnpm run build:py\"",
-    "dev:feldspar": "pnpm run --filter @eyra/feldspar dev",
-    "dev:demo": "pnpm run --filter @eyra/data-collector dev",
-    "start": "pnpm run build:py && pnpm run --filter @eyra/feldspar build && concurrently \"pnpm run start:py\" \"pnpm run dev:feldspar\" \"pnpm run dev:demo\"",
+    "dev:feldspar": "./check-deps.sh && pnpm run --filter @eyra/feldspar dev",
+    "dev:demo": "./check-deps.sh && pnpm run --filter @eyra/data-collector dev",
+    "start": "./check-deps.sh && pnpm run build:py && pnpm run --filter @eyra/feldspar build && concurrently \"pnpm run start:py\" \"pnpm run dev:feldspar\" \"pnpm run dev:demo\"",
     "clean": "pnpm run --recursive clean && rm -rf node_modules",
     "release": "./release.sh"
   },
