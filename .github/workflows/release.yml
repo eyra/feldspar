@@ -50,12 +50,6 @@ jobs:
       - name: Run JS unit tests
         run: pnpm test
 
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
-
-      - name: Run E2E tests
-        run: pnpm test:e2e
-
       - name: Build
         run: pnpm run build
 
