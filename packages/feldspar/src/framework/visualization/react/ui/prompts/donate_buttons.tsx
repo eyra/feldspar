@@ -26,7 +26,7 @@ export const DonateButtons = ({ onDonate, onCancel, locale, donateQuestion, dona
       <BodyLarge
         margin=""
         text={Translator.translate(
-          donateQuestion ?? donateQuestionLabel,
+          waiting ? submittingLabel : (donateQuestion ?? donateQuestionLabel),
           locale
         )}
       />
@@ -76,3 +76,12 @@ const cancelButtonLabel = new TextBundle()
   .add("nl", "Nee")
   .add("ro", "Nu")
   .add("lt", "Ne");
+
+const submittingLabel = new TextBundle()
+  .add("en", "Transferring data… Please keep this window open.")
+  .add("de", "Daten werden übertragen… Bitte lassen Sie dieses Fenster geöffnet.")
+  .add("it", "Trasferimento dati in corso… Si prega di mantenere questa finestra aperta.")
+  .add("es", "Transfiriendo datos… Por favor, mantenga esta ventana abierta.")
+  .add("nl", "Gegevens worden overgedragen… Houd dit venster open.")
+  .add("ro", "Se transferă datele… Vă rugăm să păstrați această fereastră deschisă.")
+  .add("lt", "Duomenys perduodami… Prašome neuždarinėti šio lango.");
