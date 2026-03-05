@@ -17,7 +17,7 @@ export const NumberIcon = ({ number }: Props): JSX.Element => {
   }
 
   return (
-    <div className={`flex-shrink-0 icon w-6 h-6 font-caption text-caption text-white bg-primary rounded-full flex items-center ${centerCorrection(number)}`}>
+    <div className={`shrink-0 icon w-6 h-6 font-caption text-caption text-white bg-primary rounded-full flex items-center ${centerCorrection(number)}`}>
       <span className='text-center w-full mt-1px'>{number}</span>
     </div>
   )

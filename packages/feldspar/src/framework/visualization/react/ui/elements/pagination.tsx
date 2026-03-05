@@ -80,11 +80,11 @@ export const Pagination = ({ pageCount, page, pageWindowLegSize, onChange }: Pro
 
   return (
     <div className='flex flex-row items-center gap-2 mt-2'>
-      <div className='flex-grow' />
+      <div className='grow' />
       <BackIconButton onClick={handlePrevious} />
       <div>{renderPageIcons()}</div>
       <ForwardIconButton onClick={handleNext} />
-      <div className='flex-grow' />
+      <div className='grow' />
     </div>
   )
 }

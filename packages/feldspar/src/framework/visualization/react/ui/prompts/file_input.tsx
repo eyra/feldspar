@@ -50,7 +50,7 @@ export const FileInput = (props: Props): JSX.Element => {
           <input ref={input} id='input' type='file' className='hidden' accept={extensions} onChange={handleSelect} />
           <div className='flex flex-col sm:flex-row gap-2 sm:gap-4 sm:items-center'>
             <BodyLarge text={selectedFile?.name ?? placeholder} margin='' color={selectedFile === undefined ? 'text-grey2' : 'textgrey1'} />
-            <div className='flex-grow' />
+            <div className='grow' />
             <div className='flex-wrap'>
               <div className='flex flex-row'>
                 <PrimaryButton onClick={handleClick} label={selectButton} color='bg-tertiary text-grey1' />

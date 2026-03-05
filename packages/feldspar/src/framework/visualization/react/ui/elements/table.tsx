@@ -243,7 +243,7 @@ export const Table = ({ id, head, body, readOnly = false, locale, onChange }: Pr
             <div className={`${body.rows.length <= desktopPageSize ? 'hidden' : ''} `}>
               <Pagination pageCount={state.desktopPageCount} page={state.desktopPage} pageWindowLegSize={3} onChange={handleDesktopPageChange} />
             </div>
-            <div className='flex-grow' />
+            <div className='grow' />
 
             {/* Desktop pages */}
             <Caption text={copy.desktopPages} color='text-grey2' margin='' />
@@ -308,7 +308,7 @@ export const Table = ({ id, head, body, readOnly = false, locale, onChange }: Pr
             <div className={`${display('delete')} mt-1px`}>
               <IconLabelButton label={copy.delete} color='text-delete' icon={DeleteSvg} onClick={handleDeleteSelected} />
             </div>
-            <div className='flex-grow' />
+            <div className='grow' />
             {/* Number of deleted rows */}
             <Label text={copy.deleted} />
             {/* Undo button */}
@@ -325,7 +325,7 @@ export const Table = ({ id, head, body, readOnly = false, locale, onChange }: Pr
               <div className='flex flex-row gap-4 items-center'>
                 {/* Number of deleted rows */}
                 <Label text={copy.deleted} />
-                <div className='flex-grow' />
+                <div className='grow' />
                 {/* Undo button */}
                 <div className={`${display('undo')}`}>
                   <IconLabelButton label={copy.undo} color='text-primary' icon={UndoSvg} onClick={handleUndo} />

@@ -17,7 +17,7 @@ export const CheckBox = ({
       role="checkbox"
       aria-checked={selected ? "true" : "false"}
     >
-      <div className="flex-shrink-0">
+      <div className="shrink-0">
         <img
           src={CheckSvg}
           id={`${id}-off`}

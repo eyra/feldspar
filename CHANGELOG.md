@@ -9,6 +9,14 @@
 * Removed - This notes any features that have been deleted and removed from the software
 * Security - This acts as an invitation to users who want to upgrade and avoid any software vulnerabilities
 
+## \#7 2026-03-05
+
+* Added status text during data submission to inform users to keep the window open
+* Added CommandSystemLog for forwarding logs from JavaScript and Python to the hosting application
+* Changed Tailwind CSS to v4
+* Changed CI workflows: added dependency update testing, feature branch releases
+* Removed unused _build_release.yml workflow
+
 ## \#6 2026-02-25
 
 * Added maximum data frame sizes to both the API and UI
