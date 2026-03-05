@@ -78,10 +78,10 @@ const cancelButtonLabel = new TextBundle()
   .add("lt", "Ne");
 
 const submittingLabel = new TextBundle()
-  .add("en", "Submitting data... Please keep this window open.")
-  .add("de", "Daten werden übermittelt... Bitte lassen Sie dieses Fenster geöffnet.")
-  .add("it", "Invio dati in corso... Si prega di mantenere questa finestra aperta.")
-  .add("es", "Enviando datos... Por favor, mantenga esta ventana abierta.")
-  .add("nl", "Gegevens worden verzonden... Houd dit venster open.")
-  .add("ro", "Se trimit datele... Vă rugăm să păstrați această fereastră deschisă.")
-  .add("lt", "Duomenys siunčiami... Prašome neuždarinėti šio lango.");
+  .add("en", "Transferring data… Please keep this window open.")
+  .add("de", "Daten werden übertragen… Bitte lassen Sie dieses Fenster geöffnet.")
+  .add("it", "Trasferimento dati in corso… Si prega di mantenere questa finestra aperta.")
+  .add("es", "Transfiriendo datos… Por favor, mantenga esta ventana abierta.")
+  .add("nl", "Gegevens worden overgedragen… Houd dit venster open.")
+  .add("ro", "Se transferă datele… Vă rugăm să păstrați această fereastră deschisă.")
+  .add("lt", "Duomenys perduodami… Prašome neuždarinėti šio lango.");
