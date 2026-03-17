@@ -1,6 +1,7 @@
 import pandas as pd
 import port.file_operations as file_operations
 import json
+import logging
 
 from port.api.assets import *
 from port.api.commands import CommandSystemDonate, CommandSystemExit
@@ -9,38 +10,22 @@ from port.parsers import YoutubeHistoryParser
 from port.parsers import ParseResult
 
 
-class DonationMetadata(list):
-    def __init__(self, session_id=None, key=None):
-        self.session_id = session_id
-        self.key = key
-        super().__init__()
-
-    def debug(self, message):
-        self.append(("debug", f"{self.key}: {message}"))
-
-    def error(self, message):
-        self.append(("error", f"{self.key}: {message}"))
-
-    def to_frame_json(self):
-        meta_frame = pd.DataFrame(self, columns=["type", "message"])
-        return meta_frame.to_json()
-
+logger = logging.getLogger(__name__)
 
 def process(session_id):
     key = "zip-youtube"
     page_renderer = PageRenderer()
     file_parser = YoutubeHistoryParser()
-    meta_data = DonationMetadata(session_id, key)
-    meta_data.debug("start")
+    logger.debug(f"{key}: start")
 
     # File selection & extraction loop
     while True:
-        meta_data.debug("prompting for file")
+        logger.debug(f"{key}: prompting for file")
         file_result = yield page_renderer.prompt_file_page(
             "application/zip, text/plain"
         )
 
-        meta_data.debug("extracting file")
+        logger.debug(f"{key}: extracting file")
         try:
             assert (
                 getattr(file_result, "__type__", None) == "PayloadString"
@@ -70,11 +55,11 @@ def process(session_id):
             break  # exit file submission loop on success file extraction
 
         except AssertionError as e:
-            meta_data.error("extraction failed, retrying ({})".format(str(e)))
+            logger.error("{}: extraction failed, retrying ({})".format(key, str(e)))
             yield page_renderer.retry_confirmation_page(str(e))
 
     # --- Consent & donation flow ---
-    meta_data.debug("extraction successful, go to consent form")
+    logger.debug(f"{key}: extraction successful, go to consent form")
     for page in page_renderer.prompt_consent_generator(
         file_parser.search_history,
         file_parser.search_watch_history,
@@ -84,9 +69,8 @@ def process(session_id):
         rtype = getattr(result, "__type__", None)
 
         if rtype == "PayloadJSON":
-            meta_data.debug("donate consent data")
+            logger.debug(f"{key}: donate consent data")
             data = json.loads(result.value)
-            data["meta"] = meta_data.to_frame_json()
             yield donate(session_id, key, json.dumps(data))
 
         elif rtype == "PayloadFalse":
