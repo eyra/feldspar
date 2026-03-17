@@ -28,7 +28,7 @@ def process(session_id):
         logger.debug(f"{key}: extracting file")
         try:
             assert (
-                getattr(file_result, "__type__", None) == "PayloadString"
+                getattr(file_result, "__type__", None) == "PayloadFile"
             ), "Invalid payload type"
 
             zip_ref = file_operations.get_zipfile(file_result.value)

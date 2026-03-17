@@ -154,6 +154,7 @@ class PageRenderer:
                 ),
                 table_description,
                 data_frame,
+                5000,
                 headers,
             )
 
@@ -177,6 +178,7 @@ class PageRenderer:
                 ),
                 table_description,
                 data_frame,
+                5000,
                 headers,
             )
 
@@ -201,6 +203,7 @@ class PageRenderer:
                 ),
                 table_description,
                 data_frame,
+                5000,
                 headers,
             )
 

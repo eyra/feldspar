@@ -1,0 +1,46 @@
+[
+  {
+    "header": "YouTube",
+    "title": "Watched Some history title",
+    "titleUrl": "https://www.youtube.com/",
+    "time": "2025-09-15T19:32:59.539Z",
+    "products": ["YouTube"],
+    "details": [{
+      "name": "From Google Ads"
+    }],
+    "activityControls": ["Web \u0026 App Activity", "YouTube watch history"]
+  },
+  {
+    "header": "YouTube",
+    "title": "Watched Some other history title",
+    "titleUrl": "https://www.youtube.com/",
+    "time": "2025-09-15T19:32:59.539Z",
+    "products": ["YouTube"],
+    "details": [{
+      "name": "From Google Ads"
+    }],
+    "activityControls": ["Web \u0026 App Activity", "YouTube watch history"]
+  },
+  {
+    "header": "YouTube",
+    "title": "Watched A third history title",
+    "titleUrl": "https://www.youtube.com/",
+    "time": "2025-09-15T19:32:59.539Z",
+    "products": ["YouTube"],
+    "details": [{
+      "name": "From Google Ads"
+    }],
+    "activityControls": ["Web \u0026 App Activity", "YouTube watch history"]
+  },
+  {
+    "header": "YouTube",
+    "title": "Watched A fourth history title",
+    "titleUrl": "https://www.youtube.com/",
+    "time": "2025-09-15T19:32:59.539Z",
+    "products": ["YouTube"],
+    "details": [{
+      "name": "From Google Ads"
+    }],
+    "activityControls": ["Web \u0026 App Activity", "YouTube watch history"]
+  }
+]

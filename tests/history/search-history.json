@@ -1,0 +1,50 @@
+[
+  {
+    "header": "YouTube",
+    "title": "Watched Some title",
+    "titleUrl": "https://www.youtube.com/",
+    "description": "Watched at 10:40 AM",
+    "time": "2025-09-12T17:40:27.272Z",
+    "products": ["YouTube"],
+    "details": [{
+      "name": "From Google Ads"
+    }],
+    "activityControls": ["Web \u0026 App Activity", "YouTube watch history", "YouTube search history"]
+  },
+  {
+    "header": "YouTube",
+    "title": "Watched Some other title",
+    "titleUrl": "https://www.youtube.com/",
+    "description": "Watched at 10:40 AM",
+    "time": "2025-09-12T17:40:27.272Z",
+    "products": ["YouTube"],
+    "details": [{
+      "name": "From Google Ads"
+    }],
+    "activityControls": ["Web \u0026 App Activity", "YouTube watch history", "YouTube search history"]
+  },
+  {
+    "header": "YouTube",
+    "title": "Watched A third title",
+    "titleUrl": "https://www.youtube.com/",
+    "description": "Watched at 10:40 AM",
+    "time": "2025-09-12T17:40:27.272Z",
+    "products": ["YouTube"],
+    "details": [{
+      "name": "From Google Ads"
+    }],
+    "activityControls": ["Web \u0026 App Activity", "YouTube watch history", "YouTube search history"]
+  },
+  {
+    "header": "YouTube",
+    "title": "Watched A fourth title",
+    "titleUrl": "https://www.youtube.com/",
+    "description": "Watched at 10:40 AM",
+    "time": "2025-09-12T17:40:27.272Z",
+    "products": ["YouTube"],
+    "details": [{
+      "name": "From Google Ads"
+    }],
+    "activityControls": ["Web \u0026 App Activity", "YouTube watch history", "YouTube search history"]
+  }
+]
