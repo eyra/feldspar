@@ -80,7 +80,7 @@ class PageRenderer:
         )
 
     def prompt_consent_generator(
-        self, search_history=[], search_watch_history=[], watch_history=[]
+        self, search_history=[], search_watch_history=[], watch_history=[], subscriptions=[], videos=[]
     ):
         description = props.PropsUIPromptText(
             text=props.Translatable(
@@ -166,7 +166,7 @@ class PageRenderer:
             )
             search_watch_data_table = props.PropsUIPromptConsentFormTable(
                 "search_data",
-                1,
+                2,
                 props.Translatable(
                     {
                         "en": "Search-watch history data",
@@ -191,7 +191,7 @@ class PageRenderer:
 
             watch_data_table = props.PropsUIPromptConsentFormTable(
                 "watch_data",
-                1,
+                3,
                 props.Translatable(
                     {
                         "en": "Watch history data",
@@ -207,6 +207,113 @@ class PageRenderer:
                 headers,
             )
 
+        subscriptions_headers = {
+            "channel_url": props.Translatable(
+                {
+                    "en": "Channel URL",
+                    "de": "Kanal-URL",
+                    "it": "URL canale",
+                    "es": "URL de canal",
+                    "nl": "Kanaal-URL",
+                }
+            ),
+            "channel_title": props.Translatable(
+                {
+                    "en": "Channel Title",
+                    "de": "Kanaltitel",
+                    "it": "Titolo canale",
+                    "es": "Título del canal",
+                    "nl": "Kanaaltitel",
+                }
+            ),
+        }
+
+        subscriptions_table = None
+        if len(subscriptions) > 0:
+            data_frame = pd.DataFrame(
+                subscriptions, columns=["channel_title", "channel_url"]
+            )
+            subscriptions_table = props.PropsUIPromptConsentFormTable(
+                "subscriptions_data",
+                4,
+                props.Translatable(
+                    {
+                        "en": "Subscriptions data",
+                        "de": "Abonnement-Daten",
+                        "it": "Dati sugli abbonamenti",
+                        "es": "Datos de suscripciones",
+                        "nl": "Abonnementgegevens",
+                    }
+                ),
+                table_description,
+                data_frame,
+                5000,
+                subscriptions_headers,
+            )
+
+        videos_headers = {
+            "video_publish_timestamp": props.Translatable(
+                {
+                    "en": "Published on",
+                    "de": "Veröffentlicht am",
+                    "it": "Pubblicato il",
+                    "es": "Publicado el",
+                    "nl": "Gepubliceerd op",
+                }
+            ),
+            "video_title": props.Translatable(
+                {
+                    "en": "Title",
+                    "de": "Titel",
+                    "it": "Titolo",
+                    "es": "Título",
+                    "nl": "Titel",
+                }
+            ),
+            "video_category": props.Translatable(
+                {
+                    "en": "Category",
+                    "de": "Kategorie",
+                    "it": "Categoria",
+                    "es": "Categoría",
+                    "nl": "Categorie",
+                }
+            ),
+            "privacy": props.Translatable(
+                {
+                    "en": "Privacy",
+                    "de": "Datenschutz",
+                    "it": "Privacy",
+                    "es": "Privacidad",
+                    "nl": "Privacy",
+                }
+            ),
+        }
+
+        videos_table = None
+        if len(videos) > 0:
+            data_frame = pd.DataFrame(
+                videos,
+                columns=["video_publish_timestamp", "video_title", "video_category", "privacy"],
+            )
+            videos_table = props.PropsUIPromptConsentFormTable(
+                "videos_data",
+                5,
+                props.Translatable(
+                    {
+                        "en": "Uploaded videos data",
+                        "de": "Hochgeladene Videos",
+                        "it": "Dati dei video caricati",
+                        "es": "Datos de videos subidos",
+                        "nl": "Geüploade video's",
+                    }
+                ),
+                table_description,
+                data_frame,
+                5000,
+                videos_headers,
+            )
+
         # Construct and render the final consent page
         result = yield self.render_page(
             [
@@ -216,6 +323,8 @@ class PageRenderer:
                     search_data_table,
                     search_watch_data_table,
                     watch_data_table,
+                    subscriptions_table,
+                    videos_table,
                     props.PropsUIDataSubmissionButtons(
                         donate_question=props.Translatable(
                             {

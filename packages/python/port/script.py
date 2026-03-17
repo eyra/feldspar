@@ -6,7 +6,7 @@ import logging
 from port.api.assets import *
 from port.api.commands import CommandSystemDonate, CommandSystemExit
 from port.rendering import PageRenderer
-from port.parsers import YoutubeHistoryParser
+from port.parsers import YoutubeHistoryParser, YoutubeSubscriptionsParser, YoutubeUploadedVideosParser
 from port.parsers import ParseResult
 
 
@@ -16,6 +16,8 @@ def process(session_id):
     key = "zip-youtube"
     page_renderer = PageRenderer()
     file_parser = YoutubeHistoryParser()
+    subscriptions_parser = YoutubeSubscriptionsParser()
+    videos_parser = YoutubeUploadedVideosParser()
     logger.debug(f"{key}: start")
 
     # File selection & extraction loop
@@ -36,21 +38,35 @@ def process(session_id):
             files = file_operations.get_files(zip_ref)
             assert files, "No files found in the zip archive"
 
+            relevant_files = [
+                f for f in files
+                if file_parser.is_relevant_file(f)
+                or subscriptions_parser.is_relevant_file(f)
+                or videos_parser.is_relevant_file(f)
+            ]
+            assert relevant_files, "No relevant files found in the zip archive"
+
             extracted_files = []
-            for i, filename in enumerate(files, start=1):
+            for i, filename in enumerate(relevant_files, start=1):
                 yield page_renderer.prompt_extraction_message_page(
-                    f"Extracting file: {filename}", (i * 100) / len(files)
+                    f"Extracting file: {filename}", (i * 100) / len(relevant_files)
                 )
-                extracted_files.append(file_operations.extract_file(zip_ref, filename))
+                logger.debug(f"{key}: extracting {filename}")
+                extracted = file_operations.extract_file(zip_ref, filename)
+                logger.debug(f"{key}: appending files")
+                extracted_files.append(extracted)
+                logger.debug(f"{key}: files appended")
 
             file_parser.parse_files(extracted_files)
             assert (
-                file_parser.parse_result == ParseResult.JSON_PARSED
+                file_parser.parse_result == ParseResult.FILE_PARSED
             ), file_parser.parse_result
             file_parser.process_histories()
             assert (
-                file_parser.parse_result == ParseResult.JSON_PROCESSED
+                file_parser.parse_result == ParseResult.FILE_PROCESSED
             ), file_parser.parse_result
+            subscriptions_parser.parse_files(extracted_files)
+            videos_parser.parse_files(extracted_files)
 
             break  # exit file submission loop on success file extraction
 
@@ -64,6 +80,8 @@ def process(session_id):
         file_parser.search_history,
         file_parser.search_watch_history,
         file_parser.watch_history,
+        subscriptions_parser.subscriptions,
+        videos_parser.videos,
     ):
         result = yield page
         rtype = getattr(result, "__type__", None)
