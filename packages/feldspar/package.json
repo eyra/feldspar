@@ -55,7 +55,7 @@
         "postcss-import": "^16.0.1",
         "rollup": "4.59.0",
         "rollup-plugin-copy": "3.5.0",
-        "rollup-plugin-dts": "6.4.0",
+        "rollup-plugin-dts": "6.4.1",
         "rollup-plugin-peer-deps-external": "2.2.4",
         "tailwindcss": "^4.2.1",
         "ts-jest": "29.4.6",
