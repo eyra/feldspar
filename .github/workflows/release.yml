@@ -77,3 +77,4 @@ jobs:
           files: ${{ env.RELEASE_NAME }}
           prerelease: ${{ env.BRANCH != 'main' }}
           generate_release_notes: true
+          target_commitish: ${{ github.sha }}
