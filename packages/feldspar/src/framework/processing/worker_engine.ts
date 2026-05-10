@@ -1,6 +1,12 @@
 import { CommandHandler } from '../types/modules'
 import { CommandSystemEvent, isCommand, Response } from '../types/commands'
-import { Logger } from '../logging'
+import { Logger, LogLevel } from '../logging'
+
+const VALID_LOG_LEVELS: LogLevel[] = ['debug', 'info', 'warn', 'error']
+
+function toLogLevel (value: unknown): LogLevel {
+  return VALID_LOG_LEVELS.includes(value as LogLevel) ? (value as LogLevel) : 'info'
+}
 
 export default class WorkerProcessingEngine {
   sessionId: String
@@ -61,6 +67,10 @@ export default class WorkerProcessingEngine {
 
       case 'error':
         this.logger?.log('error', `Python error: ${event.data.error}`, { stack: event.data.stack })
+        break
+
+      case 'workerLog':
+        this.logger?.log(toLogLevel(event.data.level), event.data.message)
         break
 
       default:

@@ -2,7 +2,7 @@ import logging
 from collections import deque
 from collections.abc import Generator
 from port.script import process
-from port.api.commands import CommandSystemExit
+from port.api.commands import CommandSystemExit, FlushLogs
 from port.api.file_utils import AsyncFileAdapter
 from port.api.logging import LogForwardingHandler
 
@@ -19,16 +19,23 @@ class ScriptWrapper(Generator):
         logger.addHandler(LogForwardingHandler(self.queue))
 
     def send(self, data):
-        if not self.queue:
+        while True:
+            if self.queue:
+                return self.queue.popleft()
+
             if data and getattr(data, '__type__') == "PayloadFile":
                 data.value = AsyncFileAdapter(data.value)
             try:
                 command = self.script.send(data)
             except StopIteration:
                 return CommandSystemExit(0, "End of script").toDict()
-            self.queue.append(command.toDict())
 
-        return self.queue.popleft()
+            if command is FlushLogs:
+                data = None
+                continue
+
+            self.queue.append(command.toDict())
+            data = None
 
     def throw(self, type=None, value=None, traceback=None):
         raise StopIteration

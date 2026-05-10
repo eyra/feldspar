@@ -57,3 +57,13 @@ class CommandSystemExit:
         dict["code"] = self.code
         dict["info"] = self.info
         return dict
+
+
+class FlushLogs:
+    """Sentinel to signal that the log queue should be flushed.
+
+    Yield this from a generator to flush any accumulated logs to the client
+    before continuing processing. This allows logs to be sent incrementally
+    during long-running operations.
+    """
+    pass

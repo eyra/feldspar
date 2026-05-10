@@ -29,10 +29,43 @@ onmessage = (event) => {
   }
 };
 
+let cycleCount = 0;
+
 function runCycle(payload) {
+  const cycleId = ++cycleCount;
+  const payloadType = (payload && payload.__type__) || "null";
   console.log("[ProcessingWorker] runCycle " + JSON.stringify(payload));
+  self.postMessage({
+    eventType: "workerLog",
+    level: "debug",
+    message: `[Worker] runCycle #${cycleId} starting, payload=${payloadType}`,
+  });
+  let scriptEvent;
   try {
     scriptEvent = pyScript.send(payload);
+  } catch (error) {
+    console.error("[ProcessingWorker] Error in pyScript.send:", error);
+    self.postMessage({
+      eventType: "error",
+      error: error.toString(),
+      stack: error.stack || "",
+    });
+    return;
+  }
+  let commandType = "unknown";
+  try {
+    if (scriptEvent && typeof scriptEvent.get === "function") {
+      commandType = scriptEvent.get("__type__") || "unknown";
+    }
+  } catch (e) {
+    commandType = `unreadable (${e.message})`;
+  }
+  self.postMessage({
+    eventType: "workerLog",
+    level: "debug",
+    message: `[Worker] runCycle #${cycleId} got command=${commandType}`,
+  });
+  try {
     self.postMessage({
       eventType: "runCycleDone",
       scriptEvent: scriptEvent.toJs({
@@ -41,7 +74,7 @@ function runCycle(payload) {
       }),
     });
   } catch (error) {
-    console.error("[ProcessingWorker] Error in runCycle:", error);
+    console.error("[ProcessingWorker] Error in toJs/postMessage:", error);
     self.postMessage({
       eventType: "error",
       error: error.toString(),
