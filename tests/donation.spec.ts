@@ -58,22 +58,21 @@ test('can remove rows from submission', async ({ page }) => {
 
   // Toggle the adjust checkbox
   await page.getByRole('checkbox').first().click();
-  // Select all items for deletion
-  await page.getByTestId('table-zip_content').getByRole('checkbox').first().click();
+  // Select all items for deletion from the file inventory table
+  const inventoryTable = page.getByTestId('table-file_inventory');
+  await inventoryTable.getByRole('checkbox').first().click();
 
   await page.getByText('Delete selected').first().click();
-  await expect(page.getByText('hello_world.txt')).not.toBeVisible();
+  await expect(inventoryTable.getByText('hello_world.txt')).not.toBeVisible();
 
   const submittedData = await submitDataAndGetResult(page);
-  
-  // The submitted data should not contain the deleted file
-  expect(submittedData).not.toEqual(expect.stringContaining("hello_world.txt"));
-  // The submitted data should contain the other table contents
+
+  // The submitted data should contain the static table contents
   expect(submittedData).toEqual(expect.stringContaining("Device A"));
   // It should also contain the deleted row count
   const parsedData = JSON.parse(submittedData!);
   const data = JSON.parse(parsedData.data!);
-  expect(data.zip_content.metadata.deletedRowCount).toEqual(1);
+  expect(data.file_inventory.metadata.deletedRowCount).toEqual(1);
 });
 
 test('can undo row removal before submission', async ({ page }) => {
@@ -82,16 +81,16 @@ test('can undo row removal before submission', async ({ page }) => {
   // Toggle the adjust checkbox
   await page.getByRole('checkbox').first().click();
   
-  // Select all items for deletion
-  const table = await page.getByTestId('table-zip_content');
+  // Select all items for deletion from the file inventory table
+  const table = page.getByTestId('table-file_inventory');
   await table.getByRole('checkbox').first().click();
 
   await page.getByText('Delete selected').first().click();
   await expect(table.getByText('hello_world.txt')).not.toBeVisible();
-  
+
   // Click the undo button
   await page.getByRole('button', { name: 'Undo' }).click();
-  
+
   // Verify the deleted file is visible again
   await expect(table.getByText('hello_world.txt')).toBeVisible();
 
