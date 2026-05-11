@@ -1,18 +1,80 @@
 name: Release
 
-on: workflow_dispatch
+on:
+  push:
+    branches:
+      - 'milestone/*'
+      - 'feature/*'
+      - 'develop'
+      - 'master'
+
+permissions:
+  contents: write
 
 jobs:
-  build_release:
-    uses: ./.github/workflows/_build_release.yml
-
-  tagged_release:
+  test-and-release:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: softprops/action-gh-release@v1
+      - uses: actions/checkout@v6
         with:
-          tag_name: "${{ needs.build_release.outputs.archive }}"
-          prerelease: false
-          fail_on_unmatched_files: true
-          files: |
-            ${{ needs.release.outputs.archive }}
+          lfs: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 11
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+
+      - name: Install Poetry
+        run: pip install poetry
+
+      - name: Install Python dependencies
+        run: cd packages/python && poetry install --with test
+
+      - name: Run Python unit tests
+        run: cd packages/python && poetry run pytest tests/ -v
+
+      - name: Run JS unit tests
+        run: pnpm test
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Create release artifact
+        env:
+          REPO_NAME: ${{ github.event.repository.name }}
+          BUILD_NR: ${{ github.run_number }}
+        run: |
+          BRANCH=${GITHUB_REF_NAME//\//-}
+          TIMESTAMP=$(date '+%Y-%m-%d')
+          RELEASE_NAME="${REPO_NAME}_${TIMESTAMP}_${BUILD_NR}_${BRANCH}.zip"
+          TAG_NAME="${TIMESTAMP}_${BUILD_NR}_${BRANCH}"
+
+          cd packages/data-collector/dist
+          zip -r ../../../${RELEASE_NAME} .
+          echo "RELEASE_NAME=${RELEASE_NAME}" >> $GITHUB_ENV
+          echo "TAG_NAME=${TAG_NAME}" >> $GITHUB_ENV
+          echo "BRANCH=${BRANCH}" >> $GITHUB_ENV
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ env.TAG_NAME }}
+          name: ${{ env.RELEASE_NAME }}
+          files: ${{ env.RELEASE_NAME }}
+          prerelease: ${{ env.BRANCH != 'main' }}
+          generate_release_notes: true
+          target_commitish: ${{ github.sha }}

@@ -20,6 +20,7 @@ Feldspar enables researchers to:
 
 - Fork or clone this repo
 - Install [Node.js](https://nodejs.org/en)
+- Install [pnpm](https://pnpm.io/installation) (Fast, disk space efficient package manager)
 - Install [Python](https://www.python.org/) (Version 3.11 or higher)
 - Install [Poetry](https://python-poetry.org/)
 - Install [Earthly CLI](https://earthly.dev/get-earthly)
@@ -29,13 +30,13 @@ Feldspar enables researchers to:
 1. Install dependencies:
 
    ```sh
-   npm install
+   pnpm install
    ```
 
 2. Run the project locally with hot reloading (builds Python package and starts the development server):
 
    ```sh
-   npm run start
+   pnpm run start
    ```
 
 3. Access the application at [http://localhost:3000](http://localhost:3000)
@@ -65,6 +66,7 @@ def prompt_file(extensions):
         "en": "Please select your data export file.",
         "de": "Bitte wählen Sie Ihre Datenexportdatei aus.",
         "it": "Seleziona il tuo file di esportazione dati.",
+        "es": "Por favor, seleccione su archivo de exportación de datos.",
         "nl": "Selecteer uw data-exportbestand."
     })
     return props.PropsUIPromptFileInput(description, extensions)
@@ -87,6 +89,25 @@ def process(sessionId):
     # Read asset contents
     content = read_asset("my_file.txt")
 ```
+
+### Data Frame Size limits
+
+Row limits for data frames in the Props UI:
+- Consent Table: default maximum of 10,000 rows (configurable)
+- UI hard cap: 50,000 rows (cannot be exceeded)
+
+For larger datasets, pre-aggregate or sample before display, and review your informed consent and privacy guidelines.
+
+### Local extraction debugging (CLI)
+
+You can run the extraction locally against a real zip file — no browser or Pyodide needed:
+
+```bash
+cd packages/python
+poetry run python -m port.script path/to/file.zip
+```
+
+This drives `extract_data()` directly and prints each extracted table to the terminal. Useful for quickly verifying that your extraction logic works before testing it in the browser.
 
 ### Adding Dependencies
 
@@ -232,6 +253,10 @@ When your data donation application is ready for deployment:
    - Any server that can host static files and store the donated data
 
 To use the release in the Next platform, add a "Donate task" and select the generated ZIP file as the "Flow application".
+
+## Important Disclaimer
+
+Please review the [disclaimer](./DISCLAIMER.md) in this repository for important information about technical limitations, logging behavior, and data handling considerations.
 
 ## Funding
 

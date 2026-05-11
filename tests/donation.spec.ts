@@ -7,9 +7,9 @@ import * as path from 'path';
 async function setupTestWithFileUpload(page: Page): Promise<void> {
   // Navigate to the local development server
   await page.goto('http://localhost:3000/');
- 
-  // Wait for the page to load with increased timeout
-  await expect(page.getByRole('heading', { name: 'Data donation demo' })).toBeVisible({ timeout: 30000 });
+
+  // Wait for Pyodide to initialize and render the page (can take a while on CI)
+  await expect(page.getByRole('heading', { name: 'Data donation flow example' })).toBeVisible({ timeout: 90000 });
   
   // Create a temporary file input for file upload
   const fileChooserPromise = page.waitForEvent('filechooser');
@@ -27,16 +27,20 @@ async function setupTestWithFileUpload(page: Page): Promise<void> {
 /**
  * Helper to handle data submission and return the submitted data
  */
-async function submitDataAndGetResult(page: Page): Promise<string | null> {
-  const result = new Promise<string|null>((resolve) => {
+
+function setupRouteForDataSubmission(page: Page): Promise<string|null> {
+  return new Promise<string|null>((resolve) => {
     page.route('/data-submission', async route => {
       const json = {ok: true};
       await route.fulfill({ json });
       resolve(route.request().postData());
     });
   });
+}
 
-  await page.getByText('Donate', { exact: true }).click();
+async function submitDataAndGetResult(page: Page): Promise<string | null> {
+  const result = setupRouteForDataSubmission(page);
+  await page.getByText('Yes, donate', { exact: true }).click();
   return result;
 }
 
@@ -54,18 +58,21 @@ test('can remove rows from submission', async ({ page }) => {
 
   // Toggle the adjust checkbox
   await page.getByRole('checkbox').first().click();
-  // Select all items for deletion
-  await page.getByTestId('table-zip_content').getByRole('checkbox').first().click();
+  // Select all items for deletion from the file inventory table
+  const inventoryTable = page.getByTestId('table-file_inventory');
+  await inventoryTable.getByRole('checkbox').first().click();
 
   await page.getByText('Delete selected').first().click();
-  await expect(page.getByText('hello_world.txt')).not.toBeVisible();
+  await expect(inventoryTable.getByText('hello_world.txt')).not.toBeVisible();
 
   const submittedData = await submitDataAndGetResult(page);
-  
-  // The submitted data should not contain the deleted file
-  expect(submittedData).not.toEqual(expect.stringContaining("hello_world.txt"));
-  // The submitted data should contain the other table contents
-  expect(submittedData).toEqual(expect.stringContaining("I don't always test my code"));
+
+  // The submitted data should contain the static table contents
+  expect(submittedData).toEqual(expect.stringContaining("Device A"));
+  // It should also contain the deleted row count
+  const parsedData = JSON.parse(submittedData!);
+  const data = JSON.parse(parsedData.data!);
+  expect(data.file_inventory.metadata.deletedRowCount).toEqual(1);
 });
 
 test('can undo row removal before submission', async ({ page }) => {
@@ -74,16 +81,16 @@ test('can undo row removal before submission', async ({ page }) => {
   // Toggle the adjust checkbox
   await page.getByRole('checkbox').first().click();
   
-  // Select all items for deletion
-  const table = await page.getByTestId('table-zip_content');
+  // Select all items for deletion from the file inventory table
+  const table = page.getByTestId('table-file_inventory');
   await table.getByRole('checkbox').first().click();
 
   await page.getByText('Delete selected').first().click();
   await expect(table.getByText('hello_world.txt')).not.toBeVisible();
-  
+
   // Click the undo button
   await page.getByRole('button', { name: 'Undo' }).click();
-  
+
   // Verify the deleted file is visible again
   await expect(table.getByText('hello_world.txt')).toBeVisible();
 
@@ -92,6 +99,24 @@ test('can undo row removal before submission', async ({ page }) => {
   // The submitted data should contain the previously deleted file
   expect(submittedData).toEqual(expect.stringContaining("hello_world.txt"));
   // The submitted data should also contain the other table contents
-  expect(submittedData).toEqual(expect.stringContaining("I don't always test my code"));
+  expect(submittedData).toEqual(expect.stringContaining("Device A"));
 });
 
+test('can cancel submission', async ({ page }) => {
+  await setupTestWithFileUpload(page);
+
+  // Toggle the adjust checkbox
+  await page.getByRole('checkbox').first().click();
+  
+  // Setup the route to capture the submission data
+  const result = setupRouteForDataSubmission(page);
+  await page.getByText('No', { exact: true }).click();
+  const submittedData = await result;
+
+  // The submitted data should not contain the previously deleted file
+  expect(submittedData).not.toEqual(expect.stringContaining("hello_world.txt"));
+  // The submitted data should also not contain the other table contents
+  expect(submittedData).not.toEqual(expect.stringContaining("I don't always test my code"));
+  // The submitted data should contain the cancellation message
+  expect(submittedData).toEqual(expect.stringContaining("data_submission declined"));
+});

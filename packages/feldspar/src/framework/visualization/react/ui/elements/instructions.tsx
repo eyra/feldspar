@@ -45,7 +45,7 @@ export const Instructions = (props: Props): JSX.Element => {
   return (
     <div className="flex flex-col gap-6 p-8 border-2 border-grey4 rounded">
       <div className="flex flex-row gap-8 items-center">
-        <div className="flex-grow">
+        <div className="grow">
           <Title3 text={title} margin="" />
         </div>
         <div className="h-12">

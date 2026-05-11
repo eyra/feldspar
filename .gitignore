@@ -1,5 +1,6 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 *.whl
+*.pyc
 
 /packages/*/dist
 /packages/*/build
@@ -9,6 +10,9 @@
 /node_modules
 /.pnp
 .pnp.js
+
+# pnpm
+.pnpm-debug.log*
 
 # testing
 /coverage
@@ -23,10 +27,12 @@
 .env.development.local
 .env.test.local
 .env.production.local
+.tsbuildinfo
 
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 /public/port-0.0.0-py3-none-any.whl
 /src/framework/processing/py/dist/port-0.0.0-py3-none-any.whl
 
@@ -39,3 +45,5 @@ node_modules/
 
 # Act artifacts
 .artifacts/
+
+

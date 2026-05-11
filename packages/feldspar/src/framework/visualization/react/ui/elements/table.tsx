@@ -106,8 +106,8 @@ export const Table = ({ id, head, body, readOnly = false, locale, onChange }: Pr
   }
 
   function matchRow (row: PropsUITableRow, query: string[]): boolean {
-    const rowText = row.cells.map((cell) => cell.text).join(' ')
-    return query.find((word) => !rowText.includes(word)) === undefined
+    const rowText = row.cells.map((cell) => cell.text.toLowerCase()).join(' ')
+    return query.find((word) => !rowText.includes(word.toLowerCase())) === undefined
   }
 
   function handleSelectedChange (selected: string[]): void {
@@ -138,6 +138,7 @@ export const Table = ({ id, head, body, readOnly = false, locale, onChange }: Pr
     }
 
     alteredRows.current = newAlteredRows
+    const deletedCount = body.rows.length - alteredRows.current.length
     filteredRows.current = filterRows()
 
     setState((state) => {
@@ -147,7 +148,6 @@ export const Table = ({ id, head, body, readOnly = false, locale, onChange }: Pr
       const mobilePageCount = getPageCount(mobilePageSize)
       const mobilePage = Math.max(0, Math.min(mobilePageCount - 1, state.mobilePage))
       const mobileRows = updateRows(mobilePage, mobilePageSize)
-      const deletedCount = body.rows.length - alteredRows.current.length
       const visibility = {
         ...state.visibility,
         undo: deletedCount > 0,
@@ -159,7 +159,7 @@ export const Table = ({ id, head, body, readOnly = false, locale, onChange }: Pr
       return { ...state, desktopPage, desktopPageCount, desktopRows, mobilePage, mobilePageCount, mobileRows, deletedCount, selected: [], visibility }
     })
 
-    onChange(alteredRows.current, state.deletedCount)
+    onChange(alteredRows.current, deletedCount)
   }
 
   function handleUndo (): void {
@@ -243,7 +243,7 @@ export const Table = ({ id, head, body, readOnly = false, locale, onChange }: Pr
             <div className={`${body.rows.length <= desktopPageSize ? 'hidden' : ''} `}>
               <Pagination pageCount={state.desktopPageCount} page={state.desktopPage} pageWindowLegSize={3} onChange={handleDesktopPageChange} />
             </div>
-            <div className='flex-grow' />
+            <div className='grow' />
 
             {/* Desktop pages */}
             <Caption text={copy.desktopPages} color='text-grey2' margin='' />
@@ -308,7 +308,7 @@ export const Table = ({ id, head, body, readOnly = false, locale, onChange }: Pr
             <div className={`${display('delete')} mt-1px`}>
               <IconLabelButton label={copy.delete} color='text-delete' icon={DeleteSvg} onClick={handleDeleteSelected} />
             </div>
-            <div className='flex-grow' />
+            <div className='grow' />
             {/* Number of deleted rows */}
             <Label text={copy.deleted} />
             {/* Undo button */}
@@ -325,7 +325,7 @@ export const Table = ({ id, head, body, readOnly = false, locale, onChange }: Pr
               <div className='flex flex-row gap-4 items-center'>
                 {/* Number of deleted rows */}
                 <Label text={copy.deleted} />
-                <div className='flex-grow' />
+                <div className='grow' />
                 {/* Undo button */}
                 <div className={`${display('undo')}`}>
                   <IconLabelButton label={copy.undo} color='text-primary' icon={UndoSvg} onClick={handleUndo} />
@@ -379,50 +379,74 @@ const searchPlaceholder = new TextBundle()
   .add("en", "Search")
   .add("de", "Suchen")
   .add("it", "Cerca")
-  .add("nl", "Zoeken");
+  .add("es", "Buscar")
+  .add("nl", "Zoeken")
+  .add("ro", "Căutați")
+  .add("lt", "Ieškoti");
 
 const noDataLabel = new TextBundle()
   .add("en", "No data found")
   .add("de", "Keine Daten gefunden")
   .add("it", "Nessun dato trovato")
-  .add("nl", "Geen gegevens gevonden");
+  .add("es", "No se han encontrado datos")
+  .add("nl", "Geen gegevens gevonden")
+  .add("ro", "Nu s-au găsit date")
+  .add("lt", "Duomenų nerasta");
 
 const noDataLeftLabel = new TextBundle()
   .add("en", "All data removed")
   .add("de", "Alle Daten gelöscht")
   .add("it", "Tutti i dati rimossi")
-  .add("nl", "Alle gegevens verwijderd");
+  .add("es", "Todos los datos han sido eliminados")
+  .add("nl", "Alle gegevens verwijderd")
+  .add("ro", "Toate datele au fost eliminate")
+  .add("lt", "Visi duomenys pašalinti");
 
 const noResultsLabel = new TextBundle()
   .add("en", "No search results")
   .add("de", "Keine Suchergebnisse")
   .add("it", "Nessun risultato di ricerca")
-  .add("nl", "Geen zoek resultaten");
+  .add("es", "No hay resultados de búsqueda")
+  .add("nl", "Geen zoek resultaten")
+  .add("ro", "Nu există rezultate de căutare")
+  .add("lt", "Paieškos rezultatų nėra");
 
 const editLabel = new TextBundle()
   .add("en", "Adjust")
   .add("de", "Anpassen")
   .add("it", "Regola")
-  .add("nl", "Aanpassen");
+  .add("es", "Ajustar")
+  .add("nl", "Aanpassen")
+  .add("ro", "Ajustați")
+  .add("lt", "Koreguoti");
 
 const undoLabel = new TextBundle()
   .add("en", "Undo")
   .add("de", "Rückgängig machen")
   .add("it", "Annulla")
-  .add("nl", "Ongedaan maken");
+  .add("es", "Deshacer")
+  .add("nl", "Ongedaan maken")
+  .add("ro", "Anulați")
+  .add("lt", "Atšaukti");
 
 const deleteLabel = new TextBundle()
   .add("en", "Delete selected")
   .add("de", "Auswahl löschen")
   .add("it", "Elimina selezione")
-  .add("nl", "Verwijder selectie");
+  .add("es", "Eliminar selección")
+  .add("nl", "Verwijder selectie")
+  .add("ro", "Ștergeți selecția")
+  .add("lt", "Ištrinti pasirinktus");
 
 function deletedNoneRowLabel(): TextBundle {
   return new TextBundle()
     .add("en", "No adjustments")
     .add("de", "Keine Anpassungen")
     .add("it", "Nessuna modifica")
-    .add("nl", "Geen aanpassingen");
+    .add("es", "Sin ajustes")
+    .add("nl", "Geen aanpassingen")
+    .add("ro", "Fără ajustări")
+    .add("lt", "Be koregavimų");
 }
 
 function deletedRowLabel(amount: number): TextBundle {
@@ -430,7 +454,10 @@ function deletedRowLabel(amount: number): TextBundle {
     .add("en", `${amount} row deleted`)
     .add("de", `${amount} Zeile gelöscht`)
     .add("it", `${amount} Riga eliminata`)
-    .add("nl", `${amount} rij verwijderd`);
+    .add("es", `${amount} fila eliminada`)
+    .add("nl", `${amount} rij verwijderd`)
+    .add("ro", `${amount} rând șters`)
+    .add("lt", `${amount} eilutė ištrinta`);
 }
 
 function deletedRowsLabel(amount: number): TextBundle {
@@ -438,7 +465,10 @@ function deletedRowsLabel(amount: number): TextBundle {
     .add("en", `${amount} rows deleted`)
     .add("de", `${amount} Zeilen gelöscht`)
     .add("it", `${amount} Righe eliminate`)
-    .add("nl", `${amount} rijen verwijderd`);
+    .add("es", `${amount} filas eliminadas`)
+    .add("nl", `${amount} rijen verwijderd`)
+    .add("ro", `${amount} rânduri șterse`)
+    .add("lt", `${amount} eilutės ištrintos`);
 }
 
 function deletedLabel(amount: number): TextBundle {
@@ -452,7 +482,10 @@ function singlePageLabel(): TextBundle {
     .add("en", "1 page")
     .add("de", "1 Seite")
     .add("it", "1 pagina")
-    .add("nl", "1 pagina");
+    .add("es", "1 página")
+    .add("nl", "1 pagina")
+    .add("ro", "1 pagină")
+    .add("lt", "1 puslapis");
 }
 
 function multiplePagesLabel(amount: number): TextBundle {
@@ -460,7 +493,10 @@ function multiplePagesLabel(amount: number): TextBundle {
     .add("en", `${amount} pages`)
     .add("de", `${amount} Seiten`)
     .add("it", `${amount} pagine`)
-    .add("nl", `${amount} pagina's`);
+    .add("es", `${amount} páginas`)
+    .add("nl", `${amount} pagina's`)
+    .add("ro", `${amount} pagini`)
+    .add("lt", `${amount} puslapiai`);
 }
 
 function pagesLabel (amount: number): TextBundle {

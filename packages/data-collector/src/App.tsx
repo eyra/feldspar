@@ -6,12 +6,13 @@ function App() {
     <div className="App">
       <ScriptHostComponent
         workerUrl="./py_worker.js"
-        standalone={process.env.NODE_ENV !== "production"}
+        standalone={import.meta.env.DEV}
         factories={[
           new DataSubmissionPageFactory({
             promptFactories: [new HelloWorldFactory()],
           }),
         ]}
+        logLevel={import.meta.env.DEV ? "debug" : "info"}
       />
     </div>
   );

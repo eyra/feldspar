@@ -50,7 +50,7 @@ export const FileInput = (props: Props): JSX.Element => {
           <input ref={input} id='input' type='file' className='hidden' accept={extensions} onChange={handleSelect} />
           <div className='flex flex-col sm:flex-row gap-2 sm:gap-4 sm:items-center'>
             <BodyLarge text={selectedFile?.name ?? placeholder} margin='' color={selectedFile === undefined ? 'text-grey2' : 'textgrey1'} />
-            <div className='flex-grow' />
+            <div className='grow' />
             <div className='flex-wrap'>
               <div className='flex flex-row'>
                 <PrimaryButton onClick={handleClick} label={selectButton} color='bg-tertiary text-grey1' />
@@ -96,7 +96,10 @@ const continueButtonLabel = (): Translatable => {
     .add('en', 'Continue')
     .add('de', 'Weiter')
     .add('it', 'Continua')
+    .add('es', 'Continuar')
     .add('nl', 'Verder')
+    .add('ro', 'Continuați')
+    .add('lt', 'Tęsti')
 }
 
 const selectButtonLabel = (): Translatable => {
@@ -104,7 +107,10 @@ const selectButtonLabel = (): Translatable => {
     .add('en', 'Choose file')
     .add('de', 'Datei auswählen')
     .add('it', 'Scegli file')
+    .add('es', 'Elegir archivo')
     .add('nl', 'Kies bestand')
+    .add('ro', 'Alegeți fișier')
+    .add('lt', 'Pasirinkti failą')
 }
 
 const note = (): Translatable => {
@@ -112,7 +118,10 @@ const note = (): Translatable => {
     .add('en', 'Note: The process to extract the correct data from the file is done on your own device. No data is stored or sent yet.')
     .add('de', 'Hinweis: Der Prozess zur Extraktion der richtigen Daten aus der Datei erfolgt auf Ihrem eigenen Gerät. Es werden noch keine Daten gespeichert oder gesendet.')
     .add('it', 'Nota: Il processo per estrarre i dati corretti dal file viene eseguito sul Suo dispositivo. Nessun dato viene ancora memorizzato o inviato.')
+    .add('es', 'Nota: El proceso para extraer los datos correctos del archivo se realiza en su propio dispositivo. Aún no se almacena ni se envía ningún dato.')
     .add('nl', 'Let op: Het proces om de juiste gegevens uit het bestand te halen wordt uitgevoerd op uw eigen apparaat. Er worden nog geen gegevens opgeslagen of verzonden.')
+    .add('ro', 'Notă: Procesul de extragere a datelor corecte din fișier se realizează pe propriul dvs. dispozitiv. Nu sunt stocate sau trimise încă date.')
+    .add('lt', 'Pastaba: Tinkamų duomenų išgavimas iš failo atliekamas jūsų įrenginyje. Duomenys dar nėra saugomi ar siunčiami.')
 }
 
 const placeholder = (): Translatable => {
@@ -120,5 +129,8 @@ const placeholder = (): Translatable => {
     .add('en', 'E.g. data.zip')
     .add('de', 'Z.B. data.zip')
     .add('it', 'Esempio: data.zip')
+    .add('es', 'Ejemplo: data.zip')
     .add('nl', 'Voorbeeld: data.zip')
+    .add('ro', 'Ex. data.zip')
+    .add('lt', 'Pvz. data.zip')
 }
