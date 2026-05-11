@@ -103,25 +103,16 @@ def step_3_consent(key, sessionId, results):
 ##########################
 
 def extract_data(path):
-    """Generator that runs extraction steps and yields FlushLogs between them.
+    """Generator that runs extraction steps, returning the results list.
 
-    Yielding FlushLogs signals the framework to deliver any accumulated log
-    messages to the client immediately, giving real-time feedback during
-    long-running extractions. Use yield from to forward them automatically:
+    Yields FlushLogs between steps so progress logs reach the client in real
+    time rather than all at once when the consent page renders. Call via:
 
         results = yield from extract_data(path)
     """
     logger.info("extract_data: opening zip file")
-    yield FlushLogs
-
-    try:
-        zf = zipfile.ZipFile(path)
-        logger.info(f"extract_data: zip opened, {len(zf.namelist())} files")
-    except zipfile.BadZipFile as e:
-        logger.error(f"extract_data: bad zip file: {e}")
-        yield FlushLogs
-        raise
-
+    zf = zipfile.ZipFile(path)
+    logger.info(f"extract_data: zip opened, {len(zf.namelist())} files")
     results = []
 
     extractors = [
@@ -135,10 +126,9 @@ def extract_data(path):
         try:
             results.append(fn())
             logger.info(f"extract_data: {name} extracted successfully")
-            yield FlushLogs
+            yield FlushLogs  # stream progress logs to the client in real time between extractors
         except Exception as e:
             logger.error(f"extract_data: failed to extract {name}: {e}", exc_info=True)
-            yield FlushLogs
             raise
 
     logger.info(f"extract_data: done, {len(results)} tables extracted")

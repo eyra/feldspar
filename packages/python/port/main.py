@@ -28,7 +28,7 @@ class ScriptWrapper(Generator):
             try:
                 command = self.script.send(data)
             except StopIteration:
-                return CommandSystemExit(0, "End of script").toDict()
+                return self.flush_logs() or CommandSystemExit(0, "End of script").toDict()
 
             if command is FlushLogs:
                 data = None
@@ -36,6 +36,13 @@ class ScriptWrapper(Generator):
 
             self.queue.append(command.toDict())
             data = None
+
+    def flush_logs(self):
+        while self.queue:
+            item = self.queue.popleft()
+            if item.get("__type__") == "CommandSystemLog":
+                return item
+        return None
 
     def throw(self, type=None, value=None, traceback=None):
         raise StopIteration
