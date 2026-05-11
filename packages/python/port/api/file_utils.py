@@ -9,7 +9,7 @@ files into Pyodide's virtual filesystem.
 try:
     import js  # Only available in Pyodide
 except ImportError:
-    js = None  # Running outside Pyodide (e.g., in tests)
+    js = None  # Running outside Pyodide (e.g., CLI or tests)
 
 
 class AsyncFileAdapter:
