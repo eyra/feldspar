@@ -145,7 +145,7 @@ importers:
         version: 10.5.0(postcss@8.5.14)
       fdir:
         specifier: 6.5.0
-        version: 6.5.0(picomatch@4.0.4)
+        version: 6.5.0(picomatch@4.0.3)
       jest:
         specifier: 30.4.2
         version: 30.4.2(@types/node@25.7.0)
@@ -2643,10 +2643,6 @@ packages:
 
   thenby@1.3.4:
     resolution: {integrity: sha512-89Gi5raiWA3QZ4b2ePcEwswC3me9JIg+ToSgtE0JWeCynLnLxNr/f9G+xfo9K+Oj4AFdom8YNJjibIARTJmapQ==}
-
-  tinyglobby@0.2.14:
-    resolution: {integrity: sha512-tX5e7OM1HnYr2+a2C/4V0htOcSQcoSTH9KgJnVvNm5zm/cyEWKJ7j7YutsH9CxMdtOkkLFy2AHrMci9IM8IPZQ==}
-    engines: {node: '>=12.0.0'}
 
   tinyglobby@0.2.16:
     resolution: {integrity: sha512-pn99VhoACYR8nFHhxqix+uvsbXineAasWm5ojXoN8xEwK5Kd3/TrhNn1wByuD52UxWRLy8pu+kRMniEi6Eq9Zg==}
@@ -5218,7 +5214,7 @@ snapshots:
       pretty-hrtime: 1.0.3
       read-cache: 1.0.0
       slash: 5.1.0
-      tinyglobby: 0.2.14
+      tinyglobby: 0.2.16
       yargs: 17.7.2
     transitivePeerDependencies:
       - jiti
@@ -5523,11 +5519,6 @@ snapshots:
       minimatch: 3.1.5
 
   thenby@1.3.4: {}
-
-  tinyglobby@0.2.14:
-    dependencies:
-      fdir: 6.5.0(picomatch@4.0.4)
-      picomatch: 4.0.4
 
   tinyglobby@0.2.16:
     dependencies:
