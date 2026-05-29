@@ -23,6 +23,7 @@
 import port.api.props as props
 from port.api.assets import *
 from port.api.commands import CommandSystemDonate, CommandSystemExit, CommandUIRender, FlushLogs
+from port.safe_data import SafeData
 
 import logging
 import os
@@ -119,6 +120,7 @@ def extract_data(path):
         ("file inventory", lambda: extract_file_inventory(zf)),
         ("file types",     lambda: extract_file_types(zf)),
         ("largest files",  lambda: extract_largest_files(zf)),
+        ("json summary",   lambda: extract_json_summary(zf)),
     ]
 
     for name, fn in extractors:
@@ -164,6 +166,43 @@ def extract_largest_files(zf, n=10):
     files = sorted(zf.infolist(), key=lambda i: i.file_size, reverse=True)[:n]
     rows = [{"Filename": i.filename, "Size": i.file_size} for i in files]
     return ExtractionResult("largest_files", pd.DataFrame(rows, columns=["Filename", "Size"]))
+
+
+def extract_json_summary(zf):
+    """Summarise every .json file in the zip using SafeData.
+
+    Demonstrates SafeData usage: each JSON file is parsed with
+    `SafeData.parse_json`, fields are pulled with typed getters that
+    return safe defaults on missing/wrong-type, dotted paths walk into
+    nested objects, and `had_errors()` flags whether the file's data
+    was fully clean.
+
+    The fields below are illustrative — typical donation-data shapes
+    have things like a user profile, an items list, and timestamps.
+    None of the accessors will raise if a field is missing or has an
+    unexpected type; instead the default is used and the error is
+    logged.
+    """
+    rows = []
+    for name in zf.namelist():
+        if not name.lower().endswith(".json"):
+            continue
+        with zf.open(name) as f:
+            data = SafeData.parse_json(f)
+        items = data.get_list_of(SafeData, "items")
+        rows.append({
+            "Filename": name,
+            # The same field may appear under different keys/shapes across
+            # export versions — list the candidates and take the first match.
+            "User": data.get_str("user.name", "user.displayName", "account.fullName", default="(unknown)"),
+            "User ID": data.get_int("user.id", "user.userId", default=0),
+            "Item count": len(items),
+            "Errors": "yes" if data.had_errors() else "no",
+        })
+    return ExtractionResult(
+        "json_summary",
+        pd.DataFrame(rows, columns=["Filename", "User", "User ID", "Item count", "Errors"]),
+    )
 
 
 ######################
