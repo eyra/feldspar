@@ -27,7 +27,7 @@
     "concurrently": "10.0.3",
     "husky": "9.1.7",
     "nodemon": "3.1.14",
-    "postcss": "^8.5.10",
+    "postcss": "^8.5.16",
     "postcss-cli": "^11.0.0",
     "postcss-import": "^16.0.1",
     "tailwindcss": "^4.2.4"
