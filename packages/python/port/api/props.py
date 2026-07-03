@@ -75,14 +75,15 @@ class PropsUIPromptConfirm:
 
     text: Translatable
     ok: Translatable
-    cancel: Translatable
+    cancel: Optional[Translatable] = None
 
     def toDict(self):
         dict = {}
         dict["__type__"] = "PropsUIPromptConfirm"
         dict["text"] = self.text.toDict()
         dict["ok"] = self.ok.toDict()
-        dict["cancel"] = self.cancel.toDict()
+        if self.cancel is not None:
+            dict["cancel"] = self.cancel.toDict()
         return dict
 
 

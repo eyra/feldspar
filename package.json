@@ -14,23 +14,23 @@
     "build:install-wheel": "cp -R packages/python/dist/*.whl packages/data-collector/public",
     "build:py": "pnpm run build:wheel && pnpm run build:install-wheel",
     "start:py": "nodemon --ext py --exec \"pnpm run build:py\"",
-    "dev:feldspar": "pnpm run --filter @eyra/feldspar dev",
-    "dev:demo": "pnpm run --filter @eyra/data-collector dev",
-    "start": "pnpm run build:py && pnpm run --filter @eyra/feldspar build && concurrently \"pnpm run start:py\" \"pnpm run dev:feldspar\" \"pnpm run dev:demo\"",
+    "dev:feldspar": "./check-deps.sh && pnpm run --filter @eyra/feldspar dev",
+    "dev:demo": "./check-deps.sh && pnpm run --filter @eyra/data-collector dev",
+    "start": "./check-deps.sh && pnpm run build:py && pnpm run --filter @eyra/feldspar build && concurrently \"pnpm run start:py\" \"pnpm run dev:feldspar\" \"pnpm run dev:demo\"",
     "clean": "pnpm run --recursive clean && rm -rf node_modules",
     "release": "./release.sh"
   },
   "devDependencies": {
-    "@playwright/test": "1.58.2",
-    "@tailwindcss/postcss": "^4.2.1",
-    "@types/node": "25.3.3",
-    "concurrently": "9.2.1",
+    "@playwright/test": "1.61.1",
+    "@tailwindcss/postcss": "^4.2.4",
+    "@types/node": "26.0.1",
+    "concurrently": "10.0.3",
     "husky": "9.1.7",
     "nodemon": "3.1.14",
-    "postcss": "^8.4.35",
+    "postcss": "^8.5.10",
     "postcss-cli": "^11.0.0",
     "postcss-import": "^16.0.1",
-    "tailwindcss": "^3.4.0"
+    "tailwindcss": "^4.2.4"
   },
   "dependencies": {
     "fdir": "6.5.0"

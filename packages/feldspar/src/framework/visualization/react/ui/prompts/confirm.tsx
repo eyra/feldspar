@@ -26,7 +26,9 @@ export const Confirm = (props: Props): JSX.Element => {
       <BodyLarge text={text} margin='mb-4' />
       <div className='flex flex-row gap-4'>
         <PrimaryButton label={ok} onClick={handleOk} color='text-grey1 bg-tertiary' />
-        <PrimaryButton label={cancel} onClick={handleCancel} color='text-white bg-primary' />
+        {cancel !== undefined && (
+          <PrimaryButton label={cancel} onClick={handleCancel} color='text-white bg-primary' />
+        )}
       </div>
     </>
   )
@@ -35,13 +37,13 @@ export const Confirm = (props: Props): JSX.Element => {
 interface Copy {
   text: string
   ok: string
-  cancel: string
+  cancel: string | undefined
 }
 
 function prepareCopy ({ text, ok, cancel, locale }: Props): Copy {
   return {
     text: Translator.translate(text, locale),
     ok: Translator.translate(ok, locale),
-    cancel: Translator.translate(cancel, locale)
+    cancel: cancel !== undefined ? Translator.translate(cancel, locale) : undefined
   }
 }

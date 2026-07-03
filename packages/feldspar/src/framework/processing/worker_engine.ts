@@ -1,9 +1,16 @@
 import { CommandHandler } from '../types/modules'
 import { CommandSystemEvent, isCommand, Response } from '../types/commands'
-import { Logger } from '../logging'
+import { Logger, LogLevel } from '../logging'
+
+const VALID_LOG_LEVELS: LogLevel[] = ['debug', 'info', 'warn', 'error']
+
+function toLogLevel (value: unknown): LogLevel {
+  return VALID_LOG_LEVELS.includes(value as LogLevel) ? (value as LogLevel) : 'info'
+}
 
 export default class WorkerProcessingEngine {
   sessionId: String
+  locale: String
   worker: Worker
   commandHandler: CommandHandler
   logger?: Logger
@@ -13,11 +20,13 @@ export default class WorkerProcessingEngine {
 
   constructor (
     sessionId: string,
+    locale: string,
     worker: Worker,
     commandHandler: CommandHandler,
     logger?: Logger
   ) {
     this.sessionId = sessionId
+    this.locale = locale
     this.commandHandler = commandHandler
     this.worker = worker
     this.logger = logger
@@ -63,6 +72,10 @@ export default class WorkerProcessingEngine {
         this.logger?.log('error', `Python error: ${event.data.error}`, { stack: event.data.stack })
         break
 
+      case 'workerLog':
+        this.logger?.log(toLogLevel(event.data.level), event.data.message)
+        break
+
       default:
         this.logger?.log('warn', `Received unsupported worker event: ${eventType}`)
     }
@@ -91,7 +104,10 @@ export default class WorkerProcessingEngine {
   }
 
   firstRunCycle (): void {
-    this.worker.postMessage({ eventType: 'firstRunCycle', sessionId: this.sessionId })
+    this.worker.postMessage({
+      eventType: 'firstRunCycle',
+      data: { sessionId: this.sessionId, locale: this.locale }
+    })
   }
 
   nextRunCycle (response: Response): void {

@@ -36,9 +36,9 @@ export default defineConfig({
     sourcemap: true,
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          feldspar: ['@eyra/feldspar']
+        manualChunks: (id) => {
+          if (id.includes('react-dom') || id.includes('react')) return 'vendor'
+          if (id.includes('@eyra/feldspar')) return 'feldspar'
         }
       }
     }

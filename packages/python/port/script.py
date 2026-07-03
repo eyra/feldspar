@@ -4,6 +4,12 @@
 # This script (`script.py`) provides a basic data donation flow using
 # standard UI components available in Feldspar.
 #
+# It demonstrates:
+#   - File upload and validation
+#   - Multiple named extraction steps with yield FlushLogs between them
+#     so log messages reach the client in real time during long extractions
+#   - Multiple result tables shown in the consent form
+#
 # For a more advanced example that includes custom UI components
 # (e.g. a custom React-based component integrated with Python),
 # please refer to:
@@ -11,87 +17,85 @@
 #     `script_custom_ui.py`
 #
 # That script demonstrates how to define and use your own components
-# using Feldspar’s React integration and how to render them via Python.
+# using Feldspar's React integration and how to render them via Python.
 # --------------------------------------------------------------------
 
 import port.api.props as props
 from port.api.assets import *
-from port.api.commands import CommandSystemDonate, CommandSystemExit, CommandUIRender
+from port.api.commands import CommandSystemDonate, CommandSystemExit, CommandUIRender, FlushLogs
+from port.safe_data import SafeData
 
 import logging
+import os
 import pandas as pd
 import zipfile
 import json
 import time
+from collections import namedtuple
 
 logger = logging.getLogger(__name__)
 
+ExtractionResult = namedtuple("ExtractionResult", ["name", "data_frame"])
 
-def donate(key, data):
-    return CommandSystemDonate(key=key, json_string=data)
 
-def process(sessionId):
-    logger.info("user entered script")
+######################
+# Data donation flow #
+######################
 
+def process(data):
+    # `data` is a context dict routed from the JS framework:
+    #   {"sessionId": "...", "locale": "en" | "nl" | ...}
+    # Use `locale` for strings rendered into DataFrame cells (column headers,
+    # summary descriptions) — those bypass the React i18n layer.
+    sessionId = data.get("sessionId")
+    locale = data.get("locale", "en")
+    logger.info(f"user entered script (locale={locale})")
     key = "zip-contents-example"
-    logger.debug(f"{key}: start")
 
-    # STEP 1: select the file
-    data = None
+    results = None
+
     while True:
-        logger.debug(f"{key}: prompt file")
-        promptFile = prompt_file("application/zip, text/plain")
-        fileResult = yield render_data_submission_page([promptFile])
+        fileResult = yield from step_1_select_file(key)
+        if fileResult is None:
+            break
 
-        if fileResult.__type__ == "PayloadFile":
-            logger.debug(f"{key}: extracting file")
-            try:
-                zipfile_ref = zipfile.ZipFile(fileResult.value)
-            except zipfile.error as e:
-                logger.error(f"{key}: error opening zipfile: {e}")
-                zipfile_ref = "invalid"
+        results, retry = yield from step_2_extract_data_from_file(key, fileResult, locale)
+        if retry:
+            continue
+        break
 
-            if zipfile_ref and zipfile_ref != "invalid":
-                # Extracting the zipfile
-                extraction_result = []
-                files = get_files(zipfile_ref)
-                fileCount = len(files)
-                for index, filename in enumerate(files):
-                    percentage = ((index + 1) / fileCount) * 100
-                    promptMessage = prompt_extraction_message(
-                        f"Extracting file: {filename}", percentage
-                    )
-                    yield render_data_submission_page(promptMessage)
-                    file_extraction_result = extract_file(zipfile_ref, filename)
-                    extraction_result.append(file_extraction_result)
+    if results:
+        yield from step_3_consent(key, sessionId, results)
 
-                if len(extraction_result) >= 0:
-                    logger.debug(f"{key}: extraction successful, go to consent form")
-                    data = extraction_result
-                    break
-                else:
-                    logger.debug(f"{key}: prompt confirmation to retry file selection")
-                    retry_result = yield render_data_submission_page(retry_confirmation())
-                    if retry_result.__type__ == "PayloadTrue":
-                        logger.debug(f"{key}: skip due to invalid file")
-                        continue
-                    else:
-                        logger.debug(f"{key}: retry prompt file")
-                        break
-            else:
-                # Invalid file, ask for retry
-                logger.debug(f"{key}: prompt confirmation to retry file selection")
-                retry_result = yield render_data_submission_page(retry_confirmation())
-                if retry_result.__type__ == "PayloadTrue":
-                    logger.debug(f"{key}: skip due to invalid file")
-                    continue
-                else:
-                    logger.debug(f"{key}: retry prompt file")
-                    break
 
-    # STEP 2: ask for consent
+def step_1_select_file(key):
+    logger.debug(f"{key}: prompt file")
+    fileResult = yield render_data_submission_page([prompt_file("application/zip, text/plain")])
+    if fileResult.__type__ != "PayloadFile":
+        logger.debug(f"{key}: no file selected, exit")
+        return None
+    return fileResult
+
+
+def step_2_extract_data_from_file(key, fileResult, locale="en"):
+    logger.debug(f"{key}: extracting file")
+    results = None
+    try:
+        results = yield from extract_data(fileResult.value, locale)
+    except (IOError, zipfile.BadZipFile):
+        logger.debug(f"{key}: prompt confirmation to retry file selection")
+        retry_result = yield render_data_submission_page(retry_confirmation())
+        if retry_result.__type__ == "PayloadTrue":
+            return None, True
+        logger.debug(f"{key}: user declined retry, exit")
+        return None, False
+    logger.debug(f"{key}: extraction successful, go to consent form")
+    return results, False
+
+
+def step_3_consent(key, sessionId, results):
     logger.debug(f"{key}: prompt consent")
-    for prompt in prompt_consent(data):
+    for prompt in prompt_consent(results):
         result = yield prompt
         if result.__type__ == "PayloadJSON":
             logger.debug(f"{key}: donate consent data")
@@ -100,6 +104,133 @@ def process(sessionId):
             value = json.dumps('{"status" : "data_submission declined"}')
             yield donate(f"{sessionId}-{key}", value)
 
+
+##########################
+# Zip file processing    #
+##########################
+
+def extract_data(path, locale="en"):
+    """Generator that runs extraction steps, returning the results list.
+
+    Yields FlushLogs between steps so progress logs reach the client in real
+    time rather than all at once when the consent page renders. Call via:
+
+        results = yield from extract_data(path, locale)
+    """
+    logger.info("extract_data: opening zip file")
+    zf = zipfile.ZipFile(path)
+    logger.info(f"extract_data: zip opened, {len(zf.namelist())} files")
+    results = []
+
+    extractors = [
+        ("file inventory", lambda: extract_file_inventory(zf, locale)),
+        ("file types",     lambda: extract_file_types(zf)),
+        ("largest files",  lambda: extract_largest_files(zf)),
+        ("json summary",   lambda: extract_json_summary(zf)),
+    ]
+
+    for name, fn in extractors:
+        logger.debug(f"extract_data: extracting {name}...")
+        try:
+            results.append(fn())
+            logger.info(f"extract_data: {name} extracted successfully")
+            yield FlushLogs  # stream progress logs to the client in real time between extractors
+        except Exception as e:
+            logger.error(f"extract_data: failed to extract {name}: {e}", exc_info=True)
+            raise
+
+    logger.info(f"extract_data: done, {len(results)} tables extracted")
+    return results
+
+
+FILE_INVENTORY_HEADERS = {
+    "en": ["Filename", "Compressed size", "Size"],
+    "de": ["Dateiname", "Komprimierte Größe", "Größe"],
+    "it": ["Nome file", "Dimensione compressa", "Dimensione"],
+    "es": ["Nombre de archivo", "Tamaño comprimido", "Tamaño"],
+    "nl": ["Bestandsnaam", "Gecomprimeerde grootte", "Grootte"],
+    "ro": ["Nume fișier", "Dimensiune comprimată", "Dimensiune"],
+    "lt": ["Failo pavadinimas", "Suspaustas dydis", "Dydis"],
+}
+
+
+def extract_file_inventory(zf, locale="en"):
+    """List every file in the zip with its compressed and uncompressed size.
+
+    Column headers are localized via `locale` — this demonstrates threading the
+    UI locale into DataFrame content, which bypasses the React i18n layer.
+    """
+    headers = FILE_INVENTORY_HEADERS.get(locale, FILE_INVENTORY_HEADERS["en"])
+    filename_col, compressed_col, size_col = headers
+    rows = []
+    for info in zf.infolist():
+        time.sleep(0.01)  # artificial delay — remove in production
+        rows.append({
+            filename_col: info.filename,
+            compressed_col: info.compress_size,
+            size_col: info.file_size,
+        })
+    return ExtractionResult("file_inventory", pd.DataFrame(rows, columns=headers))
+
+
+def extract_file_types(zf):
+    """Count files grouped by extension."""
+    from collections import Counter
+    extensions = Counter(
+        os.path.splitext(name)[1].lower() or "(none)"
+        for name in zf.namelist()
+    )
+    rows = [{"Extension": ext, "Count": count} for ext, count in sorted(extensions.items())]
+    return ExtractionResult("file_types", pd.DataFrame(rows, columns=["Extension", "Count"]))
+
+
+def extract_largest_files(zf, n=10):
+    """Show the top N files by uncompressed size."""
+    files = sorted(zf.infolist(), key=lambda i: i.file_size, reverse=True)[:n]
+    rows = [{"Filename": i.filename, "Size": i.file_size} for i in files]
+    return ExtractionResult("largest_files", pd.DataFrame(rows, columns=["Filename", "Size"]))
+
+
+def extract_json_summary(zf):
+    """Summarise every .json file in the zip using SafeData.
+
+    Demonstrates SafeData usage: each JSON file is parsed with
+    `SafeData.parse_json`, fields are pulled with typed getters that
+    return safe defaults on missing/wrong-type, dotted paths walk into
+    nested objects, and `had_errors()` flags whether the file's data
+    was fully clean.
+
+    The fields below are illustrative — typical donation-data shapes
+    have things like a user profile, an items list, and timestamps.
+    None of the accessors will raise if a field is missing or has an
+    unexpected type; instead the default is used and the error is
+    logged.
+    """
+    rows = []
+    for name in zf.namelist():
+        if not name.lower().endswith(".json"):
+            continue
+        with zf.open(name) as f:
+            data = SafeData.parse_json(f)
+        items = data.get_list_of(SafeData, "items")
+        rows.append({
+            "Filename": name,
+            # The same field may appear under different keys/shapes across
+            # export versions — list the candidates and take the first match.
+            "User": data.get_str("user.name", "user.displayName", "account.fullName", default="(unknown)"),
+            "User ID": data.get_int("user.id", "user.userId", default=0),
+            "Item count": len(items),
+            "Errors": "yes" if data.had_errors() else "no",
+        })
+    return ExtractionResult(
+        "json_summary",
+        pd.DataFrame(rows, columns=["Filename", "User", "User ID", "Item count", "Errors"]),
+    )
+
+
+######################
+# UI helpers         #
+######################
 
 def render_data_submission_page(body):
     header = props.PropsUIHeader(
@@ -115,8 +246,6 @@ def render_data_submission_page(body):
             }
         )
     )
-
-    # Convert single body item to array if needed
     body_items = [body] if not isinstance(body, list) else body
     page = props.PropsUIPageDataSubmission("Zip", header, body_items)
     return CommandUIRender(page)
@@ -145,18 +274,7 @@ def retry_confirmation():
             "lt": "Bandykite dar kartą",
         }
     )
-    cancel = props.Translatable(
-        {
-            "en": "Continue",
-            "de": "Weiter",
-            "it": "Continua",
-            "es": "Continuar",
-            "nl": "Verder",
-            "ro": "Continuați",
-            "lt": "Tęsti",
-        }
-    )
-    return props.PropsUIPromptConfirm(text, ok, cancel)
+    return props.PropsUIPromptConfirm(text, ok)
 
 
 def prompt_file(extensions):
@@ -171,135 +289,42 @@ def prompt_file(extensions):
             "lt": "Prašome pasirinkti ZIP failą, saugomą jūsų įrenginyje.",
         }
     )
-
-
-
-
-
     return props.PropsUIPromptFileInput(description, extensions)
 
 
-def prompt_extraction_message(message, percentage):
-    description = props.Translatable(
-        {
-            "en": "One moment please. Information is now being extracted from the selected file.",
-            "de": "Einen Moment bitte. Es werden nun Informationen aus der ausgewählten Datei extrahiert.",
-            "it": "Un momento, per favore. Le informazioni vengono estratte dal file selezionato.",
-            "es": "Un momento, por favor. Se están extrayendo los datos del archivo seleccionado.",
-            "nl": "Een moment geduld. Informatie wordt op dit moment uit het geselecteerde bestand gehaald.",
-            "ro": "Un moment, vă rugăm. Informațiile sunt extrase acum din fișierul selectat.",
-            "lt": "Prašome palaukti. Informacija dabar ištraukiama iš pasirinkto failo.",
-        }
-    )
-
-    return props.PropsUIPromptProgress(description, message, percentage)
-
-
-def get_files(zipfile_ref):
-    try:
-        return zipfile_ref.namelist()
-    except zipfile.error:
-        return []
-
-
-def extract_file(zipfile_ref, filename):
-    try:
-        # make it slow for demo reasons only
-        time.sleep(0.01)
-        info = zipfile_ref.getinfo(filename)
-        return (filename, info.compress_size, info.file_size)
-    except zipfile.error:
-        return "invalid"
-
-
 def prompt_consent(data):
+    """data is a list of ExtractionResult namedtuples from extract_data."""
     description = props.PropsUIPromptText(
         text=props.Translatable(
             {
-                "en": "Please review your data below. Use the search fields to find specific information. You can remove any data you prefer not to share. Thank you for supporting this research project!",
-                "de": "Bitte überprüfen Sie Ihre Daten unten. Verwenden Sie die Suchfelder, um bestimmte Informationen zu finden. Sie können alle Daten entfernen, die Sie nicht teilen möchten. Vielen Dank für Ihre Unterstützung dieses Forschungsprojekts!",
-                "it": "Controlla i tuoi dati qui sotto. Usa i campi di ricerca per trovare informazioni specifiche. Puoi rimuovere qualsiasi dato che preferisci non condividere. Grazie per il tuo supporto a questo progetto di ricerca!",
-                "es": "Revise sus datos a continuación. Utilice los campos de búsqueda para encontrar información específica. Puede eliminar cualquier dato que prefiera no compartir. ¡Gracias por apoyar este proyecto de investigación!",
-                "nl": "Bekijk hieronder uw gegevens. Gebruik de zoekvelden om specifieke informatie te vinden. U kunt gegevens verwijderen die u liever niet deelt. Bedankt voor uw steun aan dit onderzoeksproject!",
-                "ro": "Vă rugăm să revizuiți datele de mai jos. Folosiți câmpurile de căutare pentru a găsi informații specifice. Puteți elimina orice date pe care preferați să nu le partajați. Vă mulțumim că sprijiniți acest proiect de cercetare!",
-                "lt": "Prašome peržiūrėti savo duomenis žemiau. Naudokite paieškos laukus, kad rastumėte konkrečią informaciją. Galite pašalinti bet kokius duomenis, kurių nenorite bendrinti. Ačiū, kad remiate šį tyrimų projektą!",
+                "en": "Please review the data below. You can remove any information you prefer not to share. Thank you for supporting this research project!",
+                "de": "Bitte überprüfen Sie Ihre Daten unten. Sie können alle Daten entfernen, die Sie nicht teilen möchten. Vielen Dank für Ihre Unterstützung dieses Forschungsprojekts!",
+                "it": "Controlla i tuoi dati qui sotto. Puoi rimuovere qualsiasi dato che preferisci non condividere. Grazie per il tuo supporto a questo progetto di ricerca!",
+                "es": "Revise sus datos a continuación. Puede eliminar cualquier dato que prefiera no compartir. ¡Gracias por apoyar este proyecto de investigación!",
+                "nl": "Bekijk hieronder uw gegevens. U kunt gegevens verwijderen die u liever niet deelt. Bedankt voor uw steun aan dit onderzoeksproject!",
+                "ro": "Vă rugăm să revizuiți datele de mai jos. Puteți elimina orice date pe care preferați să nu le partajați. Vă mulțumim că sprijiniți acest proiect de cercetare!",
+                "lt": "Prašome peržiūrėti savo duomenis žemiau. Galite pašalinti bet kokius duomenis, kurių nenorite bendrinti. Ačiū, kad remiate šį tyrimų projektą!",
             }
         )
     )
 
-    table_title = props.Translatable(
-        {
-            "en": "Zip file contents",
-            "de": "Inhalt der ZIP-Datei",
-            "it": "Contenuto del file ZIP",
-            "es": "Contenido del archivo ZIP",
-            "nl": "Inhoud van het ZIP-bestand",
-            "ro": "Conținutul fișierului ZIP",
-            "lt": "ZIP failo turinys",
-        }
-    )
-
-    # Show data table if extracted data is available
-    data_table = None
-    if data is not None:
-        data_frame = pd.DataFrame(data, columns=["filename", "compressed_size", "size"])
-        data_table = props.PropsUIPromptConsentFormTable(
-            "zip_content",
-            1,
-            table_title,
-            props.Translatable(
-                {
-                    "en": "The table below shows the contents of the zip file you selected.",
-                    "de": "Die Tabelle unten zeigt den Inhalt der ZIP-Datei, die Sie gewählt haben.",
-                    "it": "La tabella qui sotto mostra il contenuto del file ZIP che ha scelto.",
-                    "es": "La tabla a continuación muestra el contenido del archivo ZIP que ha seleccionado.",
-                    "nl": "De tabel hieronder laat de inhoud zien van het zip-bestand dat u heeft gekozen.",
-                    "ro": "Tabelul de mai jos arată conținutul fișierului ZIP pe care l-ați selectat.",
-                    "lt": "Žemiau esanti lentelė rodo pasirinkto ZIP failo turinį.",
-                }
-            ),
-            data_frame,
-            headers={
-                "filename": props.Translatable(
-                    {
-                        "en": "Filename",
-                        "de": "Dateiname",
-                        "it": "Nome del file",
-                        "es": "Nombre del archivo",
-                        "nl": "Bestandsnaam",
-                        "ro": "Numele fișierului",
-                        "lt": "Failo pavadinimas",
-                    }
-                ),
-                "compressed_size": props.Translatable(
-                    {
-                        "en": "Compressed Size",
-                        "de": "Komprimierte Größe",
-                        "it": "Dimensione compressa",
-                        "es": "Tamaño comprimido",
-                        "nl": "Gecomprimeerde grootte",
-                        "ro": "Dimensiune comprimată",
-                        "lt": "Suspaustas dydis",
-                    }
-                ),
-                "size": props.Translatable(
-                    {
-                        "en": "Uncompressed Size",
-                        "de": "Dekomprimierte Größe",
-                        "it": "Dimensione non compressa",
-                        "es": "Tamaño descomprimido",
-                        "nl": "Ongecomprimeerde grootte",
-                        "ro": "Dimensiune necomprimată",
-                        "lt": "Nesuspaustas dydis",
-                    }
-                ),
-            },
+    # Tables derived from the uploaded zip file
+    tables = [
+        props.PropsUIPromptConsentFormTable(
+            result.name,
+            i,
+            props.Translatable({"en": result.name.replace("_", " ").title(), "nl": result.name.replace("_", " ").title()}),
+            props.Translatable({"en": f"Overview of {result.name.replace('_', ' ')} from your zip file."}),
+            result.data_frame,
         )
+        for i, result in enumerate(data, start=1)
+    ]
 
-    # A generic, illustrative second table for layout demonstration purposes
-    metadata_table = props.PropsUIPromptConsentFormTable(
-        "example_metadata",
-        2,
+    # Example of a static table with hardcoded data — useful for reference data
+    # or metadata that does not come from the uploaded file.
+    static_table = props.PropsUIPromptConsentFormTable(
+        "zip_content",
+        len(data) + 1,
         props.Translatable(
             {
                 "en": "Example Metadata Table",
@@ -313,12 +338,7 @@ def prompt_consent(data):
         ),
         props.Translatable(
             {
-                "en": "This example table is included only to demonstrate that multiple tables can be shown. Its content is static and unrelated to your uploaded file.",
-                "de": "Diese Beispieltabelle zeigt, dass mehrere Tabellen angezeigt werden können. Ihr Inhalt ist statisch und steht in keinem Zusammenhang mit Ihrer hochgeladenen Datei.",
-                "it": "Questa tabella di esempio è inclusa solo per mostrare che è possibile visualizzare più tabelle. Il contenuto è statico e non è collegato al file caricato.",
-                "es": "Esta tabla de ejemplo se incluye solo para mostrar que se pueden mostrar varias tablas. Su contenido es estático y no está relacionado con su archivo cargado.",
-                "nl": "Deze voorbeeldtabel laat alleen zien dat er meerdere tabellen kunnen worden getoond. De inhoud is statisch en staat los van het geüploade bestand.",
-
+                "en": "This table is static — its content is hardcoded, not derived from the uploaded file. Use this pattern for reference data or study metadata.",
             }
         ),
         pd.DataFrame(
@@ -329,78 +349,38 @@ def prompt_consent(data):
             ],
             columns=["Participant ID", "Device", "Date"],
         ),
-        headers={
-                "Participant ID": props.Translatable(
-                    {
-                        "en": "Participant ID",
-                        "de": "Teilnehmer-ID",
-                        "it": "ID partecipante",
-                        "es": "ID del participante",
-                        "nl": "Deelnemer-ID",
-                        "ro": "ID participant",
-                        "lt": "Dalyvio ID",
-                    }
-                ),
-                "Device": props.Translatable(
-                    {
-                        "en": "Device",
-                        "de": "Gerät",
-                        "it": "Dispositivo",
-                        "es": "Dispositivo",
-                        "nl": "Apparaat",
-                        "ro": "Dispozitiv",
-                        "lt": "Įrenginys",
-                    }
-                ),
-                "Date": props.Translatable(
-                    {
-                        "en": "Date",
-                        "de": "Datum",
-                        "it": "Data",
-                        "es": "Fecha",
-                        "nl": "Datum",
-                        "ro": "Data",
-                        "lt": "Data",
-                    }
-                ),
-            },
-            data_frame_max_size=5000,  # default is 10000, limit or expand as required by expected data
-        )
+        data_frame_max_size=5000,
+    )
 
-    # Construct and render the final consent page
     result = yield render_data_submission_page(
-        [
-            item
-            for item in [
-                description,
-                data_table,
-                metadata_table,
-                props.PropsUIDataSubmissionButtons(
-                    donate_question=props.Translatable(
-                        {
-                            "en": "Would you like to donate the above data?",
-                            "de": "Möchten Sie die obenstehenden Daten spenden?",
-                            "it": "Vuoi donare i dati sopra indicati?",
-                            "es": "¿Le gustaría donar los datos anteriores?",
-                            "nl": "Wilt u de bovenstaande gegevens doneren?",
-                            "ro": "Doriți să donați datele de mai sus?",
-                            "lt": "Ar norėtumėte paaukoti aukščiau pateiktus duomenis?",
-                        }
-                    ),
-                    donate_button=props.Translatable(
-                        {
-                            "en": "Yes, donate",
-                            "de": "Ja, spenden",
-                            "it": "Sì, dona",
-                            "es": "Sí, donar",
-                            "nl": "Ja, doneer",
-                            "ro": "Da, donez",
-                            "lt": "Taip, paaukokite",
-                        }
-                    ),
+        [description]
+        + tables
+        + [static_table]
+        + [
+            props.PropsUIDataSubmissionButtons(
+                donate_question=props.Translatable(
+                    {
+                        "en": "Would you like to donate the above data?",
+                        "de": "Möchten Sie die obenstehenden Daten spenden?",
+                        "it": "Vuoi donare i dati sopra indicati?",
+                        "es": "¿Le gustaría donar los datos anteriores?",
+                        "nl": "Wilt u de bovenstaande gegevens doneren?",
+                        "ro": "Doriți să donați datele de mai sus?",
+                        "lt": "Ar norėtumėte paaukoti aukščiau pateiktus duomenis?",
+                    }
                 ),
-            ]
-            if item is not None
+                donate_button=props.Translatable(
+                    {
+                        "en": "Yes, donate",
+                        "de": "Ja, spenden",
+                        "it": "Sì, dona",
+                        "es": "Sí, donar",
+                        "nl": "Ja, doneer",
+                        "ro": "Da, donez",
+                        "lt": "Taip, paaukokite",
+                    }
+                ),
+            ),
         ]
     )
     return result
@@ -412,3 +392,16 @@ def donate(key, json_string):
 
 def exit(code, info):
     return CommandSystemExit(code, info)
+
+
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) < 2:
+        print("Usage: python -m port.script path/to/file.zip")
+        sys.exit(1)
+    gen = extract_data(sys.argv[1])
+    try:
+        while True:
+            next(gen)
+    except StopIteration as e:
+        print(e.value)

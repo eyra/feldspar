@@ -6,7 +6,10 @@ synchronous Python file operations, avoiding the need to copy entire
 files into Pyodide's virtual filesystem.
 """
 
-import js
+try:
+    import js  # Only available in Pyodide
+except ImportError:
+    js = None  # Running outside Pyodide (e.g., CLI or tests)
 
 
 class AsyncFileAdapter:

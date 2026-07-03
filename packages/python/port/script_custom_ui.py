@@ -27,7 +27,10 @@ import json
 import time
 
 
-def process(sessionId):
+def process(data):
+    # `data` is a context dict from the JS framework:
+    #   {"sessionId": "...", "locale": "en" | "nl" | ...}
+    sessionId = data.get("sessionId")
     key = "zip-contents-example"
     meta_data = []
     meta_data.append(("debug", f"{key}: start"))
@@ -168,18 +171,7 @@ def retry_confirmation():
             "lt": "Bandykite dar kartą",
         }
     )
-    cancel = props.Translatable(
-        {
-            "en": "Continue",
-            "de": "Weiter",
-            "it": "Continua",
-            "es": "Continuar",
-            "nl": "Verder",
-            "ro": "Continuați",
-            "lt": "Tęsti",
-        }
-    )
-    return props.PropsUIPromptConfirm(text, ok, cancel)
+    return props.PropsUIPromptConfirm(text, ok)
 
 
 def prompt_file(extensions):
