@@ -1,5 +1,5 @@
 # Run Playwright tests
-npm run test:e2e
+pnpm run test:e2e
 
 diff=$(git diff --name-only)
 if [[ ! -z "$diff" ]]; then 
