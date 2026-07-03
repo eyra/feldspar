@@ -40,7 +40,7 @@ const FeldsparContent: React.FC<ScriptHostProps> = ({
     workerRef.current = worker;
 
     const run = (bridge: Bridge, selectedLocale: string = locale) => {
-      const assembly = new Assembly(worker, bridge, factories, logLevel);
+      const assembly = new Assembly(worker, bridge, selectedLocale, factories, logLevel);
       assembly.visualizationEngine.start(
         containerRef.current!,
         selectedLocale,

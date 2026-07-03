@@ -48,8 +48,8 @@ class ScriptWrapper(Generator):
         raise StopIteration
 
 
-def start(sessionId):
-    script = process(sessionId)
+def start(data):
+    script = process(data)
     wrapper = ScriptWrapper(script)
     wrapper.add_log_handler()
     return wrapper

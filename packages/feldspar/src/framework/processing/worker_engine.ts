@@ -10,6 +10,7 @@ function toLogLevel (value: unknown): LogLevel {
 
 export default class WorkerProcessingEngine {
   sessionId: String
+  locale: String
   worker: Worker
   commandHandler: CommandHandler
   logger?: Logger
@@ -19,11 +20,13 @@ export default class WorkerProcessingEngine {
 
   constructor (
     sessionId: string,
+    locale: string,
     worker: Worker,
     commandHandler: CommandHandler,
     logger?: Logger
   ) {
     this.sessionId = sessionId
+    this.locale = locale
     this.commandHandler = commandHandler
     this.worker = worker
     this.logger = logger
@@ -101,7 +104,10 @@ export default class WorkerProcessingEngine {
   }
 
   firstRunCycle (): void {
-    this.worker.postMessage({ eventType: 'firstRunCycle', sessionId: this.sessionId })
+    this.worker.postMessage({
+      eventType: 'firstRunCycle',
+      data: { sessionId: this.sessionId, locale: this.locale }
+    })
   }
 
   nextRunCycle (response: Response): void {

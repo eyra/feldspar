@@ -27,7 +27,10 @@ import json
 import time
 
 
-def process(sessionId):
+def process(data):
+    # `data` is a context dict from the JS framework:
+    #   {"sessionId": "...", "locale": "en" | "nl" | ...}
+    sessionId = data.get("sessionId")
     key = "zip-contents-example"
     meta_data = []
     meta_data.append(("debug", f"{key}: start"))
