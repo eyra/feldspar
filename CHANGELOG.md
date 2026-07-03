@@ -9,6 +9,18 @@
 * Removed - This notes any features that have been deleted and removed from the software
 * Security - This acts as an invitation to users who want to upgrade and avoid any software vulnerabilities
 
+## \#8 2026-07-03
+
+* Added SafeData for crash-resistant JSON access in donation scripts
+* Added locale routing from JavaScript to Python via `port.start(context)` so Python can localize DataFrame content the React i18n layer can't reach
+* Added `python -m port` CLI extraction runner for local script development
+* Added `workerLog` forwarding and `FlushLogs` sentinel so long-running Python extractions stream log progress to the client in real time
+* Changed `PropsUIPromptConfirm.cancel` to be optional; removed the default cancel affordance from demo confirm prompts
+* Changed demo `script.py`: refactored into step functions using `yield from` for clearer control flow
+* Changed dependency stack: Vite 8, TypeScript 6, Node.js 24.18, Python 3.14.6, Tailwind 4.3, Playwright 1.61, plus a large batch of Renovate/Dependabot bumps
+* Fixed `sys.modules` pollution in `test_script_wrapper`
+* Fixed release workflow to pin the release tag to the workflow commit
+
 ## \#7 2026-03-05
 
 * Added status text during data submission to inform users to keep the window open
