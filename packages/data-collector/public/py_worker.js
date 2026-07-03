@@ -13,7 +13,7 @@ onmessage = (event) => {
       break;
 
     case "firstRunCycle":
-      pyScript = self.pyodide.runPython(`port.start(${event.data.sessionId})`);
+      pyScript = self.pyodide.runPython(`port.start(${JSON.stringify(event.data.data)})`);
       runCycle(null);
       break;
 

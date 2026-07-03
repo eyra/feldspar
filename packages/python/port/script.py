@@ -41,8 +41,14 @@ ExtractionResult = namedtuple("ExtractionResult", ["name", "data_frame"])
 # Data donation flow #
 ######################
 
-def process(sessionId):
-    logger.info("user entered script")
+def process(data):
+    # `data` is a context dict routed from the JS framework:
+    #   {"sessionId": "...", "locale": "en" | "nl" | ...}
+    # Use `locale` for strings rendered into DataFrame cells (column headers,
+    # summary descriptions) — those bypass the React i18n layer.
+    sessionId = data.get("sessionId")
+    locale = data.get("locale", "en")
+    logger.info(f"user entered script (locale={locale})")
     key = "zip-contents-example"
 
     results = None
@@ -52,7 +58,7 @@ def process(sessionId):
         if fileResult is None:
             break
 
-        results, retry = yield from step_2_extract_data_from_file(key, fileResult)
+        results, retry = yield from step_2_extract_data_from_file(key, fileResult, locale)
         if retry:
             continue
         break
@@ -70,11 +76,11 @@ def step_1_select_file(key):
     return fileResult
 
 
-def step_2_extract_data_from_file(key, fileResult):
+def step_2_extract_data_from_file(key, fileResult, locale="en"):
     logger.debug(f"{key}: extracting file")
     results = None
     try:
-        results = yield from extract_data(fileResult.value)
+        results = yield from extract_data(fileResult.value, locale)
     except (IOError, zipfile.BadZipFile):
         logger.debug(f"{key}: prompt confirmation to retry file selection")
         retry_result = yield render_data_submission_page(retry_confirmation())
@@ -102,13 +108,13 @@ def step_3_consent(key, sessionId, results):
 # Zip file processing    #
 ##########################
 
-def extract_data(path):
+def extract_data(path, locale="en"):
     """Generator that runs extraction steps, returning the results list.
 
     Yields FlushLogs between steps so progress logs reach the client in real
     time rather than all at once when the consent page renders. Call via:
 
-        results = yield from extract_data(path)
+        results = yield from extract_data(path, locale)
     """
     logger.info("extract_data: opening zip file")
     zf = zipfile.ZipFile(path)
@@ -116,7 +122,7 @@ def extract_data(path):
     results = []
 
     extractors = [
-        ("file inventory", lambda: extract_file_inventory(zf)),
+        ("file inventory", lambda: extract_file_inventory(zf, locale)),
         ("file types",     lambda: extract_file_types(zf)),
         ("largest files",  lambda: extract_largest_files(zf)),
     ]
@@ -135,17 +141,34 @@ def extract_data(path):
     return results
 
 
-def extract_file_inventory(zf):
-    """List every file in the zip with its compressed and uncompressed size."""
+FILE_INVENTORY_HEADERS = {
+    "en": ["Filename", "Compressed size", "Size"],
+    "de": ["Dateiname", "Komprimierte Größe", "Größe"],
+    "it": ["Nome file", "Dimensione compressa", "Dimensione"],
+    "es": ["Nombre de archivo", "Tamaño comprimido", "Tamaño"],
+    "nl": ["Bestandsnaam", "Gecomprimeerde grootte", "Grootte"],
+    "ro": ["Nume fișier", "Dimensiune comprimată", "Dimensiune"],
+    "lt": ["Failo pavadinimas", "Suspaustas dydis", "Dydis"],
+}
+
+
+def extract_file_inventory(zf, locale="en"):
+    """List every file in the zip with its compressed and uncompressed size.
+
+    Column headers are localized via `locale` — this demonstrates threading the
+    UI locale into DataFrame content, which bypasses the React i18n layer.
+    """
+    headers = FILE_INVENTORY_HEADERS.get(locale, FILE_INVENTORY_HEADERS["en"])
+    filename_col, compressed_col, size_col = headers
     rows = []
     for info in zf.infolist():
         time.sleep(0.01)  # artificial delay — remove in production
         rows.append({
-            "Filename": info.filename,
-            "Compressed size": info.compress_size,
-            "Size": info.file_size,
+            filename_col: info.filename,
+            compressed_col: info.compress_size,
+            size_col: info.file_size,
         })
-    return ExtractionResult("file_inventory", pd.DataFrame(rows, columns=["Filename", "Compressed size", "Size"]))
+    return ExtractionResult("file_inventory", pd.DataFrame(rows, columns=headers))
 
 
 def extract_file_types(zf):

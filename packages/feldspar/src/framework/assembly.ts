@@ -13,13 +13,13 @@ export default class Assembly {
   logForwarder: LogForwarder
   windowLogSource: WindowLogSource
 
-  constructor(worker: Worker, bridge: Bridge, factories: PageFactory[] = [], logLevel: LogLevel = 'warn') {
+  constructor(worker: Worker, bridge: Bridge, locale: string = "en", factories: PageFactory[] = [], logLevel: LogLevel = 'warn') {
     const sessionId = String(Date.now())
     const visualizationFactory = new ReactFactory(factories);
     this.visualizationEngine = new ReactEngine(visualizationFactory);
     this.router = new CommandRouter(bridge, this.visualizationEngine)
     this.logForwarder = new LogForwarder((entries) => bridge.sendLogs(entries), logLevel)
     this.windowLogSource = new WindowLogSource(this.logForwarder)
-    this.processingEngine = new WorkerProcessingEngine(sessionId, worker, this.router, this.logForwarder)
+    this.processingEngine = new WorkerProcessingEngine(sessionId, locale, worker, this.router, this.logForwarder)
   }
 }
