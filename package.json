@@ -21,7 +21,7 @@
     "release": "./release.sh"
   },
   "devDependencies": {
-    "@playwright/test": "1.62.0",
+    "@playwright/test": "1.62.1",
     "@tailwindcss/postcss": "^4.2.4",
     "@types/node": "26.1.2",
     "concurrently": "10.0.4",
