@@ -22,7 +22,7 @@
     "globals": "^17.5.0",
     "postcss": "^8.5.20",
     "tailwindcss": "^4.3.3",
-    "typescript": "^6.0.0",
+    "typescript": "^7.0.2",
     "vite": "^8.1.4"
   },
   "scripts": {
