@@ -53,7 +53,7 @@
         "postcss": "^8.5.26",
         "postcss-cli": "^11.0.0",
         "postcss-import": "^17.0.0",
-        "rollup": "4.63.0",
+        "rollup": "4.63.1",
         "rollup-plugin-copy": "3.5.0",
         "rollup-plugin-dts": "6.5.1",
         "rollup-plugin-peer-deps-external": "2.2.4",
