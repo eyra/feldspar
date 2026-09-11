@@ -72,7 +72,7 @@ importers:
         version: 6.1.1(vite@8.2.2(@types/node@26.5.0)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.0))
       autoprefixer:
         specifier: ^10.4.21
-        version: 10.5.5(postcss@8.5.28)
+        version: 10.5.6(postcss@8.5.28)
       eslint:
         specifier: ^10.10.0
         version: 10.10.0(jiti@2.7.0)(supports-color@10.2.2)
@@ -142,7 +142,7 @@ importers:
         version: 19.2.7(@types/react@19.2.18)
       autoprefixer:
         specifier: ^10.4.18
-        version: 10.5.5(postcss@8.5.28)
+        version: 10.5.6(postcss@8.5.28)
       fdir:
         specifier: 6.5.0
         version: 6.5.0(picomatch@4.0.7)
@@ -1368,8 +1368,8 @@ packages:
     resolution: {integrity: sha512-HGyxoOTYUyCM6stUe6EJgnd4EoewAI7zMdfqO+kGjnlZmBDz/cR5pf8r/cR4Wq60sL/p0IkcjUEEPwS3GFrIyw==}
     engines: {node: '>=8'}
 
-  autoprefixer@10.5.5:
-    resolution: {integrity: sha512-uiRYvQYe/nNSzBJ7OUnd2/TZVsAdob3blml44teEpee9Cc1f4rGZFewO+JT3Wo8mgFOSzNqes4FHZn/Qz8WOuw==}
+  autoprefixer@10.5.6:
+    resolution: {integrity: sha512-HiH4oYNc5+DQEx/b8FPfMj+WHH/WWUBmbN5r1Uf/ixtfyFkk+wGIlfJT/RD5eAyzlwkeYRtZUCI8qrEi26pl2g==}
     engines: {node: ^10 || ^12 || >=14}
     hasBin: true
     peerDependencies:
@@ -4213,7 +4213,7 @@ snapshots:
 
   array-union@2.1.0: {}
 
-  autoprefixer@10.5.5(postcss@8.5.28):
+  autoprefixer@10.5.6(postcss@8.5.28):
     dependencies:
       browserslist: 4.28.9
       caniuse-lite: 1.0.30001810
