@@ -27,12 +27,24 @@ interface PendingDonation {
 
 export class LiveBridge implements Bridge {
   port: MessagePort
-  static initialized = false
+  static currentBridge: LiveBridge | null = null
   private pendingDonations: Map<string, PendingDonation> = new Map()
 
   constructor (port: MessagePort) {
     this.port = port
     this.setupResponseListener()
+  }
+
+  private replacePort (port: MessagePort): void {
+    this.log('info', 'Host re-initialized MessageChannel — updating port')
+    this.port = port
+    this.setupResponseListener()
+
+    for (const [key, pending] of this.pendingDonations) {
+      this.log('error', `Failing pending donation ${key}: channel replaced by host`)
+      pending.resolve({ success: false, key, status: 0, error: 'Channel re-initialized by host' })
+    }
+    this.pendingDonations.clear()
   }
 
   private setupResponseListener (): void {
@@ -83,14 +95,19 @@ export class LiveBridge implements Bridge {
   static create (window: Window, callback: (bridge: Bridge, locale: string) => void): void {
     window.addEventListener('message', (event) => {
       console.log('MESSAGE RECEIVED', event)
-      // Ensure initialization happens only once
-      if (event.data.action === 'live-init' && !LiveBridge.initialized) {
-        LiveBridge.initialized = true
-        const bridge = new LiveBridge(event.ports[0])
-        const locale = event.data.locale
-        console.log('LOCALE', locale)
-        callback(bridge, locale)
+      if (event.data.action !== 'live-init') return
+
+      const port = event.ports[0]
+      if (LiveBridge.currentBridge) {
+        LiveBridge.currentBridge.replacePort(port)
+        return
       }
+
+      const locale = event.data.locale
+      console.log('LOCALE', locale)
+      const bridge = new LiveBridge(port)
+      LiveBridge.currentBridge = bridge
+      callback(bridge, locale)
     })
   }
 
