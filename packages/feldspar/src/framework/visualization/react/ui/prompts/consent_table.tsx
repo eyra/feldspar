@@ -129,7 +129,7 @@ function serializeTableData(
 }
 
 function serializeRow(row: PropsUITableRow, head: PropsUITableHead): any {
-  const keys = head.cells.map((cell) => cell.text);
+  const keys = head.columns ?? head.cells.map((cell) => cell.text);
   const values = row.cells.map((cell) => cell.text);
   return _.fromPairs(_.zip(keys, values));
 }

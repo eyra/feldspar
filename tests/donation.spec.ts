@@ -53,6 +53,28 @@ test('can submit data', async ({ page }) => {
   expect(submittedData).toEqual(expect.stringContaining("hello_world.txt"));
 });
 
+test('shows header labels and widths while donating data frame column names', async ({ page }) => {
+  await setupTestWithFileUpload(page);
+
+  const table = page.getByTestId('table-zip_content');
+  const participant = table.getByRole('columnheader', { name: 'Participant ID' });
+  const device = table.getByRole('columnheader', { name: 'Device' });
+  await expect(participant).toBeVisible();
+
+  // column_widths gives the participant column twice the relative width
+  const participantWidth = (await participant.boundingBox())!.width;
+  const deviceWidth = (await device.boundingBox())!.width;
+  expect(participantWidth / deviceWidth).toBeCloseTo(2, 1);
+
+  const submittedData = await submitDataAndGetResult(page);
+  const data = JSON.parse(JSON.parse(submittedData!).data);
+  expect(data.zip_content.data[0]).toEqual({
+    participant_id: 'participant-001',
+    device: 'Device A',
+    date: '2025-06-01',
+  });
+});
+
 test('can remove rows from submission', async ({ page }) => {
   await setupTestWithFileUpload(page);
 

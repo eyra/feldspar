@@ -92,24 +92,25 @@ export class TableFactory implements PromptFactory {
       const { id, number, title, description, data_frame } = body;
       const dataFrame = JSON.parse(data_frame);
 
-      // Translate the column headers when overrides are provided
-      const headers = body.headers || {};
-      const headCells = Object.keys(dataFrame).map((column: string) => {
-        const text = headers[column] 
-          ? Translator.translate(headers[column], context.locale) 
-          : column;
-        
-        return { 
-          __type__: "PropsUITableCell" as const, 
-          text 
-        };
-      });
-      const head = { __type__: "PropsUITableHead" as const, cells: headCells };
-      
-      const rows = Object.keys(dataFrame[Object.keys(dataFrame)[0]] || {}).map(rowIndex => ({
+      // Headers are display labels only; donated rows keep the data frame column names.
+      const columns = Object.keys(dataFrame);
+      const headers = body.headers ?? {};
+      const headCells = columns.map((column) => ({
+        __type__: "PropsUITableCell" as const,
+        text: headers[column] ? Translator.translate(headers[column], context.locale) : column
+      }));
+      const columnWidths = body.column_widths;
+      const head = {
+        __type__: "PropsUITableHead" as const,
+        cells: headCells,
+        columns,
+        widths: columnWidths && columns.map((column) => columnWidths[column] ?? 1)
+      };
+
+      const rows = Object.keys(dataFrame[columns[0]] || {}).map(rowIndex => ({
         __type__: "PropsUITableRow" as const,
         id: rowIndex,
-        cells: Object.keys(dataFrame).map(column => ({
+        cells: columns.map(column => ({
           __type__: "PropsUITableCell" as const,
           text: String(dataFrame[column][rowIndex])
         }))
