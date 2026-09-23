@@ -18,6 +18,8 @@ export interface TableContext {
 
 export const TablePage = ({ head, rows, id, edit, selected, locale, onChange }: Props): JSX.Element => {
   const copy = prepareCopy(locale)
+  const totalWidth = head.widths?.reduce((total, width) => total + width, 0) ?? 0
+  const widths = totalWidth > 0 ? head.widths?.map((width) => `${(width / totalWidth) * 100}%`) : undefined
 
   function renderHeadRow (props: Weak<PropsUITableHead>): JSX.Element {
     return (
@@ -38,8 +40,9 @@ export const TablePage = ({ head, rows, id, edit, selected, locale, onChange }: 
   }
 
   function renderHeadCell (props: Weak<PropsUITableCell>, index: number): JSX.Element {
+    const width = widths?.[index]
     return (
-      <th key={`${index}`} className='h-12 px-4 text-left'>
+      <th key={`${index}`} className='h-12 px-4 text-left' style={width === undefined ? undefined : { width }}>
         <div className='font-table-header text-table text-grey1 [overflow-wrap:anywhere]'>{props.text}</div>
       </th>
     )

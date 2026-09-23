@@ -401,6 +401,10 @@ export function isPropsUITableCardItem (arg: any): arg is PropsUITableCardItem {
 export interface PropsUITableHead {
   __type__: 'PropsUITableHead'
   cells: PropsUITableCell[]
+  /** Donated data key per column; when set, `cells` hold display labels only. */
+  columns?: string[]
+  /** Relative desktop width per column, in column order. */
+  widths?: number[]
 }
 export function isPropsUITableHead (arg: any): arg is PropsUITableHead {
   return isInstanceOf<PropsUITableHead>(arg, 'PropsUITableHead', ['cells'])

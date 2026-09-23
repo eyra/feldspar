@@ -35,7 +35,7 @@ from collections import namedtuple
 
 logger = logging.getLogger(__name__)
 
-ExtractionResult = namedtuple("ExtractionResult", ["name", "data_frame"])
+ExtractionResult = namedtuple("ExtractionResult", ["name", "data_frame", "column_widths"], defaults=[None])
 
 
 ######################
@@ -170,7 +170,8 @@ def extract_file_inventory(zf, locale="en"):
             compressed_col: info.compress_size,
             size_col: info.file_size,
         })
-    return ExtractionResult("file_inventory", pd.DataFrame(rows, columns=headers))
+    # The filename gets three times the desktop width of each size column.
+    return ExtractionResult("file_inventory", pd.DataFrame(rows, columns=headers), {filename_col: 3})
 
 
 def extract_file_types(zf):
@@ -316,12 +317,17 @@ def prompt_consent(data):
             props.Translatable({"en": result.name.replace("_", " ").title(), "nl": result.name.replace("_", " ").title()}),
             props.Translatable({"en": f"Overview of {result.name.replace('_', ' ')} from your zip file."}),
             result.data_frame,
+            column_widths=result.column_widths,
         )
         for i, result in enumerate(data, start=1)
     ]
 
     # Example of a static table with hardcoded data — useful for reference data
-    # or metadata that does not come from the uploaded file.
+    # or metadata that does not come from the uploaded file. `headers` only set
+    # the labels participants see; donated rows keep the data frame's column
+    # names. `column_widths` values are relative weights; unlisted columns get 1.
+    # Here participant_id (2) is twice as wide as device and date (1 each),
+    # i.e. 50% / 25% / 25% of the desktop table.
     static_table = props.PropsUIPromptConsentFormTable(
         "zip_content",
         len(data) + 1,
@@ -347,9 +353,45 @@ def prompt_consent(data):
                 ["participant-002", "Device B", "2025-06-02"],
                 ["participant-003", "Device C", "2025-06-03"],
             ],
-            columns=["Participant ID", "Device", "Date"],
+            columns=["participant_id", "device", "date"],
         ),
         data_frame_max_size=5000,
+        headers={
+            "participant_id": props.Translatable(
+                {
+                    "en": "Participant ID",
+                    "de": "Teilnehmer-ID",
+                    "it": "ID partecipante",
+                    "es": "ID del participante",
+                    "nl": "Deelnemer-ID",
+                    "ro": "ID participant",
+                    "lt": "Dalyvio ID",
+                }
+            ),
+            "device": props.Translatable(
+                {
+                    "en": "Device",
+                    "de": "Gerät",
+                    "it": "Dispositivo",
+                    "es": "Dispositivo",
+                    "nl": "Apparaat",
+                    "ro": "Dispozitiv",
+                    "lt": "Įrenginys",
+                }
+            ),
+            "date": props.Translatable(
+                {
+                    "en": "Date",
+                    "de": "Datum",
+                    "it": "Data",
+                    "es": "Fecha",
+                    "nl": "Datum",
+                    "ro": "Dată",
+                    "lt": "Data",
+                }
+            ),
+        },
+        column_widths={"participant_id": 2},
     )
 
     result = yield render_data_submission_page(

@@ -100,7 +100,10 @@ class PropsUIPromptConsentFormTable:
         description: description of the table
         data_frame: table to be shown
         data_frame_max_size: maximum size of the table (in rows)
-        headers: optional headers for the table columns
+        headers: optional display labels per column name; donated data keeps
+            the data frame's column names, independent of label or locale
+        column_widths: optional relative desktop widths per column name;
+            unlisted columns get width 1
     """
 
     id: str
@@ -110,12 +113,16 @@ class PropsUIPromptConsentFormTable:
     data_frame: pd.DataFrame
     data_frame_max_size: int = 10000
     headers: Optional[dict[str, Translatable]] = None
+    column_widths: Optional[dict[str, float]] = None
 
     def __post_init__(self):
         if self.data_frame_max_size < 1:
             self.data_frame_max_size = 1
         if len(self.data_frame) > self.data_frame_max_size:
             self.data_frame = self.data_frame.head(self.data_frame_max_size).reset_index(drop=True)
+        for column, width in (self.column_widths or {}).items():
+            if not width > 0:
+                raise ValueError(f"column_widths[{column!r}] must be positive, got {width!r}")
 
     def toDict(self):
         dict = {}
@@ -129,6 +136,8 @@ class PropsUIPromptConsentFormTable:
             dict["headers"] = {
                 key: value.toDict() for key, value in self.headers.items()
             }
+        if self.column_widths:
+            dict["column_widths"] = self.column_widths
         return dict
 
 
