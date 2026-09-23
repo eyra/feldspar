@@ -30,7 +30,6 @@
   max-height: calc(100dvh - 3rem);
   margin: auto;
   padding: 0;
-  border: 0;
   border-radius: 0.75rem;
   overflow: hidden;
 }
@@ -40,8 +39,10 @@
   flex-direction: column;
 }
 
+/* Embedded hosts (such as Next) render Feldspar in an iframe inside their own modal, where a
+   dimmed backdrop would only cover the iframe. The dialog's drop shadow separates it instead. */
 .table-text-dialog::backdrop {
-  background: rgb(0 0 0 / 45%);
+  background: transparent;
 }
 
 .table-text-dialog-header {
