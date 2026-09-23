@@ -326,8 +326,10 @@ def prompt_consent(data):
     # or metadata that does not come from the uploaded file. `headers` only set
     # the labels participants see; donated rows keep the data frame's column
     # names. `column_widths` values are relative weights; unlisted columns get 1.
-    # Here participant_id (2) is twice as wide as device and date (1 each),
-    # i.e. 50% / 25% / 25% of the desktop table.
+    # Here participant_id (2) is twice as wide as device and date (1 each), and
+    # notes (3) three times, i.e. 2/7, 1/7, 1/7 and 3/7 of the desktop table.
+    # The notes contain line breaks: previews show them as spaces, while the
+    # full-text dialog and donated data keep them.
     static_table = props.PropsUIPromptConsentFormTable(
         "zip_content",
         len(data) + 1,
@@ -349,11 +351,20 @@ def prompt_consent(data):
         ),
         pd.DataFrame(
             [
-                ["participant-001", "Device A", "2025-06-01"],
-                ["participant-002", "Device B", "2025-06-02"],
-                ["participant-003", "Device C", "2025-06-03"],
+                ["participant-001", "Device A", "2025-06-01", "Morning session\nQuiet room\n\nNo issues"],
+                [
+                    "participant-002",
+                    "Device B",
+                    "2025-06-02",
+                    "Short break.\n\nThe participant asked how their data would be stored and who could "
+                    "access it. We explained the consent form again, walked through each table on this "
+                    "page, and showed how to remove rows before donating. They chose to continue after "
+                    "reading the full privacy statement and asked for a copy by email.\n\n"
+                    "Session completed without further questions.",
+                ],
+                ["participant-003", "Device C", "2025-06-03", "Completed\nwithout remarks"],
             ],
-            columns=["participant_id", "device", "date"],
+            columns=["participant_id", "device", "date", "notes"],
         ),
         data_frame_max_size=5000,
         headers={
@@ -390,8 +401,19 @@ def prompt_consent(data):
                     "lt": "Data",
                 }
             ),
+            "notes": props.Translatable(
+                {
+                    "en": "Notes",
+                    "de": "Notizen",
+                    "it": "Note",
+                    "es": "Notas",
+                    "nl": "Notities",
+                    "ro": "Note",
+                    "lt": "Pastabos",
+                }
+            ),
         },
-        column_widths={"participant_id": 2},
+        column_widths={"participant_id": 2, "notes": 3},
     )
 
     result = yield render_data_submission_page(
