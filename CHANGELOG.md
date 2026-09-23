@@ -18,6 +18,7 @@
 * Added - Optional `column_widths` on `PropsUIPromptConsentFormTable`: relative desktop column widths per column name (unlisted columns default to 1; non-positive values are rejected). Mobile cards are unchanged.
 * Changed - Consent-table `headers` are display-only: desktop headers, mobile card labels and full-text dialogs show the label, while donated rows keep the data frame's column names in every locale. Migration: scripts that relied on `headers` to rename donated keys must rename the data frame columns instead.
 * Fixed - Long-text previews collapse line breaks and blank lines into spaces so they fill three lines of content; the full-text dialog, search and donated values keep the original line breaks.
+* Changed - The full-text dialog uses a darker `shadow-dialog` drop shadow instead of a dimmed backdrop, so it stands out from the table without showing a gray block when Feldspar is embedded in a host modal such as Next.
 
 ## \#8 2026-07-03
 

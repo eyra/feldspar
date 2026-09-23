@@ -99,7 +99,7 @@ const FullTextDialog = ({ text, field, locale, onClose }: Props & { onClose: () 
 
   // A portal keeps the dialog visible if the responsive table switches while open.
   return createPortal(
-    <dialog ref={dialogRef} className='table-text-dialog text-grey1 bg-white' aria-labelledby={titleId} onClose={onClose}>
+    <dialog ref={dialogRef} className='table-text-dialog text-grey1 bg-white border border-grey4 shadow-dialog' aria-labelledby={titleId} onClose={onClose}>
       <header className='table-text-dialog-header border-b border-grey4'>
         <h2 id={titleId} className='min-w-0 flex flex-wrap items-baseline gap-x-2 gap-y-1 [overflow-wrap:anywhere]'>
           <span className='min-w-0 font-title6 text-title6'>{hasField ? field : fullTextLabel}</span>
