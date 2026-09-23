@@ -17,6 +17,7 @@
 * Changed - Show translated field names in full-text dialog headings using Title6, with a baseline-aligned Caption label in grey2 that wraps on narrow screens; empty labels retain the "Full text" fallback.
 * Added - Optional `column_widths` on `PropsUIPromptConsentFormTable`: relative desktop column widths per column name (unlisted columns default to 1; non-positive values are rejected). Mobile cards are unchanged.
 * Changed - Consent-table `headers` are display-only: desktop headers, mobile card labels and full-text dialogs show the label, while donated rows keep the data frame's column names in every locale. Migration: scripts that relied on `headers` to rename donated keys must rename the data frame columns instead.
+* Fixed - Long-text previews collapse line breaks and blank lines into spaces so they fill three lines of content; the full-text dialog, search and donated values keep the original line breaks.
 
 ## \#8 2026-07-03
 

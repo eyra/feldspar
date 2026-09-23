@@ -72,7 +72,24 @@ test('shows header labels and widths while donating data frame column names', as
     participant_id: 'participant-001',
     device: 'Device A',
     date: '2025-06-01',
+    notes: 'Morning session\nQuiet room\n\nNo issues',
   });
+});
+
+test('collapses line breaks in text previews but keeps them in the full text', async ({ page }) => {
+  await setupTestWithFileUpload(page);
+
+  const table = page.getByTestId('table-zip_content');
+  // Four source lines collapse into one preview line, so nothing is hidden.
+  const shortRow = table.getByRole('row').filter({ hasText: 'participant-001' });
+  await expect(shortRow.getByText('Morning session')).toBeVisible();
+  await expect(shortRow.getByRole('button', { name: 'Read full text' })).toHaveCount(0);
+
+  // A long note is clipped; the dialog shows its original paragraph breaks.
+  const longRow = table.getByRole('row').filter({ hasText: 'participant-002' });
+  await longRow.getByRole('button', { name: 'Read full text' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Notes Full text' });
+  expect(await dialog.locator('.table-text-dialog-body').innerText()).toContain('Short break.\n\nThe participant asked');
 });
 
 test('can remove rows from submission', async ({ page }) => {
