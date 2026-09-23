@@ -2,3 +2,77 @@
 @import 'tailwindcss';
 
 @config "../../tailwind.config.js";
+
+.table-text-preview {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.table-text-action {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.table-text-action:focus-visible,
+.table-text-dialog-body:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.table-text-dialog {
+  width: min(48rem, calc(100% - 3rem));
+  max-width: none;
+  max-height: calc(100dvh - 3rem);
+  margin: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.table-text-dialog[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.table-text-dialog::backdrop {
+  background: rgb(0 0 0 / 45%);
+}
+
+.table-text-dialog-header {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1.5rem;
+}
+
+.table-text-dialog-body {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  padding: 1.5rem;
+}
+
+@media (max-width: 639px) {
+  .table-text-dialog {
+    width: calc(100% - 2rem);
+    max-height: calc(100dvh - 2rem);
+  }
+
+  .table-text-dialog-header {
+    padding-top: max(0.75rem, env(safe-area-inset-top));
+  }
+
+  .table-text-dialog-body {
+    flex: 1;
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+  }
+}

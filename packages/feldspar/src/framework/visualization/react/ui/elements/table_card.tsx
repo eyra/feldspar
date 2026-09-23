@@ -17,7 +17,7 @@ export const TableCard = ({ row, headCells, locale, onDelete }: Props): JSX.Elem
 
   return (
     <div className='flex flex-row w-full p-4 border border-grey4 bg-white rounded-lg shadow-2xl '>
-      <div className='w-full flex flex-col items-left gap-4'>
+      <div className='w-full min-w-0 flex flex-col items-left gap-4'>
         {cells.map(([title, description], index) => <TableCardItem title={title} description={description} locale={locale} key={`${index}`} />)}
       </div>
       <div className='grow' />

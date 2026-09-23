@@ -32,6 +32,8 @@ import { TextBlock } from './text_block'
 export interface PromptContext extends ReactFactoryContext {
   onDataSubmissionDataChanged: (key: string, value: any) => void
   onDonate: () => void
+  // Page-derived numbering is present only when multiple consent tables are shown.
+  consentTableNumber?: number
 }
 
 export interface PromptFactory {

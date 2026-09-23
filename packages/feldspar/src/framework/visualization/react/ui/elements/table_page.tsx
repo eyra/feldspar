@@ -4,6 +4,7 @@ import { Weak } from '../../../../helpers'
 import { CheckBox } from './check_box'
 import TextBundle from '../../../../text_bundle'
 import { Translator } from '../../../../translator'
+import { TableCellText } from './table_cell_text'
 
 type Props = Weak<PropsUITablePage> & TableContext
 
@@ -39,7 +40,7 @@ export const TablePage = ({ head, rows, id, edit, selected, locale, onChange }: 
   function renderHeadCell (props: Weak<PropsUITableCell>, index: number): JSX.Element {
     return (
       <th key={`${index}`} className='h-12 px-4 text-left'>
-        <div className='font-table-header text-table text-grey1'>{props.text}</div>
+        <div className='font-table-header text-table text-grey1 [overflow-wrap:anywhere]'>{props.text}</div>
       </th>
     )
   }
@@ -67,18 +68,17 @@ export const TablePage = ({ head, rows, id, edit, selected, locale, onChange }: 
   }
 
   function renderRowCell ({ text }: Weak<PropsUITableCell>, cellIndex: number): JSX.Element {
-    const body = isValidHttpUrl(text) ? renderRowLink(text) : renderRowText(text)
+    const body = isValidHttpUrl(text)
+      ? renderRowLink(text)
+      : <TableCellText text={text} field={head.cells[cellIndex]?.text ?? ''} locale={locale} />
 
     return (
-      <td key={`${cellIndex}`} className='h-12 px-4'>
+      <td key={`${cellIndex}`} className='h-12 px-4 py-2'>
         {body}
       </td>
     )
   }
 
-  function renderRowText (text: string): JSX.Element {
-    return <div className='font-table-row text-table text-grey1'>{text}</div>
-  }
 
   function renderRowLink (href: string): JSX.Element {
     return (
@@ -135,7 +135,7 @@ export const TablePage = ({ head, rows, id, edit, selected, locale, onChange }: 
   }
 
   return (
-    <table data-testid={`table-${id}`} className='text-grey1 table-fixed divide-y divide-grey4'>
+    <table data-testid={`table-${id}`} className='w-full text-grey1 table-fixed divide-y divide-grey4'>
       <thead>
         {renderHeadRow(head)}
       </thead>
