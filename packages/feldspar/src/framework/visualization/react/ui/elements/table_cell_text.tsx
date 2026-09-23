@@ -81,9 +81,8 @@ export const TableCellText = ({ text, field, locale }: Props): JSX.Element => {
 const FullTextDialog = ({ text, field, locale, onClose }: Props & { onClose: () => void }): JSX.Element => {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const titleId = useId()
-  const title = field.trim()
-    ? `${field} — ${Translator.translate(fullTextSuffix, locale)}`
-    : Translator.translate(fullText, locale)
+  const hasField = field.trim().length > 0
+  const fullTextLabel = Translator.translate(fullText, locale)
 
   useLayoutEffect(() => {
     const dialog = dialogRef.current
@@ -102,7 +101,15 @@ const FullTextDialog = ({ text, field, locale, onClose }: Props & { onClose: () 
   return createPortal(
     <dialog ref={dialogRef} className='table-text-dialog text-grey1 bg-white' aria-labelledby={titleId} onClose={onClose}>
       <header className='table-text-dialog-header border-b border-grey4'>
-        <h2 id={titleId} className='min-w-0 font-title6 text-title6 [overflow-wrap:anywhere]'>{title}</h2>
+        <h2 id={titleId} className='min-w-0 flex flex-wrap items-baseline gap-x-2 gap-y-1 [overflow-wrap:anywhere]'>
+          <span className='min-w-0 font-title6 text-title6'>{hasField ? field : fullTextLabel}</span>
+          {hasField && (
+            <>
+              {' '}
+              <span className='font-caption text-caption text-grey2'>{fullTextLabel}</span>
+            </>
+          )}
+        </h2>
         <button
           type='button'
           autoFocus
@@ -135,15 +142,6 @@ const fullText = new TextBundle()
   .add('nl', 'Volledige tekst')
   .add('ro', 'Text complet')
   .add('lt', 'Visas tekstas')
-
-const fullTextSuffix = new TextBundle()
-  .add('en', 'full text')
-  .add('de', 'vollständiger Text')
-  .add('it', 'testo completo')
-  .add('es', 'texto completo')
-  .add('nl', 'volledige tekst')
-  .add('ro', 'text complet')
-  .add('lt', 'visas tekstas')
 
 const close = new TextBundle()
   .add('en', 'Close')
