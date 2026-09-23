@@ -4,6 +4,7 @@ import TextBundle from "../../../../text_bundle";
 import { Translator } from "../../../../translator";
 import { Translatable } from "../../../../types/elements";
 import { PropsUIPageDataSubmission } from "../../../../types/pages";
+import { isPropsUIPromptConsentFormTable } from "../../../../types/prompts";
 import { ReactFactoryContext } from "../../factory";
 import { Title1 } from "../elements/text";
 import { Page } from "./templates/page";
@@ -51,9 +52,17 @@ export const DataSubmissionPage = (props: Props): JSX.Element => {
   function renderBody(props: Props): JSX.Element[] {
     const context = { locale: locale, resolve: props.resolve, onDataSubmissionDataChanged, onDonate, onCancel};
     const bodyItems = Array.isArray(props.body) ? props.body : [props.body];
+    const tableCount = bodyItems.reduce(
+      (count, item) => count + (isPropsUIPromptConsentFormTable(item) ? 1 : 0),
+      0
+    );
+    let tableNumber = 0;
 
     return bodyItems.map((item, index) => {
-      const element = renderBodyItem(item, context);
+      const itemContext = tableCount > 1 && isPropsUIPromptConsentFormTable(item)
+        ? { ...context, consentTableNumber: ++tableNumber }
+        : context;
+      const element = renderBodyItem(item, itemContext);
       if (element === null) {
         throw new TypeError(`No factory found for body item at index ${index}`);
       }

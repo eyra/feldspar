@@ -239,14 +239,18 @@ export const Table = ({ id, head, body, readOnly = false, locale, onChange }: Pr
         {/* Desktop header */}
         <div className='hidden sm:block'>
           <div className='flex flex-row gap-4 items-center'>
-            {/* Desktop pagination */}
-            <div className={`${body.rows.length <= desktopPageSize ? 'hidden' : ''} `}>
-              <Pagination pageCount={state.desktopPageCount} page={state.desktopPage} pageWindowLegSize={3} onChange={handleDesktopPageChange} />
-            </div>
-            <div className='grow' />
+            {body.rows.length > desktopPageSize && (
+              <>
+                {/* Desktop pagination */}
+                <div>
+                  <Pagination pageCount={state.desktopPageCount} page={state.desktopPage} pageWindowLegSize={3} onChange={handleDesktopPageChange} />
+                </div>
+                <div className='grow' />
 
-            {/* Desktop pages */}
-            <Caption text={copy.desktopPages} color='text-grey2' margin='' />
+                {/* Desktop pages */}
+                <Caption text={copy.desktopPages} color='text-grey2' margin='' />
+              </>
+            )}
 
             {/* Desktop search */}
             <div>

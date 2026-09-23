@@ -3,6 +3,7 @@ import { PropsUITableCardItem } from '../../../../types/elements'
 import { Weak } from '../../../../helpers'
 import TextBundle from '../../../../text_bundle'
 import { Translator } from '../../../../translator'
+import { TableCellText } from './table_cell_text'
 
 type Props = Weak<PropsUITableCardItem> & TableCardItemContext
 
@@ -18,7 +19,7 @@ export const TableCardItem = ({ title, description, locale }: Props): JSX.Elemen
     : renderCardItemText(description.text)
 
   function renderCardItemText (text: string): JSX.Element {
-    return <div className='font-table-row text-table text-grey1'>{text}</div>
+    return <TableCellText text={text} locale={locale} />
   }
 
   function renderCardItemLink (href: string): JSX.Element {
@@ -48,9 +49,9 @@ export const TableCardItem = ({ title, description, locale }: Props): JSX.Elemen
   }
 
   return (
-    <div className='w-full flex flex-col items-left gap-2'>
-      <div className='font-card text-left text-card-key'>{title.text}</div>
-      <div className='font-card text-left text-card-value'>{body}</div>
+    <div className='w-full min-w-0 flex flex-col items-left gap-2'>
+      <div className='font-card text-left text-card-key [overflow-wrap:anywhere]'>{title.text}</div>
+      <div className='min-w-0 font-card text-left text-card-value'>{body}</div>
     </div>
   )
 }

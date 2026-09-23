@@ -9,6 +9,12 @@
 * Removed - This notes any features that have been deleted and removed from the software
 * Security - This acts as an invitation to users who want to upgrade and avoid any software vulnerabilities
 
+## Unreleased
+
+* Fixed - Hide framework numbering for a single consent table; number multiple tables in display order without changing script-authored titles or donated data.
+* Fixed - Bound long consent-table and mobile-card text to three-line previews with an explicit full-text reader only when lines are hidden, preserving complete search and donation values.
+* Changed - Left-align desktop table search when pagination is not needed, without showing a redundant single-page indicator.
+
 ## \#8 2026-07-03
 
 * Added SafeData for crash-resistant JSON access in donation scripts
