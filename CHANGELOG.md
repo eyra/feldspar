@@ -14,6 +14,7 @@
 * Fixed - Hide framework numbering for a single consent table; number multiple tables in display order without changing script-authored titles or donated data.
 * Fixed - Bound long consent-table and mobile-card text to three-line previews with an explicit full-text reader only when lines are hidden, preserving complete search and donation values.
 * Changed - Left-align desktop table search when pagination is not needed, without showing a redundant single-page indicator.
+* Changed - Name full-text dialogs after the translated field, such as "Message — full text", with "Full text" as the fallback for empty labels.
 
 ## \#8 2026-07-03
 

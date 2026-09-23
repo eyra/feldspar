@@ -68,7 +68,9 @@ export const TablePage = ({ head, rows, id, edit, selected, locale, onChange }: 
   }
 
   function renderRowCell ({ text }: Weak<PropsUITableCell>, cellIndex: number): JSX.Element {
-    const body = isValidHttpUrl(text) ? renderRowLink(text) : renderRowText(text)
+    const body = isValidHttpUrl(text)
+      ? renderRowLink(text)
+      : <TableCellText text={text} field={head.cells[cellIndex]?.text ?? ''} locale={locale} />
 
     return (
       <td key={`${cellIndex}`} className='h-12 px-4 py-2'>
@@ -77,9 +79,6 @@ export const TablePage = ({ head, rows, id, edit, selected, locale, onChange }: 
     )
   }
 
-  function renderRowText (text: string): JSX.Element {
-    return <TableCellText text={text} locale={locale} />
-  }
 
   function renderRowLink (href: string): JSX.Element {
     return (

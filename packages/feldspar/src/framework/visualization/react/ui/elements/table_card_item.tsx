@@ -16,11 +16,8 @@ export const TableCardItem = ({ title, description, locale }: Props): JSX.Elemen
 
   const body = isValidHttpUrl(description.text)
     ? renderCardItemLink(description.text)
-    : renderCardItemText(description.text)
+    : <TableCellText text={description.text} field={title.text} locale={locale} />
 
-  function renderCardItemText (text: string): JSX.Element {
-    return <TableCellText text={text} locale={locale} />
-  }
 
   function renderCardItemLink (href: string): JSX.Element {
     return (

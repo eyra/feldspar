@@ -5,10 +5,11 @@ import { Translator } from '../../../../translator'
 
 interface Props {
   text: string
+  field: string
   locale: string
 }
 
-export const TableCellText = ({ text, locale }: Props): JSX.Element => {
+export const TableCellText = ({ text, field, locale }: Props): JSX.Element => {
   const previewRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
   const [clipped, setClipped] = useState(false)
@@ -65,6 +66,7 @@ export const TableCellText = ({ text, locale }: Props): JSX.Element => {
       {open && (
         <FullTextDialog
           text={text}
+          field={field}
           locale={locale}
           onClose={() => {
             setOpen(false)
@@ -76,9 +78,12 @@ export const TableCellText = ({ text, locale }: Props): JSX.Element => {
   )
 }
 
-const FullTextDialog = ({ text, locale, onClose }: Props & { onClose: () => void }): JSX.Element => {
+const FullTextDialog = ({ text, field, locale, onClose }: Props & { onClose: () => void }): JSX.Element => {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const titleId = useId()
+  const title = field.trim()
+    ? `${field} — ${Translator.translate(fullTextSuffix, locale)}`
+    : Translator.translate(fullText, locale)
 
   useLayoutEffect(() => {
     const dialog = dialogRef.current
@@ -97,11 +102,11 @@ const FullTextDialog = ({ text, locale, onClose }: Props & { onClose: () => void
   return createPortal(
     <dialog ref={dialogRef} className='table-text-dialog text-grey1 bg-white' aria-labelledby={titleId} onClose={onClose}>
       <header className='table-text-dialog-header border-b border-grey4'>
-        <h2 id={titleId} className='font-title6 text-title6'>{Translator.translate(fullText, locale)}</h2>
+        <h2 id={titleId} className='min-w-0 font-title6 text-title6 [overflow-wrap:anywhere]'>{title}</h2>
         <button
           type='button'
           autoFocus
-          className='table-text-action text-primary font-button text-buttonsmall'
+          className='table-text-action shrink-0 text-primary font-button text-buttonsmall'
           onClick={() => dialogRef.current?.close()}
         >
           {Translator.translate(close, locale)}
@@ -130,6 +135,15 @@ const fullText = new TextBundle()
   .add('nl', 'Volledige tekst')
   .add('ro', 'Text complet')
   .add('lt', 'Visas tekstas')
+
+const fullTextSuffix = new TextBundle()
+  .add('en', 'full text')
+  .add('de', 'vollständiger Text')
+  .add('it', 'testo completo')
+  .add('es', 'texto completo')
+  .add('nl', 'volledige tekst')
+  .add('ro', 'text complet')
+  .add('lt', 'visas tekstas')
 
 const close = new TextBundle()
   .add('en', 'Close')
