@@ -8,6 +8,12 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 6
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['24.20.0', '24.21.0']
+        pnpm: ['12.5.1', '12.6.0']
 
     steps:
       - uses: actions/checkout@v7
@@ -17,12 +23,12 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: '24'
+          node-version: ${{ matrix.node }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
         with:
-          version: 12
+          version: ${{ matrix.pnpm }}
 
       - name: Install dependencies
         run: pnpm install
@@ -48,6 +54,8 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run E2E tests
+        env:
+          DEBUG: pw:webserver,pw:browser
         run: pnpm test:e2e
 
       - name: Build
