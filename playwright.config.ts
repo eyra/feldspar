@@ -50,5 +50,7 @@ export default defineConfig({
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
+    // Let pnpm forward termination to scripts in separate process groups.
+    gracefulShutdown: { signal: 'SIGTERM', timeout: 10000 },
   },
 });
