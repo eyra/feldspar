@@ -19,7 +19,7 @@
 * Changed - Consent-table `headers` are display-only: desktop headers, mobile card labels and full-text dialogs show the label, while donated rows keep the data frame's column names in every locale. Migration: scripts that relied on `headers` to rename donated keys must rename the data frame columns instead.
 * Fixed - Long-text previews collapse line breaks and blank lines into spaces so they fill three lines of content; the full-text dialog, search and donated values keep the original line breaks.
 * Changed - The full-text dialog uses a darker `shadow-dialog` drop shadow instead of a dimmed backdrop, so it stands out from the table without showing a gray block when Feldspar is embedded in a host modal such as Next.
-* Fixed - Let Playwright gracefully stop the development server and its child processes, preventing E2E runs from hanging after tests pass with pnpm 12.6.
+* Fixed - Run E2E tests against a completed demo build instead of concurrently rewritten development bundles, and gracefully stop the server's child processes with pnpm 12.6.
 
 ## \#8 2026-07-03
 
