@@ -97,8 +97,10 @@ class PropsUIPromptConsentFormTable:
         id: a unique string to itentify the table after donation
         number: the number of table in the list of tables
         title: title of the table
-        description: description of the table
-        data_frame: table to be shown
+        description: optional short text shown under the title, e.g. which
+            period or subset of the data the table contains; omit it (or pass
+            None) to show none, passing data_frame by keyword
+        data_frame: table to be shown (required)
         data_frame_max_size: maximum size of the table (in rows)
         headers: optional display labels per column name; donated data keeps
             the data frame's column names, independent of label or locale
@@ -109,13 +111,19 @@ class PropsUIPromptConsentFormTable:
     id: str
     number: int
     title: Translatable
-    description: Translatable
-    data_frame: pd.DataFrame
+    description: Optional[Translatable] = None
+    # Defaults only so description can be omitted; a missing data frame is rejected below.
+    data_frame: Optional[pd.DataFrame] = None
     data_frame_max_size: int = 10000
     headers: Optional[dict[str, Translatable]] = None
     column_widths: Optional[dict[str, float]] = None
 
     def __post_init__(self):
+        if not isinstance(self.data_frame, pd.DataFrame):
+            raise TypeError(
+                "PropsUIPromptConsentFormTable requires a data_frame; "
+                "when omitting description, pass it as data_frame=..."
+            )
         if self.data_frame_max_size < 1:
             self.data_frame_max_size = 1
         if len(self.data_frame) > self.data_frame_max_size:
@@ -130,7 +138,8 @@ class PropsUIPromptConsentFormTable:
         dict["id"] = self.id
         dict["number"] = self.number
         dict["title"] = self.title.toDict()
-        dict["description"] = self.description.toDict()
+        if self.description:
+            dict["description"] = self.description.toDict()
         dict["data_frame"] = self.data_frame.to_json()
         if self.headers:
             dict["headers"] = {

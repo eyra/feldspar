@@ -4,7 +4,7 @@ import {
   PropsUITableRow,
 } from "../../../../types/elements";
 import { Table } from "../elements/table";
-import { BodyLarge, Title4 } from "../elements/text";
+import { BodyMedium, Title4 } from "../elements/text";
 import React, {
   JSX,
   forwardRef,
@@ -77,6 +77,9 @@ export const ConsentTable = forwardRef<ConsentTableHandle | null, Props>(
             <Title4 text={currentTable.title} margin='' />
           </div>
         </div>
+        {currentTable.description?.trim() && (
+          <BodyMedium text={currentTable.description} margin='' />
+        )}
         <Table
           {...currentTable}
           readOnly={readOnly}
