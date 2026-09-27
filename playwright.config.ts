@@ -21,8 +21,9 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  /* Reporter to use. See https://playwright.dev/docs/test-reporters
+     CI logs show per-test progress and failures; locally the HTML report stays. */
+  reporter: process.env.CI ? 'list' : 'html',
   /* Increase timeout since Pyodide takes time to initialize */
   timeout: 120000,
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
