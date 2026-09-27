@@ -44,13 +44,11 @@ export default defineConfig({
     }
   ],
 
-  /* Build once so tests never read bundles while development watchers rewrite them. */
+  /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'pnpm run build && pnpm run --filter @eyra/data-collector preview --port 3000 --strictPort',
+    command: 'pnpm run start',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
-    // Let pnpm forward termination to scripts in separate process groups.
-    gracefulShutdown: { signal: 'SIGTERM', timeout: 10000 },
   },
 });
