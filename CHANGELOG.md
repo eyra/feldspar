@@ -20,6 +20,7 @@
 * Fixed - Long-text previews collapse line breaks and blank lines into spaces so they fill three lines of content; the full-text dialog, search and donated values keep the original line breaks.
 * Changed - The full-text dialog uses a darker `shadow-dialog` drop shadow instead of a dimmed backdrop, so it stands out from the table without showing a gray block when Feldspar is embedded in a host modal such as Next.
 * Fixed - Consent-table descriptions are shown under the table title again (lost in release 4). `PropsUIPromptConsentFormTable.description` is now optional: omit it (passing `data_frame=` by keyword) or pass `None` to show no description; existing positional calls keep working. Scripts that pass a description should check its text, since participants will now see it. Donated data is unchanged.
+* Fixed - Pin CI to pnpm 12.5.1 to avoid the E2E shutdown regression introduced in pnpm 12.6, and print per-test progress in CI logs.
 
 ## \#8 2026-07-03
 
