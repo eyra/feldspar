@@ -92,6 +92,19 @@ test('collapses line breaks in text previews but keeps them in the full text', a
   expect(await dialog.locator('.table-text-dialog-body').innerText()).toContain('Short break.\n\nThe participant asked');
 });
 
+test('shows a table description under its title only when set', async ({ page }) => {
+  await setupTestWithFileUpload(page);
+
+  const consentTable = (title: string) =>
+    page.locator('div.mb-20', { has: page.getByText(title, { exact: true }) });
+  const description = (title: string) => consentTable(title).locator(':scope > .text-bodymedium');
+
+  await expect(description('File Inventory')).toHaveText('Overview of file inventory from your zip file.');
+  // The static example table passes description=None.
+  await expect(consentTable('Example Metadata Table')).toBeVisible();
+  await expect(description('Example Metadata Table')).toHaveCount(0);
+});
+
 test('can remove rows from submission', async ({ page }) => {
   await setupTestWithFileUpload(page);
 

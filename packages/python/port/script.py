@@ -323,7 +323,8 @@ def prompt_consent(data):
     ]
 
     # Example of a static table with hardcoded data — useful for reference data
-    # or metadata that does not come from the uploaded file. `headers` only set
+    # or metadata that does not come from the uploaded file. It omits the
+    # description, so nothing is shown under its title. `headers` only set
     # the labels participants see; donated rows keep the data frame's column
     # names. `column_widths` values are relative weights; unlisted columns get 1.
     # Here participant_id (2) is twice as wide as device and date (1 each), and
@@ -344,12 +345,7 @@ def prompt_consent(data):
                 "lt": "Metaduomenų lentelės pavyzdys",
             }
         ),
-        props.Translatable(
-            {
-                "en": "This table is static — its content is hardcoded, not derived from the uploaded file. Use this pattern for reference data or study metadata.",
-            }
-        ),
-        pd.DataFrame(
+        data_frame=pd.DataFrame(
             [
                 ["participant-001", "Device A", "2025-06-01", "Morning session\nQuiet room\n\nNo issues"],
                 [
