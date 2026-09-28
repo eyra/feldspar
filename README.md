@@ -43,22 +43,8 @@ Feldspar enables researchers to:
 
 ## Optional iframe liveness
 
-The host passes the server-provided `attempt_id` in
-`liveness: { attempt_id }` on the existing `live-init` message.
-Feldspar uses its transferred `MessagePort` for:
-
-```js
-{ __type__: "LivenessReady", attempt_id }          // Feldspar announces readiness
-{ __type__: "LivenessPing", attempt_id, sequence } // Host sends a probe
-{ __type__: "LivenessPong", attempt_id, sequence } // Feldspar echoes the probe
-```
-
-The host numbers its probes with `sequence`; Feldspar echoes both fields unchanged.
-Ready confirms bridge responsiveness, not Python initialization or health.
-Without opt-in, initialization is unchanged and no liveness messages are sent.
-
-Custom integrations must call the disposer returned by `LiveBridge.create`
-during teardown. Existing uploaded bundles must be rebuilt to support liveness.
+When enabled by the host, Feldspar handles liveness checks without changes to
+your Python script. Rebuild and re-upload existing bundles to include this support.
 
 ## Customizing the Python Code
 
