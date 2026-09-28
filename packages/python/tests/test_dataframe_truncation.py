@@ -1,4 +1,5 @@
 import importlib.util
+import json
 import sys
 from pathlib import Path
 
@@ -25,123 +26,39 @@ def make_dataframe(num_rows: int) -> pd.DataFrame:
 
 
 class TestPropsUIPromptConsentFormTableTruncation:
-    """Tests for data frame truncation in PropsUIPromptConsentFormTable"""
-
-    def test_dataframe_under_max_size_unchanged(self):
-        """DataFrame smaller than max_size should not be truncated"""
-        df = make_dataframe(100)
+    @pytest.mark.parametrize(
+        ("max_size", "expected_rows"),
+        [(0, 1), (-5, 1), (10, 10), (100, 100), (101, 100)],
+    )
+    def test_numeric_limit_serializes_the_original_prefix(self, max_size, expected_rows):
         table = PropsUIPromptConsentFormTable(
             id="test",
             number=1,
             title=make_translatable("Test"),
-            description=make_translatable("Description"),
-            data_frame=df,
-            data_frame_max_size=10000,
+            data_frame=make_dataframe(100),
+            data_frame_max_size=max_size,
         )
-        assert len(table.data_frame) == 100
 
-    def test_dataframe_at_max_size_unchanged(self):
-        """DataFrame exactly at max_size should not be truncated"""
-        df = make_dataframe(500)
+        serialized = json.loads(table.toDict()["data_frame"])
+
+        assert serialized == {
+            "col1": {str(i): i for i in range(expected_rows)},
+            "col2": {str(i): f"row_{i}" for i in range(expected_rows)},
+        }
+
+    def test_none_serializes_every_row_beyond_the_former_javascript_limit(self):
+        row_count = 100001
         table = PropsUIPromptConsentFormTable(
             id="test",
             number=1,
             title=make_translatable("Test"),
-            description=make_translatable("Description"),
-            data_frame=df,
-            data_frame_max_size=500,
+            data_frame=make_dataframe(row_count),
+            data_frame_max_size=None,
         )
-        assert len(table.data_frame) == 500
 
-    def test_dataframe_over_max_size_truncated(self):
-        """DataFrame larger than max_size should be truncated"""
-        df = make_dataframe(1000)
-        table = PropsUIPromptConsentFormTable(
-            id="test",
-            number=1,
-            title=make_translatable("Test"),
-            description=make_translatable("Description"),
-            data_frame=df,
-            data_frame_max_size=500,
-        )
-        assert len(table.data_frame) == 500
+        serialized = json.loads(table.toDict()["data_frame"])
 
-    def test_truncation_keeps_first_rows(self):
-        """Truncation should keep the first N rows"""
-        df = make_dataframe(100)
-        table = PropsUIPromptConsentFormTable(
-            id="test",
-            number=1,
-            title=make_translatable("Test"),
-            description=make_translatable("Description"),
-            data_frame=df,
-            data_frame_max_size=10,
-        )
-        assert list(table.data_frame["col1"]) == list(range(10))
-        assert list(table.data_frame["col2"]) == [f"row_{i}" for i in range(10)]
-
-    def test_truncation_resets_index(self):
-        """Truncated DataFrame should have reset index"""
-        df = make_dataframe(100)
-        table = PropsUIPromptConsentFormTable(
-            id="test",
-            number=1,
-            title=make_translatable("Test"),
-            description=make_translatable("Description"),
-            data_frame=df,
-            data_frame_max_size=10,
-        )
-        assert list(table.data_frame.index) == list(range(10))
-
-    def test_custom_max_size(self):
-        """Custom max_size should be respected"""
-        df = make_dataframe(200)
-        table = PropsUIPromptConsentFormTable(
-            id="test",
-            number=1,
-            title=make_translatable("Test"),
-            description=make_translatable("Description"),
-            data_frame=df,
-            data_frame_max_size=50,
-        )
-        assert len(table.data_frame) == 50
-
-    def test_max_size_zero_defaults_to_one(self):
-        """max_size of 0 should default to 1"""
-        df = make_dataframe(100)
-        table = PropsUIPromptConsentFormTable(
-            id="test",
-            number=1,
-            title=make_translatable("Test"),
-            description=make_translatable("Description"),
-            data_frame=df,
-            data_frame_max_size=0,
-        )
-        assert table.data_frame_max_size == 1
-        assert len(table.data_frame) == 1
-
-    def test_max_size_negative_defaults_to_one(self):
-        """Negative max_size should default to 1"""
-        df = make_dataframe(100)
-        table = PropsUIPromptConsentFormTable(
-            id="test",
-            number=1,
-            title=make_translatable("Test"),
-            description=make_translatable("Description"),
-            data_frame=df,
-            data_frame_max_size=-5,
-        )
-        assert table.data_frame_max_size == 1
-        assert len(table.data_frame) == 1
-
-    def test_default_max_size_is_10000(self):
-        """Default max_size should be 10000"""
-        df = make_dataframe(100)
-        table = PropsUIPromptConsentFormTable(
-            id="test",
-            number=1,
-            title=make_translatable("Test"),
-            description=make_translatable("Description"),
-            data_frame=df,
-        )
-        assert table.data_frame_max_size == 10000
+        assert serialized == {
+            "col1": {str(i): i for i in range(row_count)},
+            "col2": {str(i): f"row_{i}" for i in range(row_count)},
+        }

@@ -8,8 +8,6 @@ import { BodyMedium, Title4 } from "../elements/text";
 import React, {
   JSX,
   forwardRef,
-  useImperativeHandle,
-  MutableRefObject,
 } from "react";
 import {
   DataSubmissionData,
@@ -18,7 +16,6 @@ import {
 import _ from "lodash";
 import { PromptContext } from "./factory";
 import { NumberIcon } from '../elements/number_icon'
-import { truncateRows, MAX_ROWS } from '../../../../utils/truncation'
 
 interface Props {
   table: PropsUITable & {
@@ -36,15 +33,6 @@ export interface ConsentTableHandle extends DataSubmissionProvider {}
 
 export const ConsentTable = forwardRef<ConsentTableHandle | null, Props>(
   ({ table, readOnly = false, context, onChange }, ref): JSX.Element => {
-    const [currentTable, setCurrentTable] = React.useState<
-      PropsUITable & {
-        number: number;
-        title: string;
-        description?: string;
-        deletedRowCount: number;
-      }
-    >(truncatedTable(table));
-
     const handleChange = (rows: PropsUITableRow[], deletedCount: number) => {
       context.onDataSubmissionDataChanged(
         table.id,
@@ -53,17 +41,9 @@ export const ConsentTable = forwardRef<ConsentTableHandle | null, Props>(
     };
 
     React.useEffect(() => {
-      console.log("ConsentTable useEffect", currentTable);
-      const { truncatedRows, truncatedRowCount } = truncateRows(table.body.rows ?? []);
-      if (truncatedRowCount > 0) {
-        console.warn(`ConsentTable "${table.id}" initial data exceeds ${MAX_ROWS} rows. Truncating.`);
-      }
-
-      setCurrentTable(truncatedTable(table));
-
       context.onDataSubmissionDataChanged(
         table.id,
-        getDataSubmissionData(table.head, truncatedRows, truncatedRowCount)
+        getDataSubmissionData(table.head, table.body.rows ?? [], 0)
       );
     }, [table]);
 
@@ -74,41 +54,24 @@ export const ConsentTable = forwardRef<ConsentTableHandle | null, Props>(
             <NumberIcon number={context.consentTableNumber} />
           )}
           <div className='pt-2px'>
-            <Title4 text={currentTable.title} margin='' />
+            <Title4 text={table.title} margin='' />
           </div>
         </div>
-        {currentTable.description?.trim() && (
-          <BodyMedium text={currentTable.description} margin='' />
+        {table.description?.trim() && (
+          <BodyMedium text={table.description} margin='' />
         )}
         <Table
-          {...currentTable}
+          {...table}
           readOnly={readOnly}
           locale={context.locale}
           onChange={handleChange}
-          id={currentTable.id}
-          key={currentTable.id}
+          id={table.id}
+          key={table.id}
         />
       </div>
     );
   }
 );
-
-function truncatedTable(
-  t: PropsUITable & {
-    number: number;
-    title: string;
-    description?: string;
-    deletedRowCount: number;
-  }
-) {
-  const rows = t.body?.rows ?? [];
-  const { truncatedRows, truncatedRowCount } = truncateRows(rows);
-  return {
-    ...t,
-    body: { ...t.body, rows: truncatedRows },
-    deletedRowCount: (t.deletedRowCount ?? 0) + truncatedRowCount,
-  };
-}
 
 function getDataSubmissionData(
   head: PropsUITableHead,
@@ -126,12 +89,11 @@ function getDataSubmissionData(
 function serializeTableData(
   head: PropsUITableHead,
   rows: PropsUITableRow[]
-): any[] {
-  const limited = rows.slice(0, MAX_ROWS);
-  return limited.map((row) => serializeRow(row, head));
+): Record<string, string | undefined>[] {
+  return rows.map((row) => serializeRow(row, head));
 }
 
-function serializeRow(row: PropsUITableRow, head: PropsUITableHead): any {
+function serializeRow(row: PropsUITableRow, head: PropsUITableHead): Record<string, string | undefined> {
   const keys = head.columns ?? head.cells.map((cell) => cell.text);
   const values = row.cells.map((cell) => cell.text);
   return _.fromPairs(_.zip(keys, values));

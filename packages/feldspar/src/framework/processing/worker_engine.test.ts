@@ -38,6 +38,36 @@ function makeEngine (): { engine: WorkerProcessingEngine, logger: FakeLogger, wo
 }
 
 describe('WorkerProcessingEngine.handleEvent', () => {
+  it('preserves leading BOMs and multibyte donation text when decoding worker bytes', () => {
+    const { engine } = makeEngine()
+    const received: Command[] = []
+    engine.commandHandler = {
+      async onCommand (command: Command): Promise<Response> {
+        received.push(command)
+        return { __type__: 'Response', command, payload: { __type__: 'PayloadVoid', value: undefined } }
+      }
+    }
+    const command: Command = {
+      __type__: 'CommandSystemDonate',
+      key: '\uFEFFdonnées',
+      json_string: JSON.stringify({ text: '日本語 — \u{1F680}', empty: '' })
+    }
+    const encoder = new TextEncoder()
+
+    engine.handleEvent({
+      data: {
+        eventType: 'runCycleDone',
+        scriptEvent: {
+          __type__: encoder.encode(command.__type__),
+          key: encoder.encode(command.key),
+          json_string: encoder.encode(command.json_string)
+        }
+      }
+    })
+
+    expect(received).toEqual([command])
+  })
+
   it('routes workerLog events through logger with the provided level', () => {
     const { engine, logger } = makeEngine()
     engine.handleEvent({ data: { eventType: 'workerLog', level: 'debug', message: 'starting cycle' } })

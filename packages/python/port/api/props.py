@@ -91,7 +91,7 @@ class PropsUIPromptConfirm:
 class PropsUIPromptConsentFormTable:
     """Table to be shown to the participant prior to data_submission
 
-    It is truncated to a maximum number of rows to avoid overloading the UI.
+    By default, rows are limited to avoid overloading the UI.
 
     Attributes:
         id: a unique string to itentify the table after donation
@@ -101,7 +101,7 @@ class PropsUIPromptConsentFormTable:
             period or subset of the data the table contains; omit it (or pass
             None) to show none, passing data_frame by keyword
         data_frame: table to be shown (required)
-        data_frame_max_size: maximum size of the table (in rows)
+        data_frame_max_size: maximum size of the table (in rows), or None for no limit
         headers: optional display labels per column name; donated data keeps
             the data frame's column names, independent of label or locale
         column_widths: optional relative desktop widths per column name;
@@ -114,7 +114,7 @@ class PropsUIPromptConsentFormTable:
     description: Optional[Translatable] = None
     # Defaults only so description can be omitted; a missing data frame is rejected below.
     data_frame: Optional[pd.DataFrame] = None
-    data_frame_max_size: int = 10000
+    data_frame_max_size: Optional[int] = 10000
     headers: Optional[dict[str, Translatable]] = None
     column_widths: Optional[dict[str, float]] = None
 
@@ -124,10 +124,11 @@ class PropsUIPromptConsentFormTable:
                 "PropsUIPromptConsentFormTable requires a data_frame; "
                 "when omitting description, pass it as data_frame=..."
             )
-        if self.data_frame_max_size < 1:
-            self.data_frame_max_size = 1
-        if len(self.data_frame) > self.data_frame_max_size:
-            self.data_frame = self.data_frame.head(self.data_frame_max_size).reset_index(drop=True)
+        if self.data_frame_max_size is not None:
+            if self.data_frame_max_size < 1:
+                self.data_frame_max_size = 1
+            if len(self.data_frame) > self.data_frame_max_size:
+                self.data_frame = self.data_frame.head(self.data_frame_max_size).reset_index(drop=True)
         for column, width in (self.column_widths or {}).items():
             if not width > 0:
                 raise ValueError(f"column_widths[{column!r}] must be positive, got {width!r}")

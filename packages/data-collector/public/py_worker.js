@@ -1,9 +1,11 @@
 let pyScript;
+let encodeCommandStrings;
+const payloadDecoder = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true });
 
 console.log("[ProcessingWorker] Worker loaded");
 
 onmessage = (event) => {
-  console.log("[ProcessingWorker] Received event: ", event.data);
+  console.log("[ProcessingWorker] Received event:", event.data.eventType);
   const { eventType } = event.data;
   switch (eventType) {
     case "initialise":
@@ -18,8 +20,8 @@ onmessage = (event) => {
       break;
 
     case "nextRunCycle":
-      const { response } = event.data;
-      unwrap(response).then((userInput) => {
+      const { payload } = event.data;
+      unwrap(payload).then((userInput) => {
         runCycle(userInput);
       });
       break;
@@ -34,7 +36,7 @@ let cycleCount = 0;
 function runCycle(payload) {
   const cycleId = ++cycleCount;
   const payloadType = (payload && payload.__type__) || "null";
-  console.log("[ProcessingWorker] runCycle " + JSON.stringify(payload));
+  console.log("[ProcessingWorker] runCycle", payloadType);
   self.postMessage({
     eventType: "workerLog",
     level: "debug",
@@ -66,13 +68,19 @@ function runCycle(payload) {
     message: `[Worker] runCycle #${cycleId} got command=${commandType}`,
   });
   try {
-    self.postMessage({
-      eventType: "runCycleDone",
-      scriptEvent: scriptEvent.toJs({
-        create_proxies: false,
-        dict_converter: Object.fromEntries,
-      }),
+    const encodedEvent = encodeCommandStrings(scriptEvent);
+    scriptEvent.destroy();
+    scriptEvent = encodedEvent;
+    const command = scriptEvent.toJs({
+      create_pyproxies: false,
+      dict_converter: Object.fromEntries,
     });
+    const buffers = new Set();
+    collectBuffers(command, buffers);
+    self.postMessage(
+      { eventType: "runCycleDone", scriptEvent: command },
+      [...buffers]
+    );
   } catch (error) {
     console.error("[ProcessingWorker] Error in toJs/postMessage:", error);
     self.postMessage({
@@ -80,21 +88,35 @@ function runCycle(payload) {
       error: error.toString(),
       stack: error.stack || "",
     });
+  } finally {
+    // The transferred buffers are owned JS copies, not views of WASM memory.
+    // Release the Python command and its encoded strings immediately.
+    scriptEvent.destroy();
   }
 }
 
-function unwrap(response) {
-  console.log(
-    "[ProcessingWorker] unwrap response: " + JSON.stringify(response.payload)
-  );
+function collectBuffers(value, buffers) {
+  if (value instanceof Uint8Array) {
+    buffers.add(value.buffer);
+  } else if (value && typeof value === "object") {
+    for (const child of Object.values(value)) {
+      collectBuffers(child, buffers);
+    }
+  }
+}
+
+function unwrap(payload) {
+  if (payload.value instanceof Uint8Array) {
+    payload.value = payloadDecoder.decode(payload.value);
+  }
   return new Promise((resolve) => {
-    switch (response.payload.__type__) {
+    switch (payload.__type__) {
       case "PayloadFile":
-        copyFileToPyFS(response.payload.value, resolve);
+        copyFileToPyFS(payload.value, resolve);
         break;
 
       default:
-        resolve(response.payload);
+        resolve(payload);
     }
   });
 }
@@ -131,8 +153,11 @@ function initialise() {
       self.pyodide = pyodide;
       return loadPackages();
     })
+    .then(() => installPortPackage())
     .then(() => {
-      return installPortPackage();
+      encodeCommandStrings = self.pyodide.runPython(
+        "from port.main import encode_command_strings; encode_command_strings"
+      );
     });
 }
 

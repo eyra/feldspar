@@ -26,7 +26,7 @@ export class LiveBridge implements Bridge {
 
   send (command: CommandSystem): void {
     if (isCommandSystem(command)) {
-      this.log('info', 'send', command)
+      this.log('info', 'send', command.__type__)
       this.port.postMessage(command)
     } else {
       this.log('error', 'received unknown command', command)

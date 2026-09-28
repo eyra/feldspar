@@ -21,13 +21,11 @@ export const DataSubmissionPage = (props: Props): JSX.Element => {
   const DataSubmissionData = React.useRef<Map<string, string>>(new Map());
 
   const onDataSubmissionDataChanged = useCallback((key: string, value: any)=> {
-    console.log("onDataSubmissionDataChanged", key, value);
     DataSubmissionData.current.set(key, value);
   }, [DataSubmissionData]);
 
   function onDonate(): void {
     const DataSubmissionDataObject = Object.fromEntries(DataSubmissionData.current);
-    console.log("onDonate", JSON.stringify(DataSubmissionDataObject));
     props.resolve?.({ __type__: "PayloadJSON", value: JSON.stringify(DataSubmissionDataObject) });
   }
 

@@ -1,10 +1,14 @@
 import { test, expect, Page } from '@playwright/test';
 import * as path from 'path';
+import { execFileSync } from 'node:child_process';
 
 /**
  * Common setup for tests: navigate to the page, upload a test file
  */
-async function setupTestWithFileUpload(page: Page): Promise<void> {
+async function setupTestWithFileUpload(
+  page: Page,
+  file?: { name: string; mimeType: string; buffer: Buffer },
+): Promise<void> {
   // Navigate to the local development server
   await page.goto('http://localhost:3000/');
 
@@ -18,7 +22,7 @@ async function setupTestWithFileUpload(page: Page): Promise<void> {
   
   // Set a test zip file path
   const zipFilePath = path.join(__dirname, 'test.zip');
-  await fileChooser.setFiles(zipFilePath);
+  await fileChooser.setFiles(file ?? zipFilePath);
   
   // Click continue to process the file
   await page.getByText('Continue').click();
@@ -51,6 +55,25 @@ test('can submit data', async ({ page }) => {
   
   // The submitted data should contain the expected file
   expect(submittedData).toEqual(expect.stringContaining("hello_world.txt"));
+});
+
+test('preserves Unicode and escaped text through worker review and donation', async ({ page }) => {
+  const filename = '\uFEFFcafé — 中文 — \u{1D11E}\n"quoted" \\ note.txt';
+  const buffer = execFileSync('python3', ['-c', [
+    'import io, sys, zipfile',
+    'buffer = io.BytesIO()',
+    'with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as archive:',
+    '    archive.writestr(sys.argv[1], "synthetic content")',
+    'sys.stdout.buffer.write(buffer.getvalue())',
+  ].join('\n'), filename]);
+  await setupTestWithFileUpload(page, {
+    name: 'unicode.zip', mimeType: 'application/zip', buffer,
+  });
+  await expect(page.getByTestId('table-file_inventory').getByText('café — 中文', { exact: false })).toBeVisible();
+
+  const submitted = await submitDataAndGetResult(page);
+  const data = JSON.parse(JSON.parse(submitted!).data);
+  expect(data.file_inventory.data.map((row: Record<string, string>) => row.Filename)).toEqual([filename]);
 });
 
 test('shows header labels and widths while donating data frame column names', async ({ page }) => {

@@ -90,13 +90,55 @@ def process(sessionId):
     content = read_asset("my_file.txt")
 ```
 
-### Data Frame Size limits
+### Dataframe limits and worker memory
 
-Row limits for data frames in the Props UI:
-- Consent Table: default maximum of 10,000 rows (configurable)
-- UI hard cap: 50,000 rows (cannot be exceeded)
+`PropsUIPromptConsentFormTable` defaults to 10,000 rows. Set
+`data_frame_max_size` to another row limit, or explicitly use `None` to retain
+all rows. The UI no longer silently truncates tables at 50,000 rows: review and
+donation use the rows supplied by the script, minus participant deletions.
+Scripts must choose limits appropriate for their data, devices and host upload
+limits; an unlimited table is not a browser-memory guarantee.
 
-For larger datasets, pre-aggregate or sample before display, and review your informed consent and privacy guidelines.
+Serialized command strings cross the worker boundary as transferable UTF-8
+buffers and are decoded before UI handling. Responses return only their payload,
+not the original command, and transferred Python command proxies are released.
+Public script dictionaries and host donation JSON are unchanged. The Python
+wheel, worker and framework must be deployed together because the internal
+transport protocol changed. Runtime-error recovery is not provided by this change.
+
+### Reproducing large-donation memory use
+
+The normal demo extracts each JSON file's `user.name` into its JSON-summary table.
+Use the dedicated fixture generator to exercise that real upload, extraction,
+review and donation path. Unlike a large ZIP of unselected content, these values
+actually reach the donated table. No Python or worker code is substituted.
+
+```sh
+python3 tests/generate_memory_zip.py /tmp/feldspar-memory.zip --mib 192 --files 256
+pnpm run build
+pnpm --filter @eyra/data-collector exec vite preview --host 127.0.0.1 --port 4173
+```
+
+In another terminal:
+
+```sh
+node tests/memory-benchmark.cjs http://127.0.0.1:4173/ /tmp/feldspar-memory.zip
+```
+
+The fixture contains synthetic data only, uses exclusive creation, and compresses
+well. `--mib` controls total donated `User` text, not ZIP size; JSON and the other
+demo tables add overhead. Start with `--mib 64` for a smaller comparison.
+
+The opt-in benchmark opens headed Chromium, uploads the ZIP, deletes and restores
+a JSON-summary row, donates through the real host bridge, and checks every
+summary row's text, order and metadata. Its local receiver does not upload to
+Next. It samples the dedicated Chromium process tree's RSS every 250 ms using
+`ps` (macOS/Linux), reporting phase peaks, completion or failure, and donation
+bytes. RSS includes shared pages and is not unique physical memory or JS heap;
+sampling can miss brief peaks. Compare the same fixture against production builds
+of the base and changed branches sequentially on the same machine. A crash is
+reported as a failure, not a completed low-memory run. This heavyweight benchmark
+is deliberately outside the default browser test suite.
 
 ### Local extraction debugging (CLI)
 
