@@ -3,6 +3,20 @@ import { CommandSystemEvent, isCommand, Response } from '../types/commands'
 import { Logger, LogLevel } from '../logging'
 
 const VALID_LOG_LEVELS: LogLevel[] = ['debug', 'info', 'warn', 'error']
+const commandDecoder = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true })
+const payloadEncoder = new TextEncoder()
+
+function decodeCommandStrings (value: unknown): unknown {
+  if (value instanceof Uint8Array) {
+    return commandDecoder.decode(value)
+  }
+  if (value && typeof value === 'object') {
+    for (const [key, child] of Object.entries(value)) {
+      Reflect.set(value, key, decodeCommandStrings(child))
+    }
+  }
+  return value
+}
 
 function toLogLevel (value: unknown): LogLevel {
   return VALID_LOG_LEVELS.includes(value as LogLevel) ? (value as LogLevel) : 'info'
@@ -65,7 +79,7 @@ export default class WorkerProcessingEngine {
 
       case 'runCycleDone':
         this.logger?.log('debug', 'Worker run cycle done')
-        this.handleRunCycle(event.data.scriptEvent)
+        this.handleRunCycle(decodeCommandStrings(event.data.scriptEvent))
         break
 
       case 'error':
@@ -111,7 +125,17 @@ export default class WorkerProcessingEngine {
   }
 
   nextRunCycle (response: Response): void {
-    this.worker.postMessage({ eventType: 'nextRunCycle', response })
+    // The worker consumes only the answer, not the original render/donate command.
+    const { payload } = response
+    if (typeof payload.value === 'string') {
+      const value = payloadEncoder.encode(payload.value)
+      this.worker.postMessage(
+        { eventType: 'nextRunCycle', payload: { ...payload, value } },
+        [value.buffer]
+      )
+    } else {
+      this.worker.postMessage({ eventType: 'nextRunCycle', payload })
+    }
   }
 
   terminate (): void {

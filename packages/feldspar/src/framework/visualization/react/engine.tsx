@@ -24,9 +24,9 @@ export default class ReactEngine {
   }
 
   async render(command: CommandUIRender): Promise<Response> {
-    console.debug("[ReactEngine] render", command);
+    console.debug("[ReactEngine] render", command.__type__);
     const payload = await this.renderPage(command.page);
-    console.log("[ReactEngine] render done", command, payload);
+    console.log("[ReactEngine] render done", payload.__type__);
     return { __type__: "Response", command, payload };
   }
 

@@ -7,6 +7,22 @@ from port.api.file_utils import AsyncFileAdapter
 from port.api.logging import LogForwardingHandler
 
 
+def encode_command_strings(value):
+    """Build a UTF-8 transport tree without mutating script-owned props.
+
+    Some toDict methods retain nested dictionaries owned by reusable props.
+    Copy containers, encoding strings to bytes that Pyodide converts to owned,
+    transferable Uint8Arrays instead of per-character JavaScript strings.
+    """
+    if isinstance(value, str):
+        return value.encode("utf-8")
+    if isinstance(value, dict):
+        return {key: encode_command_strings(child) for key, child in value.items()}
+    if isinstance(value, list):
+        return [encode_command_strings(child) for child in value]
+    return value
+
+
 class ScriptWrapper(Generator):
     def __init__(self, script):
         self.script = script

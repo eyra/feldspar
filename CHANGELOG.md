@@ -11,6 +11,9 @@
 
 ## Unreleased
 
+* Fixed - Transfer serialized command strings and string response payloads as owned UTF-8 buffers instead of expanding Python strings and copying full original commands across the worker boundary. Release Python command proxies after transfer and avoid logging full render/donation data. Deploy the Python wheel, worker and framework together; public script dictionaries and host donation JSON are unchanged.
+* Changed - Allow `data_frame_max_size=None` for explicitly unlimited consent tables and remove the hidden JavaScript 50,000-row cutoff. Existing Python numeric limits and the 10,000-row default remain; scripts are responsible for choosing suitable data and upload limits.
+* Added - An opt-in synthetic ZIP generator and process-memory benchmark for the unchanged demo's actual JSON-summary upload, review, delete/undo and donation flow.
 * Fixed - Hide framework numbering for a single consent table; number multiple tables in display order without changing script-authored titles or donated data.
 * Fixed - Bound long consent-table and mobile-card text to three-line previews with an explicit full-text reader only when lines are hidden, preserving complete search and donation values.
 * Changed - Left-align desktop table search when pagination is not needed, without showing a redundant single-page indicator.

@@ -7,8 +7,9 @@ from pathlib import Path
 # Add packages/python to sys.path so the `port` package resolves.
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from port.main import ScriptWrapper
+from port.main import ScriptWrapper, encode_command_strings
 from port.api.commands import CommandUIRender, FlushLogs
+from port.api.props import PropsUIHeader, Translatable
 
 
 class _StubPage:
@@ -20,6 +21,18 @@ class _StubPage:
 
 def _ui_command():
     return CommandUIRender(_StubPage())
+
+
+def test_transport_encoding_does_not_mutate_reusable_script_translations():
+    title = Translatable({"en": "café"})
+    header = PropsUIHeader(title)
+    command = {"page": header.toDict(), "body": [title.toDict()]}
+
+    encode_command_strings(command)
+
+    # Scripts can reuse and update their props after rendering a command.
+    title.translations["en"] += " again"
+    assert header.toDict()["title"]["translations"]["en"] == "café again"
 
 
 def test_flushlogs_sentinel_does_not_become_a_command():

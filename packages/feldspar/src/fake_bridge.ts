@@ -16,7 +16,7 @@ export default class FakeBridge implements Bridge {
   }
 
   async handleDataSubmission (command: CommandSystemDonate): Promise<void> {
-    console.log(`[FakeBridge] received dataSubmission: ${command.key}=${command.json_string}`);
+    console.log(`[FakeBridge] received dataSubmission: ${command.key}`);
     // Post the data, this allows testing the data submission
     try {
       const response = await fetch('/data-submission', {
