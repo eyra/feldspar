@@ -43,8 +43,9 @@ Feldspar enables researchers to:
 
 ## Optional iframe liveness
 
-Add `liveness: { attempt_id: "<fresh UUID>" }` to the existing `live-init`
-message to enable replies on its transferred `MessagePort`:
+The host passes the server-provided `attempt_id` in
+`liveness: { attempt_id }` on the existing `live-init` message.
+Feldspar uses its transferred `MessagePort` for:
 
 ```js
 { __type__: "LivenessReady", attempt_id }          // Feldspar announces readiness
@@ -52,7 +53,7 @@ message to enable replies on its transferred `MessagePort`:
 { __type__: "LivenessPong", attempt_id, sequence } // Feldspar echoes the probe
 ```
 
-Use a matching attempt ID and an integer sequence from `1` to `2147483647`.
+The host numbers its probes with `sequence`; Feldspar echoes both fields unchanged.
 Ready confirms bridge responsiveness, not Python initialization or health.
 Without opt-in, initialization is unchanged and no liveness messages are sent.
 
