@@ -7,7 +7,7 @@ interface LivenessOptions {
 }
 
 interface LivenessPing extends LivenessOptions {
-  __type__: 'FeldsparLivenessPing'
+  __type__: 'LivenessPing'
   sequence: number
 }
 
@@ -35,7 +35,7 @@ export class LiveBridge implements Bridge {
       port.addEventListener('message', this.onMessage)
       port.start()
       port.postMessage({
-        __type__: 'FeldsparLivenessReady',
+        __type__: 'LivenessReady',
         attempt_id: this.attemptId,
       })
     }
@@ -73,13 +73,13 @@ export class LiveBridge implements Bridge {
   private readonly onMessage = (event: MessageEvent): void => {
     const data = event.data as Partial<LivenessPing> | null
     if (this.disposed || typeof data !== 'object' || data === null || Array.isArray(data) ||
-        data.__type__ !== 'FeldsparLivenessPing' ||
+        data.__type__ !== 'LivenessPing' ||
         data.attempt_id !== this.attemptId ||
         typeof data.sequence !== 'number' || !Number.isInteger(data.sequence) ||
         data.sequence < 1 || data.sequence > 2147483647) return
 
     this.port.postMessage({
-      __type__: 'FeldsparLivenessPong',
+      __type__: 'LivenessPong',
       attempt_id: this.attemptId,
       sequence: data.sequence,
     })

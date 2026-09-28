@@ -61,15 +61,15 @@ iframe.contentWindow.postMessage({
 On the transferred port, Feldspar sends:
 
 ```js
-{ __type__: "FeldsparLivenessReady", attempt_id: attemptId }
+{ __type__: "LivenessReady", attempt_id: attemptId }
 ```
 
 The host can then send probes on `channel.port1`:
 
 ```js
-{ __type__: "FeldsparLivenessPing", attempt_id: attemptId, sequence: 1 }
+{ __type__: "LivenessPing", attempt_id: attemptId, sequence: 1 }
 // Feldspar replies:
-{ __type__: "FeldsparLivenessPong", attempt_id: attemptId, sequence: 1 }
+{ __type__: "LivenessPong", attempt_id: attemptId, sequence: 1 }
 ```
 
 - `attempt_id` is a non-blank string, treated as an opaque token and echoed
