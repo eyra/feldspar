@@ -40,7 +40,7 @@ const FeldsparContent: React.FC<ScriptHostProps> = ({
     let assembly: Assembly | null = null;
     let disposeBridge: (() => void) | undefined;
 
-    const terminateAttempt = () => {
+    const terminateAssembly = () => {
       if (!assembly) return;
       assembly.windowLogSource.dispose();
       assembly.visualizationEngine.terminate();
@@ -49,7 +49,7 @@ const FeldsparContent: React.FC<ScriptHostProps> = ({
     };
 
     const run = (bridge: Bridge, selectedLocale: string = locale) => {
-      terminateAttempt();
+      terminateAssembly();
       setState({ elements: [] });
       const worker = new Worker(workerUrl);
       assembly = new Assembly(worker, bridge, selectedLocale, factories, logLevel);
@@ -84,7 +84,7 @@ const FeldsparContent: React.FC<ScriptHostProps> = ({
     return () => {
       disposeBridge?.();
       observer.disconnect();
-      terminateAttempt();
+      terminateAssembly();
     };
   }, [workerUrl, locale, standalone, setState, factories, logLevel]);
 
