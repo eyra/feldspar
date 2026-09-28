@@ -3,7 +3,6 @@ import { Bridge } from './framework/types/modules'
 import { LogEntry } from './framework/logging'
 
 interface LivenessOptions {
-  version: 1
   attempt_id: string
 }
 
@@ -21,7 +20,7 @@ interface LiveInit {
 function isLivenessOptions (value: unknown): value is LivenessOptions {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) return false
   const options = value as Partial<LivenessOptions>
-  return options.version === 1 && typeof options.attempt_id === 'string' &&
+  return typeof options.attempt_id === 'string' &&
     options.attempt_id.trim().length > 0
 }
 
@@ -37,7 +36,6 @@ export class LiveBridge implements Bridge {
       port.start()
       port.postMessage({
         __type__: 'FeldsparLivenessReady',
-        version: 1,
         attempt_id: this.attemptId,
       })
     }
@@ -76,13 +74,12 @@ export class LiveBridge implements Bridge {
     const data = event.data as Partial<LivenessPing> | null
     if (this.disposed || typeof data !== 'object' || data === null || Array.isArray(data) ||
         data.__type__ !== 'FeldsparLivenessPing' ||
-        data.version !== 1 || data.attempt_id !== this.attemptId ||
+        data.attempt_id !== this.attemptId ||
         typeof data.sequence !== 'number' || !Number.isInteger(data.sequence) ||
         data.sequence < 1 || data.sequence > 2147483647) return
 
     this.port.postMessage({
       __type__: 'FeldsparLivenessPong',
-      version: 1,
       attempt_id: this.attemptId,
       sequence: data.sequence,
     })

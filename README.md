@@ -41,7 +41,7 @@ Feldspar enables researchers to:
 
 3. Access the application at [http://localhost:3000](http://localhost:3000)
 
-## Optional iframe liveness protocol (v1)
+## Optional iframe liveness
 
 Production hosts can opt in when transferring the existing `MessagePort` with
 `live-init`. This only measures whether the iframe's JavaScript bridge responds;
@@ -54,32 +54,32 @@ const attemptId = crypto.randomUUID();
 iframe.contentWindow.postMessage({
   action: "live-init",
   locale: "en",
-  liveness: { version: 1, attempt_id: attemptId }
+  liveness: { attempt_id: attemptId }
 }, feldsparOrigin, [channel.port2]);
 ```
 
 On the transferred port, Feldspar sends:
 
 ```js
-{ __type__: "FeldsparLivenessReady", version: 1, attempt_id: attemptId }
+{ __type__: "FeldsparLivenessReady", attempt_id: attemptId }
 ```
 
 The host can then send probes on `channel.port1`:
 
 ```js
-{ __type__: "FeldsparLivenessPing", version: 1, attempt_id: attemptId, sequence: 1 }
+{ __type__: "FeldsparLivenessPing", attempt_id: attemptId, sequence: 1 }
 // Feldspar replies:
-{ __type__: "FeldsparLivenessPong", version: 1, attempt_id: attemptId, sequence: 1 }
+{ __type__: "FeldsparLivenessPong", attempt_id: attemptId, sequence: 1 }
 ```
 
 - `attempt_id` is a non-blank string, treated as an opaque token and echoed
   unchanged. Hosts should use a fresh UUID for each iframe attempt.
 - `sequence` must be an integer from `1` through `2147483647`. Repeating a valid
   sequence produces another Pong; Feldspar does not deduplicate or order probes.
-- Wrong attempts, unsupported versions, malformed probes, and unrelated port
+- Wrong attempts, malformed probes, and unrelated port
   messages are ignored. Probe handling does not enter the Python worker, command
   router, UI-response wait, or donation path.
-- Omitting `liveness`, or supplying an invalid/unsupported capability, preserves
+- Omitting `liveness`, or supplying an invalid capability, preserves
   ordinary initialization without sending any liveness messages. Older bundles
   never advertise Ready; hosts must not start liveness monitoring for them.
 - Only the embedding parent can initialize the bridge. A valid `live-init` has a

@@ -5,7 +5,7 @@ import type ReactEngine from './framework/visualization/react/engine'
 import type { CommandSystemDonate, CommandSystemEvent, CommandUIRender, Response } from './framework/types/commands'
 
 const attempt = ' opaque/attempt:001 '
-const optIn = { version: 1, attempt_id: attempt }
+const optIn = { attempt_id: attempt }
 const ready = { __type__: 'FeldsparLivenessReady', ...optIn }
 const ping = (sequence: number) => ({ __type__: 'FeldsparLivenessPing', ...optIn, sequence })
 const pong = (sequence: number) => ({ __type__: 'FeldsparLivenessPong', ...optIn, sequence })
@@ -111,7 +111,7 @@ describe('LiveBridge liveness protocol', () => {
     expect(connection.messages).toEqual([ready, pong(1), pong(2147483647), pong(1), pong(2)])
   })
 
-  it('ignores malformed, unsupported and other-attempt messages before a valid ping barrier', async () => {
+  it('ignores malformed and other-attempt messages before a valid ping barrier', async () => {
     const connection = channel()
     bridge(connection)
     const malformed: unknown[] = [
@@ -119,13 +119,10 @@ describe('LiveBridge liveness protocol', () => {
       { ...ping(1), __type__: 'FeldsparLivenessReady' },
       { ...ping(1), __type__: 'FeldsparLivenessPong' },
       { ...ping(1), __type__: 'UnknownMessage' },
-      { ...ping(1), version: 2 },
-      { ...ping(1), version: '1' },
-      { __type__: 'FeldsparLivenessPing', attempt_id: attempt, sequence: 1 },
       { ...ping(1), attempt_id: 'another-attempt' },
       { ...ping(1), attempt_id: '' },
       { ...ping(1), attempt_id: 1 },
-      { __type__: 'FeldsparLivenessPing', version: 1, sequence: 1 },
+      { __type__: 'FeldsparLivenessPing', sequence: 1 },
       { __type__: 'FeldsparLivenessPing', ...optIn },
       ...[0, -1, 2147483648, 1.5, NaN, Infinity, '1', null, true].map(sequence => ({ ...ping(1), sequence })),
     ]
@@ -139,13 +136,10 @@ describe('LiveBridge liveness protocol', () => {
   it.each([
     ['absent', undefined],
     ['null', null],
-    ['non-object', 'v1'],
-    ['missing version', { attempt_id: attempt }],
-    ['unsupported version', { version: 2, attempt_id: attempt }],
-    ['string version', { version: '1', attempt_id: attempt }],
-    ['missing attempt', { version: 1 }],
-    ['empty attempt', { version: 1, attempt_id: '' }],
-    ['non-string attempt', { version: 1, attempt_id: 123 }],
+    ['non-object', 'enabled'],
+    ['missing attempt', {}],
+    ['empty attempt', { attempt_id: '' }],
+    ['non-string attempt', { attempt_id: 123 }],
   ])('keeps ordinary initialization and commands working with %s opt-in', async (_name, liveness) => {
     const window = new WindowHarness()
     const connection = channel()
@@ -235,7 +229,7 @@ describe('LiveBridge initialization and lifetime', () => {
     await old.until(message => message.__type__ === 'FeldsparLivenessReady')
 
     old.host.postMessage(ping(1))
-    const next = { version: 1, attempt_id: 'next-attempt' }
+    const next = { attempt_id: 'next-attempt' }
     window.message({ action: 'live-init', locale: 'nl', liveness: next }, [current.iframe])
     await old.closed
     bridges[0].send(donation)
