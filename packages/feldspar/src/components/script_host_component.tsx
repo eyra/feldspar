@@ -20,44 +20,35 @@ export interface ScriptHostProps {
   logLevel?: LogLevel;
 }
 
-const defaultFactories: PageFactory[] = [];
-
 const FeldsparContent: React.FC<ScriptHostProps> = ({
   workerUrl,
   locale = "en",
   standalone = false,
   className,
-  factories = defaultFactories,
+  factories = [],
   logLevel = "info",
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const assemblyRef = useRef<Assembly | null>(null);
+  const workerRef = useRef<Worker | null>(null);
   const { setState, state } = useVisualization();
 
   useEffect(() => {
     if (!containerRef.current) return;
 
-    let assembly: Assembly | null = null;
+    const worker = new Worker(workerUrl);
+    workerRef.current = worker;
     let disposeBridge: (() => void) | undefined;
 
-    const terminateAssembly = () => {
-      if (!assembly) return;
-      assembly.windowLogSource.dispose();
-      assembly.visualizationEngine.terminate();
-      assembly.processingEngine.terminate();
-      assembly = null;
-    };
-
     const run = (bridge: Bridge, selectedLocale: string = locale) => {
-      terminateAssembly();
-      setState({ elements: [] });
-      const worker = new Worker(workerUrl);
-      assembly = new Assembly(worker, bridge, selectedLocale, factories, logLevel);
+      const assembly = new Assembly(worker, bridge, selectedLocale, factories, logLevel);
       assembly.visualizationEngine.start(
         containerRef.current!,
         selectedLocale,
         setState
       );
       assembly.processingEngine.start();
+      assemblyRef.current = assembly;
     };
 
     if (!standalone && process.env.NODE_ENV === "production") {
@@ -83,7 +74,14 @@ const FeldsparContent: React.FC<ScriptHostProps> = ({
     return () => {
       disposeBridge?.();
       observer.disconnect();
-      terminateAssembly();
+      setTimeout(() => {
+        assemblyRef.current?.visualizationEngine.terminate();
+        assemblyRef.current?.processingEngine.terminate();
+        if (workerRef.current) {
+          workerRef.current.terminate();
+          workerRef.current = null;
+        }
+      }, 0);
     };
   }, [workerUrl, locale, standalone, setState, factories, logLevel]);
 

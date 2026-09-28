@@ -5,7 +5,7 @@ import { isLiveInit, isLivenessOptions, isLivenessPing } from './framework/types
 
 export class LiveBridge implements Bridge {
   port: MessagePort
-  private static registrations = new WeakMap<Window, () => void>()
+  static initialized = false
   private disposed = false
   private attemptId?: string
 
@@ -15,32 +15,32 @@ export class LiveBridge implements Bridge {
   }
 
   static create (window: Window, callback: (bridge: Bridge, locale: string) => void): () => void {
-    LiveBridge.registrations.get(window)?.()
     let bridge: LiveBridge | undefined
-    let disposed = false
     const onInit = (event: MessageEvent): void => {
       console.log('MESSAGE RECEIVED', event)
-      if (disposed || event.source !== window.parent ||
+      if (event.source !== window.parent ||
           !isLiveInit(event.data) || event.ports.length !== 1) return
 
-      bridge?.dispose()
-      bridge = new LiveBridge(event.ports[0], event.data.liveness)
-      const locale = event.data.locale
-      console.log('LOCALE', locale)
-      callback(bridge, locale)
-    }
-    const dispose = (): void => {
-      if (disposed) return
-      disposed = true
-      window.removeEventListener('message', onInit)
-      bridge?.dispose()
-      if (LiveBridge.registrations.get(window) === dispose) {
-        LiveBridge.registrations.delete(window)
+      // Ensure initialization happens only once
+      if (!LiveBridge.initialized) {
+        LiveBridge.initialized = true
+        bridge = new LiveBridge(event.ports[0], event.data.liveness)
+        const locale = event.data.locale
+        console.log('LOCALE', locale)
+        callback(bridge, locale)
+      } else {
+        bridge?.sendLogs([{
+          level: 'error',
+          message: 'Received duplicate live-init; keeping the original bridge',
+          timestamp: new Date().toISOString(),
+        }])
       }
     }
     window.addEventListener('message', onInit)
-    LiveBridge.registrations.set(window, dispose)
-    return dispose
+    return () => {
+      window.removeEventListener('message', onInit)
+      bridge?.dispose()
+    }
   }
 
   dispose (): void {

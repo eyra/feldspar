@@ -17,9 +17,6 @@ export interface Logger {
 }
 
 export class WindowLogSource {
-  private readonly onError: (event: ErrorEvent) => void
-  private readonly onUnhandledRejection: (event: PromiseRejectionEvent) => void
-
   constructor(logger: Logger) {
     const memoryContext = (): Record<string, unknown> => {
       const perf = performance as any
@@ -33,7 +30,7 @@ export class WindowLogSource {
       return {}
     }
 
-    this.onError = (event) => {
+    window.addEventListener('error', (event) => {
       logger.log('error', event.message, {
         filename: event.filename,
         lineno: event.lineno,
@@ -41,22 +38,14 @@ export class WindowLogSource {
         error: event.error?.toString(),
         ...memoryContext(),
       })
-    }
+    })
 
-    this.onUnhandledRejection = (event) => {
+    window.addEventListener('unhandledrejection', (event) => {
       logger.log('error', `Unhandled promise rejection: ${String(event.reason)}`, {
         reason: String(event.reason),
         ...memoryContext(),
       })
-    }
-
-    window.addEventListener('error', this.onError)
-    window.addEventListener('unhandledrejection', this.onUnhandledRejection)
-  }
-
-  dispose(): void {
-    window.removeEventListener('error', this.onError)
-    window.removeEventListener('unhandledrejection', this.onUnhandledRejection)
+    })
   }
 }
 

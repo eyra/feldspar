@@ -21,8 +21,7 @@
 * Changed - The full-text dialog uses a darker `shadow-dialog` drop shadow instead of a dimmed backdrop, so it stands out from the table without showing a gray block when Feldspar is embedded in a host modal such as Next.
 * Fixed - Consent-table descriptions are shown under the table title again (lost in release 4). `PropsUIPromptConsentFormTable.description` is now optional: omit it (passing `data_frame=` by keyword) or pass `None` to show no description; existing positional calls keep working. Scripts that pass a description should check its text, since participants will now see it. Donated data is unchanged.
 * Fixed - Pin CI to pnpm 12.5.1 to avoid the E2E shutdown regression introduced in pnpm 12.6, and print per-test progress in CI logs.
-* Added - Opt-in iframe liveness on the existing parent MessagePort: Ready and validated Ping/Pong replies, independent of Python processing. Invalid or omitted capabilities retain the legacy flow without liveness messages. Existing uploaded ZIPs require rebuilding and reuploading; see the README protocol and issue 10347258246 release handoff.
-* Fixed - Close replaced/disposed/exited live bridges and clean up attempt-owned workers and window logging listeners, without allowing stale component cleanup to terminate a newer attempt.
+* Added - Opt-in iframe liveness replies, independent of Python processing. Existing uploaded bundles require rebuilding and reuploading.
 
 ## \#8 2026-07-03
 

@@ -3,6 +3,7 @@ import { LiveBridge } from './live_bridge'
 import CommandRouter from './framework/command_router'
 import type ReactEngine from './framework/visualization/react/engine'
 import type { CommandSystemDonate, CommandSystemEvent, CommandUIRender, Response } from './framework/types/commands'
+import { isCommandSystemLog } from './framework/types/commands'
 
 const attempt = ' opaque/attempt:001 '
 const optIn = { attempt_id: attempt }
@@ -93,6 +94,10 @@ function register (window: WindowHarness, callback: Parameters<typeof LiveBridge
   cleanups.push(dispose)
   return dispose
 }
+
+beforeEach(() => {
+  LiveBridge.initialized = false
+})
 
 afterEach(async () => {
   for (const cleanup of cleanups.splice(0).reverse()) cleanup()
@@ -215,63 +220,46 @@ describe('LiveBridge initialization and lifetime', () => {
     expect(accepted.messages).toEqual([ready, pong(1)])
   })
 
-  it('replaces an active attempt and stops queued old replies while the new attempt remains live', async () => {
+  it('reports another live-init as an error and keeps the original bridge running', async () => {
     const window = new WindowHarness()
-    const old = channel()
-    const current = channel()
-    const bridges: LiveBridge[] = []
-    register(window, instance => {
-      // The old bridge must already be inert when the replacement callback runs.
-      bridges[0]?.send(donation)
-      bridges.push(instance as LiveBridge)
-    })
-    window.message({ action: 'live-init', locale: 'en', liveness: optIn }, [old.iframe])
-    await old.until(message => message.__type__ === 'LivenessReady')
+    const original = channel()
+    const duplicate = channel()
+    const callback = jest.fn()
+    register(window, callback)
+    window.message({ action: 'live-init', locale: 'en', liveness: optIn }, [original.iframe])
+    await original.until(message => message.__type__ === 'LivenessReady')
 
-    old.host.postMessage(ping(1))
-    const next = { attempt_id: 'next-attempt' }
-    window.message({ action: 'live-init', locale: 'nl', liveness: next }, [current.iframe])
-    await old.closed
-    bridges[0].send(donation)
-    bridges[0].sendLogs([{ level: 'info', message: 'stale', timestamp: '2026-01-01T00:00:00Z' }])
-    current.host.postMessage({ ...ping(3), ...next })
-    await current.until(message => message.__type__ === 'LivenessPong')
+    const next = { attempt_id: 'another-attempt' }
+    window.message({ action: 'live-init', locale: 'nl', liveness: next }, [duplicate.iframe])
+    expect(callback).toHaveBeenCalledTimes(1)
 
-    expect(bridges).toHaveLength(2)
-    expect(old.messages).toEqual([ready])
-    expect(current.messages).toEqual([
-      { __type__: 'LivenessReady', ...next },
-      { __type__: 'LivenessPong', ...next, sequence: 3 },
-    ])
+    await duplicate.deliver({ ...ping(1), ...next })
+    callback.mock.calls[0][0].send(donation)
+    original.host.postMessage(ping(3))
+    await original.until(message => message.__type__ === 'LivenessPong')
+
+    const [, error, ...responses] = original.messages
+    expect(original.messages[0]).toEqual(ready)
+    if (!isCommandSystemLog(error)) throw new Error('Expected an error log on the original channel')
+    expect(JSON.parse(error.json_string)).toMatchObject({ level: 'error' })
+    expect(responses).toEqual([donation, pong(3)])
+    expect(duplicate.messages).toEqual([])
   })
 
-  it('does not let an obsolete registration disposer tear down its replacement', async () => {
+  it('stops replies when the registration is disposed', async () => {
     const window = new WindowHarness()
-    const old = channel()
-    const current = channel()
-    const oldCallback = jest.fn()
-    const currentCallback = jest.fn()
-    const disposeOld = register(window, oldCallback)
-    window.message({ action: 'live-init', locale: 'en', liveness: optIn }, [old.iframe])
-    await old.until(message => message.__type__ === 'LivenessReady')
+    const connection = channel()
+    const callback = jest.fn()
+    const dispose = register(window, callback)
+    window.message({ action: 'live-init', locale: 'en', liveness: optIn }, [connection.iframe])
+    await connection.until(message => message.__type__ === 'LivenessReady')
 
-    const disposeCurrent = register(window, currentCallback)
-    await old.closed
-    disposeOld()
-    window.message({ action: 'live-init', locale: 'en', liveness: optIn }, [current.iframe])
-    await current.until(message => message.__type__ === 'LivenessReady')
-    disposeOld()
-    current.host.postMessage(ping(4))
-    await current.until(message => message.__type__ === 'LivenessPong')
-    expect(oldCallback).toHaveBeenCalledTimes(1)
-    expect(currentCallback).toHaveBeenCalledTimes(1)
-    expect(current.messages).toEqual([ready, pong(4)])
+    connection.host.postMessage(ping(1))
+    dispose()
+    dispose()
+    await connection.closed
 
-    disposeCurrent()
-    await current.closed
-    const ignored = channel()
-    window.message({ action: 'live-init', locale: 'en', liveness: optIn }, [ignored.iframe])
-    expect(currentCallback).toHaveBeenCalledTimes(1)
+    expect(connection.messages).toEqual([ready])
   })
 
   it('closes a disposed bridge and ignores queued pings, later commands and logs', async () => {
