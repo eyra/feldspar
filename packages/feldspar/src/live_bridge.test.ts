@@ -39,7 +39,6 @@ interface Channel {
   iframe: MessagePort
   host: NodeMessagePort
   messages: unknown[]
-  closed: Promise<void>
   until: (predicate: (message: Record<string, unknown>) => boolean) => Promise<void>
   deliver: (message: unknown) => Promise<void>
 }
@@ -59,7 +58,6 @@ function channel (): Channel {
     iframe: port1 as unknown as MessagePort,
     host: port2,
     messages,
-    closed,
     until: async predicate => {
       const matches = (message: unknown): boolean =>
         typeof message === 'object' && message !== null && predicate(message as Record<string, unknown>)
@@ -85,7 +83,7 @@ function channel (): Channel {
 
 function bridge (connection: Channel, liveness: unknown = optIn): LiveBridge {
   const instance = new LiveBridge(connection.iframe, liveness)
-  cleanups.push(() => instance.dispose())
+  cleanups.push(() => instance.stopLiveness())
   return instance
 }
 
@@ -246,47 +244,64 @@ describe('LiveBridge initialization and lifetime', () => {
     expect(duplicate.messages).toEqual([])
   })
 
-  it('stops replies when the registration is disposed', async () => {
+  it('stops liveness on registration cleanup without closing the bridge', async () => {
     const window = new WindowHarness()
     const connection = channel()
     const callback = jest.fn()
-    const dispose = register(window, callback)
+    const cleanup = register(window, callback)
     window.message({ action: 'live-init', locale: 'en', liveness: optIn }, [connection.iframe])
     await connection.until(message => message.__type__ === 'LivenessReady')
 
-    connection.host.postMessage(ping(1))
-    dispose()
-    dispose()
-    await connection.closed
+    const queued = connection.deliver(ping(1))
+    cleanup()
+    cleanup()
+    await queued
+    callback.mock.calls[0][0].send(systemEvent)
+    await connection.until(message => message.__type__ === 'CommandSystemEvent')
 
-    expect(connection.messages).toEqual([ready])
+    expect(connection.messages).toEqual([ready, systemEvent])
   })
 
-  it('closes a disposed bridge and ignores queued pings, later commands and logs', async () => {
+  it('stops queued and later liveness replies without changing commands or logs', async () => {
     const connection = channel()
     const instance = bridge(connection)
     await connection.until(message => message.__type__ === 'LivenessReady')
-    connection.host.postMessage(ping(1))
-    instance.dispose()
-    instance.dispose()
+    const queued = connection.deliver(ping(1))
+    instance.stopLiveness()
+    instance.stopLiveness()
+    await queued
+    await connection.deliver(ping(2))
     instance.send(donation)
-    instance.sendLogs([{ level: 'info', message: 'after disposal', timestamp: '2026-01-01T00:00:00Z' }])
-    await connection.closed
+    instance.sendLogs([{ level: 'info', message: 'after liveness stopped', timestamp: '2026-01-01T00:00:00Z' }])
+    instance.send(systemEvent)
+    await connection.until(message => message.__type__ === 'CommandSystemEvent')
 
-    expect(connection.messages).toEqual([ready])
+    expect(connection.messages).toEqual([
+      ready,
+      donation,
+      expect.objectContaining({ __type__: 'CommandSystemLog', level: 'info', message: 'after liveness stopped' }),
+      systemEvent,
+    ])
   })
 
-  it('delivers system exit before closing and suppresses subsequent traffic', async () => {
+  it('stops liveness on exit without changing subsequent command or log delivery', async () => {
     const connection = channel()
     const instance = bridge(connection)
     await connection.until(message => message.__type__ === 'LivenessReady')
     const exit = { __type__: 'CommandSystemExit' as const, code: 0, info: 'done' }
-    connection.host.postMessage(ping(1))
+    const queued = connection.deliver(ping(1))
     instance.send(exit)
+    await queued
+    await connection.deliver(ping(2))
     instance.send(systemEvent)
     instance.sendLogs([{ level: 'info', message: 'after exit', timestamp: '2026-01-01T00:00:00Z' }])
-    await connection.closed
+    await connection.until(message => message.__type__ === 'CommandSystemLog')
 
-    expect(connection.messages).toEqual([ready, exit])
+    expect(connection.messages).toEqual([
+      ready,
+      exit,
+      systemEvent,
+      expect.objectContaining({ __type__: 'CommandSystemLog', level: 'info', message: 'after exit' }),
+    ])
   })
 })

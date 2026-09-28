@@ -38,7 +38,7 @@ const FeldsparContent: React.FC<ScriptHostProps> = ({
 
     const worker = new Worker(workerUrl);
     workerRef.current = worker;
-    let disposeBridge: (() => void) | undefined;
+    let cleanupBridge: (() => void) | undefined;
 
     const run = (bridge: Bridge, selectedLocale: string = locale) => {
       const assembly = new Assembly(worker, bridge, selectedLocale, factories, logLevel);
@@ -53,7 +53,7 @@ const FeldsparContent: React.FC<ScriptHostProps> = ({
 
     if (!standalone && process.env.NODE_ENV === "production") {
       console.log("Initializing bridge system");
-      disposeBridge = LiveBridge.create(window, run);
+      cleanupBridge = LiveBridge.create(window, run);
     } else {
       console.log("Running with fake bridge");
       run(new FakeBridge());
@@ -72,7 +72,7 @@ const FeldsparContent: React.FC<ScriptHostProps> = ({
 
 
     return () => {
-      disposeBridge?.();
+      cleanupBridge?.();
       observer.disconnect();
       setTimeout(() => {
         assemblyRef.current?.visualizationEngine.terminate();

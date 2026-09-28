@@ -6,7 +6,6 @@ import { isLiveInit, isLivenessOptions, isLivenessPing } from './framework/types
 export class LiveBridge implements Bridge {
   port: MessagePort
   static initialized = false
-  private disposed = false
   private attemptId?: string
 
   constructor (port: MessagePort, liveness?: unknown) {
@@ -39,30 +38,25 @@ export class LiveBridge implements Bridge {
     window.addEventListener('message', onInit)
     return () => {
       window.removeEventListener('message', onInit)
-      bridge?.dispose()
+      bridge?.stopLiveness()
     }
   }
 
-  dispose (): void {
-    if (this.disposed) return
-    this.disposed = true
+  stopLiveness (): void {
     this.port.removeEventListener('message', this.onLivenessMessage)
-    this.port.close()
   }
 
   send (command: CommandSystem): void {
-    if (this.disposed) return
     if (isCommandSystem(command)) {
       this.log('info', 'send', command)
       this.port.postMessage(command)
-      if (isCommandSystemExit(command)) this.dispose()
+      if (isCommandSystemExit(command)) this.stopLiveness()
     } else {
       this.log('error', 'received unknown command', command)
     }
   }
 
   sendLogs (entries: LogEntry[]): void {
-    if (this.disposed) return
     entries.forEach(entry => {
       this.port.postMessage({
         __type__: 'CommandSystemLog',
@@ -86,7 +80,7 @@ export class LiveBridge implements Bridge {
 
   private readonly onLivenessMessage = (event: MessageEvent): void => {
     const data = event.data
-    if (this.disposed || !isLivenessPing(data) || data.attempt_id !== this.attemptId) return
+    if (!isLivenessPing(data) || data.attempt_id !== this.attemptId) return
 
     this.port.postMessage({
       __type__: 'LivenessPong',
