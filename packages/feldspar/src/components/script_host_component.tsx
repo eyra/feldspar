@@ -34,8 +34,7 @@ const FeldsparContent: React.FC<ScriptHostProps> = ({
   const { setState, state } = useVisualization();
 
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
+    if (!containerRef.current) return;
 
     let assembly: Assembly | null = null;
     let disposeBridge: (() => void) | undefined;
@@ -54,7 +53,7 @@ const FeldsparContent: React.FC<ScriptHostProps> = ({
       const worker = new Worker(workerUrl);
       assembly = new Assembly(worker, bridge, selectedLocale, factories, logLevel);
       assembly.visualizationEngine.start(
-        container,
+        containerRef.current!,
         selectedLocale,
         setState
       );

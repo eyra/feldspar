@@ -1,44 +1,17 @@
 import { CommandSystem, isCommandSystem, isCommandSystemExit } from './framework/types/commands'
 import { Bridge } from './framework/types/modules'
 import { LogEntry } from './framework/logging'
-
-interface LivenessOptions {
-  attempt_id: string
-}
-
-interface LivenessPing extends LivenessOptions {
-  __type__: 'LivenessPing'
-  sequence: number
-}
-
-interface LiveInit {
-  action: 'live-init'
-  locale: string
-  liveness?: unknown
-}
-
-function isLivenessOptions (value: unknown): value is LivenessOptions {
-  if (typeof value !== 'object' || value === null || Array.isArray(value)) return false
-  const options = value as Partial<LivenessOptions>
-  return typeof options.attempt_id === 'string' &&
-    options.attempt_id.trim().length > 0
-}
+import { isLiveInit, isLivenessOptions, isLivenessPing } from './framework/types/live_bridge'
 
 export class LiveBridge implements Bridge {
+  port: MessagePort
   private static registrations = new WeakMap<Window, () => void>()
   private disposed = false
-  private readonly attemptId?: string
+  private attemptId?: string
 
-  constructor (readonly port: MessagePort, liveness?: unknown) {
-    if (isLivenessOptions(liveness)) {
-      this.attemptId = liveness.attempt_id
-      port.addEventListener('message', this.onMessage)
-      port.start()
-      port.postMessage({
-        __type__: 'LivenessReady',
-        attempt_id: this.attemptId,
-      })
-    }
+  constructor (port: MessagePort, liveness?: unknown) {
+    this.port = port
+    this.setupLiveness(liveness)
   }
 
   static create (window: Window, callback: (bridge: Bridge, locale: string) => void): () => void {
@@ -46,15 +19,15 @@ export class LiveBridge implements Bridge {
     let bridge: LiveBridge | undefined
     let disposed = false
     const onInit = (event: MessageEvent): void => {
-      const data = event.data as Partial<LiveInit> | null
+      console.log('MESSAGE RECEIVED', event)
       if (disposed || event.source !== window.parent ||
-          typeof data !== 'object' || data === null || Array.isArray(data) ||
-          data.action !== 'live-init' || typeof data.locale !== 'string' ||
-          data.locale.trim().length === 0 || event.ports.length !== 1) return
+          !isLiveInit(event.data) || event.ports.length !== 1) return
 
       bridge?.dispose()
-      bridge = new LiveBridge(event.ports[0], data.liveness)
-      callback(bridge, data.locale)
+      bridge = new LiveBridge(event.ports[0], event.data.liveness)
+      const locale = event.data.locale
+      console.log('LOCALE', locale)
+      callback(bridge, locale)
     }
     const dispose = (): void => {
       if (disposed) return
@@ -70,25 +43,10 @@ export class LiveBridge implements Bridge {
     return dispose
   }
 
-  private readonly onMessage = (event: MessageEvent): void => {
-    const data = event.data as Partial<LivenessPing> | null
-    if (this.disposed || typeof data !== 'object' || data === null || Array.isArray(data) ||
-        data.__type__ !== 'LivenessPing' ||
-        data.attempt_id !== this.attemptId ||
-        typeof data.sequence !== 'number' || !Number.isInteger(data.sequence) ||
-        data.sequence < 1 || data.sequence > 2147483647) return
-
-    this.port.postMessage({
-      __type__: 'LivenessPong',
-      attempt_id: this.attemptId,
-      sequence: data.sequence,
-    })
-  }
-
   dispose (): void {
     if (this.disposed) return
     this.disposed = true
-    this.port.removeEventListener('message', this.onMessage)
+    this.port.removeEventListener('message', this.onLivenessMessage)
     this.port.close()
   }
 
@@ -112,6 +70,28 @@ export class LiveBridge implements Bridge {
         message: entry.message,
         json_string: JSON.stringify({ level: entry.level, message: entry.message }),
       })
+    })
+  }
+
+  private setupLiveness (liveness: unknown): void {
+    if (!isLivenessOptions(liveness)) return
+    this.attemptId = liveness.attempt_id
+    this.port.addEventListener('message', this.onLivenessMessage)
+    this.port.start()
+    this.port.postMessage({
+      __type__: 'LivenessReady',
+      attempt_id: this.attemptId,
+    })
+  }
+
+  private readonly onLivenessMessage = (event: MessageEvent): void => {
+    const data = event.data
+    if (this.disposed || !isLivenessPing(data) || data.attempt_id !== this.attemptId) return
+
+    this.port.postMessage({
+      __type__: 'LivenessPong',
+      attempt_id: this.attemptId,
+      sequence: data.sequence,
     })
   }
 
