@@ -43,73 +43,21 @@ Feldspar enables researchers to:
 
 ## Optional iframe liveness
 
-Production hosts can opt in when transferring the existing `MessagePort` with
-`live-init`. This only measures whether the iframe's JavaScript bridge responds;
-it does not prove Python is healthy, diagnose out-of-memory failures, or authorize
-a restart, upload, donation, or payout.
+Add `liveness: { attempt_id: "<fresh UUID>" }` to the existing `live-init`
+message to enable replies on its transferred `MessagePort`:
 
 ```js
-const channel = new MessageChannel();
-const attemptId = crypto.randomUUID();
-iframe.contentWindow.postMessage({
-  action: "live-init",
-  locale: "en",
-  liveness: { attempt_id: attemptId }
-}, feldsparOrigin, [channel.port2]);
+{ __type__: "LivenessReady", attempt_id }          // Feldspar announces readiness
+{ __type__: "LivenessPing", attempt_id, sequence } // Host sends a probe
+{ __type__: "LivenessPong", attempt_id, sequence } // Feldspar echoes the probe
 ```
 
-On the transferred port, Feldspar sends:
+Use a matching attempt ID and an integer sequence from `1` to `2147483647`.
+Ready confirms bridge responsiveness, not Python initialization or health.
+Without opt-in, initialization is unchanged and no liveness messages are sent.
 
-```js
-{ __type__: "LivenessReady", attempt_id: attemptId }
-```
-
-The host can then send probes on `channel.port1`:
-
-```js
-{ __type__: "LivenessPing", attempt_id: attemptId, sequence: 1 }
-// Feldspar replies:
-{ __type__: "LivenessPong", attempt_id: attemptId, sequence: 1 }
-```
-
-- `attempt_id` is a non-blank string, treated as an opaque token and echoed
-  unchanged. Hosts should use a fresh UUID for each iframe attempt.
-- `sequence` must be an integer from `1` through `2147483647`. Repeating a valid
-  sequence produces another Pong; Feldspar does not deduplicate or order probes.
-- Wrong attempts, malformed probes, and unrelated port
-  messages are ignored. Probe handling does not enter the Python worker, command
-  router, UI-response wait, or donation path.
-- Omitting `liveness`, or supplying an invalid capability, preserves
-  ordinary initialization without sending any liveness messages. Older bundles
-  never advertise Ready; hosts must not start liveness monitoring for them.
-- Only the embedding parent can initialize the bridge. A valid `live-init` has a
-  non-empty string `locale` and exactly one transferred port. Each accepted init
-  replaces the previous bridge; `ScriptHostComponent` also terminates its previous
-  worker and removes attempt-owned logging listeners.
-- Ready means the port handler is installed, not that Python has initialized.
-  Next starts monitoring only after both Ready and the existing
-  `CommandSystemEvent` named `initialized`. Next owns its **5-second probes**,
-  **30-second response window**, and a fresh response window after returning from
-  a backgrounded/hidden page. Feldspar has no watchdog timer.
-- `CommandSystemExit` is sent before the port closes. Subsequent probes and
-  outbound commands/logs on that bridge are ignored. Component unmount and effect
-  disposal close the bridge and terminate its worker. Custom integrations using
-  `LiveBridge.create` must call its returned disposer during teardown; a stale
-  disposer cannot close a newer registration.
-
-### Bundle rollout
-
-This protocol is introduced by [issue 10347258246](https://app.basecamp.com/5734045/buckets/36111585/todos/10347258246).
-Its release handoff records the first production ZIP, release tag, and source
-commit. Use that artifact (or a later build containing the change) when testing
-the Next recovery integration.
-
-Already-uploaded ZIPs do **not** change when Next or Feldspar is upgraded. For a
-custom donation application, incorporate this Feldspar change, rebuild its
-production bundle with `pnpm run build`, ZIP the contents of
-`packages/data-collector/dist`, and upload the new ZIP to Next. Preserve the
-application's Python script and custom UI; the example application release is not
-a replacement for a researcher's custom bundle.
+Custom integrations must call the disposer returned by `LiveBridge.create`
+during teardown. Existing uploaded bundles must be rebuilt to support liveness.
 
 ## Customizing the Python Code
 
