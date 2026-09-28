@@ -20,39 +20,50 @@ export interface ScriptHostProps {
   logLevel?: LogLevel;
 }
 
+const defaultFactories: PageFactory[] = [];
+
 const FeldsparContent: React.FC<ScriptHostProps> = ({
   workerUrl,
   locale = "en",
   standalone = false,
   className,
-  factories = [],
+  factories = defaultFactories,
   logLevel = "info",
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const assemblyRef = useRef<Assembly | null>(null);
-  const workerRef = useRef<Worker | null>(null);
   const { setState, state } = useVisualization();
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    const container = containerRef.current;
+    if (!container) return;
 
-    const worker = new Worker(workerUrl);
-    workerRef.current = worker;
+    let assembly: Assembly | null = null;
+    let disposeBridge: (() => void) | undefined;
+
+    const terminateAttempt = () => {
+      if (!assembly) return;
+      assembly.windowLogSource.dispose();
+      assembly.visualizationEngine.terminate();
+      assembly.processingEngine.terminate();
+      assembly = null;
+    };
 
     const run = (bridge: Bridge, selectedLocale: string = locale) => {
-      const assembly = new Assembly(worker, bridge, selectedLocale, factories, logLevel);
+      terminateAttempt();
+      setState({ elements: [] });
+      const worker = new Worker(workerUrl);
+      assembly = new Assembly(worker, bridge, selectedLocale, factories, logLevel);
       assembly.visualizationEngine.start(
-        containerRef.current!,
+        container,
         selectedLocale,
         setState
       );
       assembly.processingEngine.start();
-      assemblyRef.current = assembly;
     };
 
     if (!standalone && process.env.NODE_ENV === "production") {
       console.log("Initializing bridge system");
-      LiveBridge.create(window, run);
+      disposeBridge = LiveBridge.create(window, run);
     } else {
       console.log("Running with fake bridge");
       run(new FakeBridge());
@@ -71,15 +82,9 @@ const FeldsparContent: React.FC<ScriptHostProps> = ({
 
 
     return () => {
+      disposeBridge?.();
       observer.disconnect();
-      setTimeout(() => {
-        assemblyRef.current?.visualizationEngine.terminate();
-        assemblyRef.current?.processingEngine.terminate();
-        if (workerRef.current) {
-          workerRef.current.terminate();
-          workerRef.current = null;
-        }
-      }, 0);
+      terminateAttempt();
     };
   }, [workerUrl, locale, standalone, setState, factories, logLevel]);
 

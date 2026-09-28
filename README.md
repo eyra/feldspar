@@ -41,6 +41,76 @@ Feldspar enables researchers to:
 
 3. Access the application at [http://localhost:3000](http://localhost:3000)
 
+## Optional iframe liveness protocol (v1)
+
+Production hosts can opt in when transferring the existing `MessagePort` with
+`live-init`. This only measures whether the iframe's JavaScript bridge responds;
+it does not prove Python is healthy, diagnose out-of-memory failures, or authorize
+a restart, upload, donation, or payout.
+
+```js
+const channel = new MessageChannel();
+const attemptId = crypto.randomUUID();
+iframe.contentWindow.postMessage({
+  action: "live-init",
+  locale: "en",
+  liveness: { version: 1, attempt_id: attemptId }
+}, feldsparOrigin, [channel.port2]);
+```
+
+On the transferred port, Feldspar sends:
+
+```js
+{ __type__: "FeldsparLivenessReady", version: 1, attempt_id: attemptId }
+```
+
+The host can then send probes on `channel.port1`:
+
+```js
+{ __type__: "FeldsparLivenessPing", version: 1, attempt_id: attemptId, sequence: 1 }
+// Feldspar replies:
+{ __type__: "FeldsparLivenessPong", version: 1, attempt_id: attemptId, sequence: 1 }
+```
+
+- `attempt_id` is a non-blank string, treated as an opaque token and echoed
+  unchanged. Hosts should use a fresh UUID for each iframe attempt.
+- `sequence` must be an integer from `1` through `2147483647`. Repeating a valid
+  sequence produces another Pong; Feldspar does not deduplicate or order probes.
+- Wrong attempts, unsupported versions, malformed probes, and unrelated port
+  messages are ignored. Probe handling does not enter the Python worker, command
+  router, UI-response wait, or donation path.
+- Omitting `liveness`, or supplying an invalid/unsupported capability, preserves
+  ordinary initialization without sending any liveness messages. Older bundles
+  never advertise Ready; hosts must not start liveness monitoring for them.
+- Only the embedding parent can initialize the bridge. A valid `live-init` has a
+  non-empty string `locale` and exactly one transferred port. Each accepted init
+  replaces the previous bridge; `ScriptHostComponent` also terminates its previous
+  worker and removes attempt-owned logging listeners.
+- Ready means the port handler is installed, not that Python has initialized.
+  Next starts monitoring only after both Ready and the existing
+  `CommandSystemEvent` named `initialized`. Next owns its **5-second probes**,
+  **30-second response window**, and a fresh response window after returning from
+  a backgrounded/hidden page. Feldspar has no watchdog timer.
+- `CommandSystemExit` is sent before the port closes. Subsequent probes and
+  outbound commands/logs on that bridge are ignored. Component unmount and effect
+  disposal close the bridge and terminate its worker. Custom integrations using
+  `LiveBridge.create` must call its returned disposer during teardown; a stale
+  disposer cannot close a newer registration.
+
+### Bundle rollout
+
+This protocol is introduced by [issue 10347258246](https://app.basecamp.com/5734045/buckets/36111585/todos/10347258246).
+Its release handoff records the first production ZIP, release tag, and source
+commit. Use that artifact (or a later build containing the change) when testing
+the Next recovery integration.
+
+Already-uploaded ZIPs do **not** change when Next or Feldspar is upgraded. For a
+custom donation application, incorporate this Feldspar change, rebuild its
+production bundle with `pnpm run build`, ZIP the contents of
+`packages/data-collector/dist`, and upload the new ZIP to Next. Preserve the
+application's Python script and custom UI; the example application release is not
+a replacement for a researcher's custom bundle.
+
 ## Customizing the Python Code
 
 The core of Feldspar's functionality is in the Python script at `packages/python/port/script.py`. This script defines the flow of the data donation process.
