@@ -1,4 +1,4 @@
-import React, { JSX, useCallback, useState } from "react";
+import React, { JSX, useCallback, useEffect, useState } from "react";
 import { LabelButton, PrimaryButton } from "../elements/button";
 import { BodyLarge } from "../elements/text";
 import TextBundle from "../../../../text_bundle";
@@ -15,6 +15,14 @@ interface Props {
 
 export const DonateButtons = ({ onDonate, onCancel, locale, donateQuestion, donateButton }: Props): JSX.Element => {
     const [waiting, setWaiting] = useState(false);
+    const [longWaiting, setLongWaiting] = useState(false);
+
+    useEffect(() => {
+        if (!waiting) return;
+
+        const timeout = window.setTimeout(() => setLongWaiting(true), 30_000);
+        return () => window.clearTimeout(timeout);
+    }, [waiting]);
     
     const handleDonate = useCallback(() => {
         setWaiting(true);
@@ -26,7 +34,9 @@ export const DonateButtons = ({ onDonate, onCancel, locale, donateQuestion, dona
       <BodyLarge
         margin=""
         text={Translator.translate(
-          waiting ? submittingLabel : (donateQuestion ?? donateQuestionLabel),
+          waiting
+            ? (longWaiting ? longSubmittingLabel : submittingLabel)
+            : (donateQuestion ?? donateQuestionLabel),
           locale
         )}
       />
@@ -78,10 +88,19 @@ const cancelButtonLabel = new TextBundle()
   .add("lt", "Ne");
 
 const submittingLabel = new TextBundle()
-  .add("en", "Transferring data… Please keep this window open.")
-  .add("de", "Daten werden übertragen… Bitte lassen Sie dieses Fenster geöffnet.")
-  .add("it", "Trasferimento dati in corso… Si prega di mantenere questa finestra aperta.")
-  .add("es", "Transfiriendo datos… Por favor, mantenga esta ventana abierta.")
-  .add("nl", "Gegevens worden overgedragen… Houd dit venster open.")
-  .add("ro", "Se transferă datele… Vă rugăm să păstrați această fereastră deschisă.")
-  .add("lt", "Duomenys perduodami… Prašome neuždarinėti šio lango.");
+  .add("en", "Sending your donation. Please keep this window open.")
+  .add("de", "Ihre Datenspende wird gesendet. Bitte lassen Sie dieses Fenster geöffnet.")
+  .add("it", "Invio della tua donazione in corso. Tieni aperta questa finestra.")
+  .add("es", "Enviando su donación. Por favor, mantenga esta ventana abierta.")
+  .add("nl", "Uw donatie wordt verzonden. Houd dit venster open.")
+  .add("ro", "Se trimite donația dumneavoastră. Vă rugăm să păstrați această fereastră deschisă.")
+  .add("lt", "Siunčiami jūsų paaukoti duomenys. Prašome neuždaryti šio lango.");
+
+const longSubmittingLabel = new TextBundle()
+  .add("en", "Sending your donation. This may take 10 minutes or longer on a slow internet connection. Please keep this window open.")
+  .add("de", "Ihre Datenspende wird gesendet. Bei einer langsamen Internetverbindung kann dies 10 Minuten oder länger dauern. Bitte lassen Sie dieses Fenster geöffnet.")
+  .add("it", "Invio della tua donazione in corso. Con una connessione Internet lenta, potrebbero volerci 10 minuti o più. Tieni aperta questa finestra.")
+  .add("es", "Enviando su donación. Con una conexión a internet lenta, esto puede tardar 10 minutos o más. Por favor, mantenga esta ventana abierta.")
+  .add("nl", "Uw donatie wordt verzonden. Bij een trage internetverbinding kan dit 10 minuten of langer duren. Houd dit venster open.")
+  .add("ro", "Se trimite donația dumneavoastră. Cu o conexiune lentă la internet, acest lucru poate dura 10 minute sau mai mult. Vă rugăm să păstrați această fereastră deschisă.")
+  .add("lt", "Siunčiami jūsų paaukoti duomenys. Esant lėtam interneto ryšiui, tai gali užtrukti 10 minučių ar ilgiau. Prašome neuždaryti šio lango.");
