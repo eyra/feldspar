@@ -104,7 +104,21 @@ buffers and are decoded before UI handling. Responses return only their payload,
 not the original command, and transferred Python command proxies are released.
 Public script dictionaries and host donation JSON are unchanged. The Python
 wheel, worker and framework must be deployed together because the internal
-transport protocol changed. Runtime-error recovery is not provided by this change.
+transport protocol changed.
+
+Fatal worker errors are forwarded to monitoring before Feldspar sends one
+`CommandSystemExit` with code `1` and stops the worker. The exit explanation uses
+the participant's locale, without exposing error details. `MemoryError`, the
+observed pandas `OverflowError` messages (`Could not reserve memory block` and
+`Maximum recursion level reached`), and WASM `memory access out of bounds` failures
+use: “Data processing failed. The data may be too large to process on this device.”
+Other fatal errors use: “Data processing failed.” Both messages are translated
+into the seven supported languages.
+
+Late worker events and pending UI responses cannot resume processing after failure.
+Error-level script logs do not themselves end the flow; handled errors can still
+use script-defined retries. The host owns recovery; Feldspar does not restart the
+failed runtime or add a retry UI.
 
 ### Reproducing large-donation memory use
 
