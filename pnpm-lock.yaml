@@ -32,13 +32,13 @@ importers:
         version: 3.1.14
       postcss:
         specifier: ^8.5.26
-        version: 8.5.28
+        version: 8.5.29
       postcss-cli:
         specifier: ^12.0.0
-        version: 12.0.0(jiti@2.7.0)(postcss@8.5.28)(yaml@2.9.0)
+        version: 12.0.0(jiti@2.7.0)(postcss@8.5.29)(yaml@2.9.0)
       postcss-import:
         specifier: ^17.0.0
-        version: 17.0.0(postcss@8.5.28)
+        version: 17.0.0(postcss@8.5.29)
       tailwindcss:
         specifier: ^4.3.3
         version: 4.3.3
@@ -72,7 +72,7 @@ importers:
         version: 6.1.2(vite@8.3.2(@types/node@26.6.4)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.0))
       autoprefixer:
         specifier: ^10.6.1
-        version: 10.6.1(postcss@8.5.28)
+        version: 10.6.1(postcss@8.5.29)
       eslint:
         specifier: ^10.12.0
         version: 10.12.0(jiti@2.7.0)(supports-color@10.2.2)
@@ -87,7 +87,7 @@ importers:
         version: 17.13.0
       postcss:
         specifier: ^8.5.26
-        version: 8.5.28
+        version: 8.5.29
       tailwindcss:
         specifier: ^4.3.3
         version: 4.3.3
@@ -142,7 +142,7 @@ importers:
         version: 19.3.0(@types/react@19.3.0)
       autoprefixer:
         specifier: ^10.6.1
-        version: 10.6.1(postcss@8.5.28)
+        version: 10.6.1(postcss@8.5.29)
       fdir:
         specifier: 6.5.0
         version: 6.5.0(picomatch@4.0.7)
@@ -151,13 +151,13 @@ importers:
         version: 30.5.2(@types/node@26.6.3)(supports-color@10.2.2)
       postcss:
         specifier: ^8.5.26
-        version: 8.5.28
+        version: 8.5.29
       postcss-cli:
         specifier: ^12.0.0
-        version: 12.0.0(jiti@2.7.0)(postcss@8.5.28)(yaml@2.9.0)
+        version: 12.0.0(jiti@2.7.0)(postcss@8.5.29)(yaml@2.9.0)
       postcss-import:
         specifier: ^17.0.0
-        version: 17.0.0(postcss@8.5.28)
+        version: 17.0.0(postcss@8.5.29)
       rollup:
         specifier: 4.64.0
         version: 4.64.0
@@ -2570,8 +2570,8 @@ packages:
   postcss-value-parser@4.2.0:
     resolution: {integrity: sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==}
 
-  postcss@8.5.28:
-    resolution: {integrity: sha512-RRuzqDtt5Y9h3quz5hWhK+TPnsmVs6WwSU6LkJMeY4HstUEDuYTG8UJSdawMRzmzAtV+KEoG8N3Qg2qLy5vM/A==}
+  postcss@8.5.29:
+    resolution: {integrity: sha512-49cGhUbXj8Qenv0iTMxA1cFBzxXoctpC9Ujd77t1WcbJIr6nF/eI7g/8MgxrYldFRuAXvja7xQRwavoW7kgrxQ==}
     engines: {node: ^10 || ^12 || >=14}
 
   prelude-ls@1.2.1:
@@ -3907,7 +3907,7 @@ snapshots:
       '@alloc/quick-lru': 5.3.0
       '@tailwindcss/node': 4.3.3
       '@tailwindcss/oxide': 4.3.3
-      postcss: 8.5.28
+      postcss: 8.5.29
       tailwindcss: 4.3.3
 
   '@tybys/wasm-util@0.10.4':
@@ -4210,13 +4210,13 @@ snapshots:
 
   array-union@2.1.0: {}
 
-  autoprefixer@10.6.1(postcss@8.5.28):
+  autoprefixer@10.6.1(postcss@8.5.29):
     dependencies:
       browserslist: 4.28.9
       caniuse-lite: 1.0.30001814
       fraction.js: 5.3.4
       picocolors: 1.1.1
-      postcss: 8.5.28
+      postcss: 8.5.29
       postcss-value-parser: 4.2.0
 
   babel-jest@30.5.2(@babel/core@7.29.7(supports-color@10.2.2))(supports-color@10.2.2):
@@ -5459,14 +5459,14 @@ snapshots:
     dependencies:
       playwright-core: 1.63.0
 
-  postcss-cli@12.0.0(jiti@2.7.0)(postcss@8.5.28)(yaml@2.9.0):
+  postcss-cli@12.0.0(jiti@2.7.0)(postcss@8.5.29)(yaml@2.9.0):
     dependencies:
       chokidar: 5.0.0
       dependency-graph: 1.0.0
       picocolors: 1.1.1
-      postcss: 8.5.28
-      postcss-load-config: 6.0.1(jiti@2.7.0)(postcss@8.5.28)(yaml@2.9.0)
-      postcss-reporter: 7.1.0(postcss@8.5.28)
+      postcss: 8.5.29
+      postcss-load-config: 6.0.1(jiti@2.7.0)(postcss@8.5.29)(yaml@2.9.0)
+      postcss-reporter: 7.1.0(postcss@8.5.29)
       pretty-hrtime: 1.0.3
       read-cache: 1.0.2
       slash: 5.1.0
@@ -5477,30 +5477,30 @@ snapshots:
       - tsx
       - yaml
 
-  postcss-import@17.0.0(postcss@8.5.28):
+  postcss-import@17.0.0(postcss@8.5.29):
     dependencies:
-      postcss: 8.5.28
+      postcss: 8.5.29
       postcss-value-parser: 4.2.0
       read-cache: 1.0.2
       resolve: 1.22.12
 
-  postcss-load-config@6.0.1(jiti@2.7.0)(postcss@8.5.28)(yaml@2.9.0):
+  postcss-load-config@6.0.1(jiti@2.7.0)(postcss@8.5.29)(yaml@2.9.0):
     dependencies:
       lilconfig: 3.1.3
     optionalDependencies:
       jiti: 2.7.0
-      postcss: 8.5.28
+      postcss: 8.5.29
       yaml: 2.9.0
 
-  postcss-reporter@7.1.0(postcss@8.5.28):
+  postcss-reporter@7.1.0(postcss@8.5.29):
     dependencies:
       picocolors: 1.1.1
-      postcss: 8.5.28
+      postcss: 8.5.29
       thenby: 1.4.1
 
   postcss-value-parser@4.2.0: {}
 
-  postcss@8.5.28:
+  postcss@8.5.29:
     dependencies:
       nanoid: 3.3.19
       picocolors: 1.1.1
@@ -5877,7 +5877,7 @@ snapshots:
     dependencies:
       lightningcss: 1.33.0
       picomatch: 4.0.7
-      postcss: 8.5.28
+      postcss: 8.5.29
       rolldown: 1.2.12
       tinyglobby: 0.2.17
     optionalDependencies:
