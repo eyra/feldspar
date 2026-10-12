@@ -2,7 +2,7 @@
 
 Status: **draft for review**. Tracked in the Feldspar Flux project.
 
-This document covers only Feldspar's part of the Nova migration. The overall plan, with the split of `eyra/mono` into Mica (`novasoftwarefoundation/mica`) and Next (`eyra/next`), is in [eyra/mono `doc/nova-migration/plan.md`](https://github.com/eyra/mono/blob/develop/doc/nova-migration/plan.md). The design, including the protocol, is in [eyra/mono `doc/nova-migration/design.md`](https://github.com/eyra/mono/blob/develop/doc/nova-migration/design.md).
+This document covers only Feldspar's part of the Nova migration. The overall plan, with the split of `eyra/mono` into Mica (`novasoftwarefoundation/mica`) and Next (`eyra/next`), is in [eyra/mono `docs/nova-migration/plan.md`](https://github.com/eyra/mono/blob/develop/docs/nova-migration/plan.md). The design, including the protocol, is in [eyra/mono `docs/nova-migration/design.md`](https://github.com/eyra/mono/blob/develop/docs/nova-migration/design.md).
 
 ## Summary
 
