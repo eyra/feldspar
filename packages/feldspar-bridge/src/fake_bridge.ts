@@ -1,6 +1,6 @@
-import { CommandSystem, CommandSystemDonate, CommandSystemExit, isCommandSystemDonate, isCommandSystemExit, isCommandSystemLog } from './framework/types/commands'
-import { Bridge } from './framework/types/modules'
-import { LogEntry } from './framework/logging'
+import { CommandSystem, CommandSystemDonate, CommandSystemExit, isCommandSystemDonate, isCommandSystemExit, isCommandSystemLog } from './commands.js'
+import { Bridge } from './bridge.js'
+import { LogEntry } from './logging.js'
 
 export default class FakeBridge implements Bridge {
   send (command: CommandSystem): void {

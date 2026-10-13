@@ -27,6 +27,7 @@ COPY pnpm-workspace.yaml ./
 # Copy package.json files for dependency installation
 COPY package.json ./
 COPY packages/feldspar/package.json ./packages/feldspar/
+COPY packages/feldspar-bridge/package.json ./packages/feldspar-bridge/
 COPY packages/data-collector/package.json ./packages/data-collector/
 
 # Copy pnpm lock file for reliable installs
