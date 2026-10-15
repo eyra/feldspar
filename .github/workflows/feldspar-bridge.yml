@@ -1,0 +1,103 @@
+name: feldspar-bridge
+
+# Build, test and dry-run the npm package of the bridge (packages/feldspar-bridge).
+# - Pull requests to develop and pushes to develop: checks only, nothing is published.
+# - Tags `feldspar-bridge/vX.Y.Z`: the same checks, then publish, but only when the repository
+#   variable BRIDGE_PUBLISH_ENABLED is 'true'.
+# No Python, no Playwright and no Git LFS: the checks do not need them.
+on:
+  pull_request:
+    branches:
+      - develop
+  push:
+    branches:
+      - develop
+    tags:
+      - 'feldspar-bridge/v*'
+
+permissions:
+  contents: read
+
+jobs:
+  bridge:
+    name: bridge
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 12
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Check that the tag matches the package version
+        if: github.ref_type == 'tag'
+        run: |
+          VERSION=$(node -p "require('./packages/feldspar-bridge/package.json').version")
+          if [ "${GITHUB_REF_NAME}" != "feldspar-bridge/v${VERSION}" ]; then
+            echo "Tag ${GITHUB_REF_NAME} does not match package version ${VERSION}"
+            exit 1
+          fi
+
+      - name: Typecheck bridge
+        run: pnpm --filter ./packages/feldspar-bridge run typecheck
+
+      - name: Test bridge
+        run: pnpm --filter ./packages/feldspar-bridge run test
+
+      - name: Test feldspar (uses the bridge)
+        run: pnpm --filter @eyra/feldspar run test
+
+      - name: Build bridge
+        run: pnpm --filter ./packages/feldspar-bridge run build
+
+      - name: Build feldspar (uses the bridge)
+        run: pnpm --filter @eyra/feldspar run build
+
+      - name: Check package contents
+        run: node scripts/check-bridge-package.mjs
+
+      - name: Publish dry run
+        working-directory: packages/feldspar-bridge
+        run: npm publish --dry-run --access public
+
+  publish:
+    name: publish
+    needs: bridge
+    if: github.ref_type == 'tag' && vars.BRIDGE_PUBLISH_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write # npm trusted publishing and provenance
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 12
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Build bridge
+        run: pnpm --filter ./packages/feldspar-bridge run build
+
+      - name: Publish
+        working-directory: packages/feldspar-bridge
+        run: npm publish --provenance --access public

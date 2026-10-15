@@ -1,0 +1,47 @@
+{
+    "name": "@novasoftwarefoundation/feldspar-bridge",
+    "version": "0.1.0",
+    "description": "Bridge between a Feldspar app and its host: system commands (Donate, Event, Exit, Log), LiveBridge (MessageChannel) and FakeBridge (local development).",
+    "license": "AGPL-3.0-only",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/eyra/feldspar.git",
+        "directory": "packages/feldspar-bridge"
+    },
+    "type": "module",
+    "sideEffects": false,
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+        },
+        "./package.json": "./package.json"
+    },
+    "files": [
+        "dist",
+        "!dist/**/*.test.*",
+        "!dist/**/*.map",
+        "README.md",
+        "LICENSE"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
+    "scripts": {
+        "build": "rm -rf dist && tsc -p tsconfig.build.json",
+        "dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+        "prepare": "[ ! -d src ] || pnpm run build",
+        "typecheck": "tsc -p tsconfig.json --noEmit",
+        "test": "jest",
+        "clean": "rm -rf dist node_modules"
+    },
+    "devDependencies": {
+        "@types/jest": "30.0.0",
+        "@types/node": "26.6.4",
+        "jest": "30.5.2",
+        "ts-jest": "29.4.14",
+        "typescript": "6.0.3"
+    }
+}

@@ -1,8 +1,6 @@
 import { useEffect, useRef } from "react";
 import Assembly from "../framework/assembly";
-import { Bridge } from "../framework/types/modules";
-import { LiveBridge } from "../live_bridge";
-import FakeBridge from "../fake_bridge";
+import { Bridge, FakeBridge, LiveBridge } from "../framework/bridge";
 import React from "react";
 import {
   VisualizationProvider,
