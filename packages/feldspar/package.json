@@ -19,8 +19,8 @@
         "clean": "rm -rf dist node_modules"
     },
     "peerDependencies": {
-        "react": "19.3.0",
-        "react-dom": "19.3.0",
+        "react": "19.3.1",
+        "react-dom": "19.3.1",
         "tslib": "2.8.1",
         "typescript": "6.0.3"
     },
