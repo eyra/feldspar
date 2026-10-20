@@ -1,10 +1,6 @@
-import { Command, Response, CommandSystem } from './commands'
-import { LogEntry } from '../logging'
+import { Command, Response } from './commands'
 
-export interface Bridge {
-  send: (command: CommandSystem) => void
-  sendLogs: (entries: LogEntry[]) => void
-}
+export type { Bridge } from '../bridge'
 
 export interface CommandHandler {
   onCommand: (command: Command) => Promise<Response>

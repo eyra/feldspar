@@ -1,13 +1,8 @@
-export type LogLevel = 'debug' | 'info' | 'warn' | 'error'
+import type { LogEntry, LogLevel } from './bridge'
+
+export type { LogEntry, LogLevel }
 
 const LOG_LEVEL_SEVERITY: Record<LogLevel, number> = { debug: 0, info: 1, warn: 2, error: 3 }
-
-export interface LogEntry {
-  level: LogLevel
-  message: string
-  context?: Record<string, unknown>
-  timestamp: string
-}
 
 type FlushCallback = (entries: LogEntry[]) => void
 

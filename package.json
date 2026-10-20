@@ -3,8 +3,8 @@
   "private": true,
   "scripts": {
     "prepare": "husky install",
-    "build": "pnpm run build:py && pnpm run --filter @eyra/feldspar build && pnpm run --filter @eyra/data-collector build",
-    "dev": "pnpm run --recursive dev",
+    "build": "pnpm run build:py && pnpm run --filter ./packages/feldspar-bridge build && pnpm run --filter @eyra/feldspar build && pnpm run --filter @eyra/data-collector build",
+    "dev": "pnpm run --parallel --recursive dev",
     "test": "pnpm run --recursive test",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
@@ -16,7 +16,7 @@
     "start:py": "nodemon --ext py --exec \"pnpm run build:py\"",
     "dev:feldspar": "./check-deps.sh && pnpm run --filter @eyra/feldspar dev",
     "dev:demo": "./check-deps.sh && pnpm run --filter @eyra/data-collector dev",
-    "start": "./check-deps.sh && pnpm run build:py && pnpm run --filter @eyra/feldspar build && concurrently \"pnpm run start:py\" \"pnpm run dev:feldspar\" \"pnpm run dev:demo\"",
+    "start": "./check-deps.sh && pnpm run build:py && pnpm run --filter ./packages/feldspar-bridge build && pnpm run --filter @eyra/feldspar build && concurrently \"pnpm run start:py\" \"pnpm run dev:feldspar\" \"pnpm run dev:demo\"",
     "clean": "pnpm run --recursive clean && rm -rf node_modules",
     "release": "./release.sh"
   },

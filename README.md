@@ -33,6 +33,8 @@ Feldspar enables researchers to:
    pnpm install
    ```
 
+   This also builds `packages/feldspar-bridge` (its `prepare` script), which Feldspar needs before it can start or build. `pnpm dev` keeps it rebuilt on change.
+
 2. Run the project locally with hot reloading (builds Python package and starts the development server):
 
    ```sh

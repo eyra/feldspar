@@ -1,6 +1,6 @@
-import { CommandSystem, isCommandSystem } from './framework/types/commands'
-import { Bridge } from './framework/types/modules'
-import { LogEntry } from './framework/logging'
+import { CommandSystem, isCommandSystem } from './commands.js'
+import { Bridge } from './bridge.js'
+import { LogEntry } from './logging.js'
 
 export class LiveBridge implements Bridge {
   port: MessagePort
