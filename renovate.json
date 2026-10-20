@@ -3,6 +3,7 @@
   "extends": [
     "config:recommended"
   ],
+  "minimumReleaseAge": "1 day",
   "packageRules": [
     {
       "description": "Automerge non-major updates",
