@@ -1,5 +1,5 @@
 import { isDonateAnswer, type DonateError, type DonateSuccess, type ResponseSystemDonate } from './answers.js'
-import type { HostBridge, HostBridgeOptions } from './bridge.js'
+import type { HostBridge } from './bridge.js'
 import type { CommandSystem } from './commands.js'
 
 // The sends for one key that wait for the host's answer: their resolvers, how many of them the
@@ -9,7 +9,7 @@ interface Waiting {
   outstanding: number
 }
 
-export interface LiveHostBridgeOptions extends HostBridgeOptions {
+export interface LiveHostBridgeOptions {
   // The locale the host sent with live-init.
   readonly locale?: string
 }
@@ -17,23 +17,20 @@ export interface LiveHostBridgeOptions extends HostBridgeOptions {
 // Talks to the host over the MessageChannel it hands over with 'live-init': commands go out
 // with postMessage, and the host answers each donation with DonateSuccess or DonateError on the
 // same port. Answers carry only the key, not which send they answer, and may arrive in any
-// order. Without acknowledges (the fallback) send() resolves once posted, and a DonateError
-// that arrives is only logged. Usually created by connectBridge.
+// order. A DonateError for a key nothing waits on is logged. Usually created by connectBridge.
 export class LiveHostBridge implements HostBridge {
-  readonly acknowledges: boolean
   readonly locale: string | undefined
   readonly #port: MessagePort
   readonly #waiting = new Map<string, Waiting>()
 
-  constructor (port: MessagePort, { acknowledges = true, locale }: LiveHostBridgeOptions = {}) {
-    this.acknowledges = acknowledges
+  constructor (port: MessagePort, { locale }: LiveHostBridgeOptions = {}) {
     this.locale = locale
     this.#port = port
     this.#listen()
   }
 
   async send (command: CommandSystem): Promise<ResponseSystemDonate | undefined> {
-    if (command.__type__ !== 'CommandSystemDonate' || !this.acknowledges) {
+    if (command.__type__ !== 'CommandSystemDonate') {
       this.#port.postMessage(command)
       return undefined
     }

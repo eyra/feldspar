@@ -16,7 +16,7 @@ export {
 export type { LogEntry, LogLevel } from './logging.js'
 export { default as FakeBridge } from './fake_bridge.js'
 export { LiveBridge } from './live_bridge.js'
-export type { HostBridge, HostBridgeOptions } from './bridge.js'
+export type { HostBridge } from './bridge.js'
 export type { DonateError, DonateSuccess, ResponseSystemDonate } from './answers.js'
 export { isDonateAnswer } from './answers.js'
 export { connectBridge, LIVE_INIT_TIMEOUT_MS } from './connect.js'

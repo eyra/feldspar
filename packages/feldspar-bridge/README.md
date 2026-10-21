@@ -39,8 +39,6 @@ A later `live-init` is ignored and logged. Outside an iframe `connectBridge()` r
 
 `send` resolves a donation with `{ success, key, status, error? }` from `DonateSuccess` or `DonateError` (`status` 0 is a network error). It never rejects and has no time-out of its own: the app decides how long to wait and whether to retry with the same key. A late answer for a key settles every send still waiting for that key; a `DonateError` does so only once no other send for the key is unanswered, so a retry is not ended by the error of the attempt before it. Other commands resolve with `undefined` once posted.
 
-`connectBridge({ acknowledges: false })` is a fallback for a host that does not answer: donations resolve with `undefined` once posted, and a `DonateError` that arrives anyway is logged.
-
 The bridge logs the steps of the handshake (prefix `[connectBridge]`), malformed answers and failed donations it cannot return, but not each donation it sends, nor messages of other sources.
 
 ## Use LiveBridge.create
@@ -76,8 +74,8 @@ if (import.meta.env.PROD) {
 | `LiveBridge` | Sends commands to the host over a `MessageChannel` port. `LiveBridge.create(window, callback)` waits once for the host's `live-init` message. |
 | `FakeBridge` | Local development: logs commands and posts donations as `{ key, data }` to `/data-submission`. |
 | `LogEntry`, `LogLevel` | Types used by `Bridge.sendLogs`. |
-| `connectBridge(options?)` | Since 0.2.0. The handshake with the host; resolves with a `HostBridge`. Options: `acknowledges` (default `true`), `liveInitTimeoutMs` (default `LIVE_INIT_TIMEOUT_MS`, 10 000), `window`. |
-| `HostBridge`, `HostBridgeOptions`, `ConnectOptions`, `HostWindow` | Since 0.2.0. `HostBridge`: `acknowledges` and `send(command)`, which resolves with the answer to a donation. |
+| `connectBridge(options?)` | Since 0.2.0. The handshake with the host; resolves with a `HostBridge`. Options: `liveInitTimeoutMs` (default `LIVE_INIT_TIMEOUT_MS`, 10 000), `window`. |
+| `HostBridge`, `ConnectOptions`, `HostWindow` | Since 0.2.0. `HostBridge`: `send(command)`, which resolves with the answer to a donation. |
 | `LiveHostBridge` | Since 0.2.0. A `HostBridge` on a `MessagePort`, with the `locale` from `live-init`. Usually created by `connectBridge`. |
 | `FakeHostBridge`, `KEEPALIVE_MAX_BYTES` | Since 0.2.0. Local development: posts donations as `{ key, data }` to `/data-submission` (option `url`) and answers like Next: success for HTTP 2xx, an error with the status otherwise, 0 for a network error. Uses `keepalive` while the requests in flight stay within 64 KiB. |
 | `DonateSuccess`, `DonateError`, `ResponseSystemDonate`, `isDonateAnswer` | Since 0.2.0. The host's answers to a donation and what `HostBridge.send` resolves with. |

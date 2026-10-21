@@ -1,4 +1,4 @@
-import type { HostBridge, HostBridgeOptions } from './bridge.js'
+import type { HostBridge } from './bridge.js'
 import { FakeHostBridge } from './fake_host_bridge.js'
 import { LiveHostBridge } from './live_host_bridge.js'
 import { reportSize } from './resize.js'
@@ -15,7 +15,7 @@ export interface HostWindow {
 // How long an app in an iframe waits for the host's 'live-init'.
 export const LIVE_INIT_TIMEOUT_MS = 10_000
 
-export interface ConnectOptions extends HostBridgeOptions {
+export interface ConnectOptions {
   // The window to connect from. Default: the global window.
   readonly window?: HostWindow
   // How long to wait for the host's 'live-init'. Default LIVE_INIT_TIMEOUT_MS (10 000 ms).
@@ -41,12 +41,11 @@ function fromHost (event: MessageEvent, win: HostWindow): boolean {
 // with 'app-loaded' (Next sets up the channel only after that message) and reports its height.
 // It resolves once the host hands over the MessageChannel; the app sends 'initialized' itself
 // when it is ready (Next shows the app only then). A later 'live-init' is ignored and logged.
-// Rejects when no 'live-init' comes within liveInitTimeoutMs. Outside an
-// iframe (the dev server) it uses the FakeHostBridge. Rejects at once for an invalid
-// liveInitTimeoutMs, so a configuration error shows at start-up.
+// Rejects when no 'live-init' comes within liveInitTimeoutMs. Outside an iframe (the dev
+// server) it uses the FakeHostBridge. Rejects at once for an invalid liveInitTimeoutMs, so a
+// configuration error shows at start-up.
 export async function connectBridge ({
   window: win = window,
-  acknowledges = true,
   liveInitTimeoutMs = LIVE_INIT_TIMEOUT_MS
 }: ConnectOptions = {}): Promise<HostBridge> {
   if (typeof liveInitTimeoutMs !== 'number' || !Number.isFinite(liveInitTimeoutMs) || liveInitTimeoutMs < 0) {
@@ -54,7 +53,7 @@ export async function connectBridge ({
   }
   if ((win.parent as unknown) === win) {
     console.info(`${LOG} Not inside an iframe: using the FakeHostBridge`)
-    return new FakeHostBridge({ acknowledges })
+    return new FakeHostBridge()
   }
   return await new Promise((resolve, reject) => {
     let bridge: LiveHostBridge | undefined
@@ -73,7 +72,7 @@ export async function connectBridge ({
       if (bridge !== undefined) return console.warn(`${LOG} Ignoring live-init: already connected`)
       clearTimeout(timer)
       console.info(`${LOG} live-init accepted: connected to the host`)
-      bridge = new LiveHostBridge(port, { acknowledges, locale: typeof locale === 'string' ? locale : undefined })
+      bridge = new LiveHostBridge(port, { locale: typeof locale === 'string' ? locale : undefined })
       resolve(bridge)
     }
 

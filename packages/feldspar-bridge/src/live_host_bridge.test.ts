@@ -1,5 +1,4 @@
 import { connectBridge, FakeHostBridge, LiveHostBridge, reportSize, type HostWindow } from './index.js'
-import { waitFor } from './test_helpers.js'
 
 const channels: MessageChannel[] = []
 const channel = () => {
@@ -130,24 +129,23 @@ describe('LiveHostBridge', () => {
     await expect(retry).resolves.toEqual({ success: false, key: 'k', status: 503, error: 'second' })
   })
 
-  it('without acknowledges (the fallback) resolves once posted and logs a DonateError that arrives', async () => {
+  it('logs a DonateError for a key nothing waits on', async () => {
     const error = jest.spyOn(console, 'error').mockImplementation(() => {})
     const { port1: host, port2 } = channel()
-    const bridge = new LiveHostBridge(port2, { acknowledges: false })
-    const sent = nextMessage(host)
-
-    await expect(bridge.send({ __type__: 'CommandSystemDonate', key: 'k', json_string: '{}' })).resolves.toBeUndefined()
-    expect(await sent).toMatchObject({ key: 'k' })
+    const bridge = new LiveHostBridge(port2)
+    const waiting = bridge.send({ __type__: 'CommandSystemDonate', key: 'other', json_string: '{}' })
 
     host.postMessage({ __type__: 'DonateError', key: 'k', status: 500, error: 'storage failed' })
-    await waitFor(() =>
-      expect(error).toHaveBeenCalledWith('[LiveHostBridge] DonateError', {
-        __type__: 'DonateError',
-        key: 'k',
-        status: 500,
-        error: 'storage failed',
-      }),
-    )
+    // The port delivers in order: once this answer settles, the DonateError has been handled.
+    host.postMessage({ __type__: 'DonateSuccess', key: 'other', status: 201 })
+    await waiting
+
+    expect(error).toHaveBeenCalledWith('[LiveHostBridge] DonateError', {
+      __type__: 'DonateError',
+      key: 'k',
+      status: 500,
+      error: 'storage failed',
+    })
     error.mockRestore()
   })
 
@@ -246,9 +244,8 @@ describe('connectBridge', () => {
     spy.mock.calls.map((args) => args.map(String).join(' ')).filter((line) => line.startsWith('[connectBridge]') && keyword.test(line))
 
   it('uses the FakeHostBridge outside an iframe', async () => {
-    const bridge = await connectBridge({ window: topWindow().win, acknowledges: false })
+    const bridge = await connectBridge({ window: topWindow().win })
     expect(bridge).toBeInstanceOf(FakeHostBridge)
-    expect(bridge.acknowledges).toBe(false)
   })
 
   it('announces the app, resolves with a LiveHostBridge on live-init, and sends nothing on the port itself', async () => {
@@ -267,7 +264,6 @@ describe('connectBridge', () => {
 
     const bridge = await connecting
     expect(bridge).toBeInstanceOf(LiveHostBridge)
-    expect(bridge.acknowledges).toBe(true)
     expect((bridge as LiveHostBridge).locale).toBe('nl')
     // The app sends 'initialized' itself; the first message on the port is the donation.
     const sent = nextMessage(host)

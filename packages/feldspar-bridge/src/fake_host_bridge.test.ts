@@ -1,5 +1,4 @@
 import { FakeHostBridge, KEEPALIVE_MAX_BYTES } from './index.js'
-import { waitFor } from './test_helpers.js'
 
 const donate = { __type__: 'CommandSystemDonate', key: 'k', json_string: '{}' } as const
 
@@ -10,7 +9,6 @@ describe('FakeHostBridge', () => {
     const fetch = respondWith(200)
     const bridge = new FakeHostBridge({ fetch })
 
-    expect(bridge.acknowledges).toBe(true)
     const answer = await bridge.send({ __type__: 'CommandSystemDonate', key: 'run-1/session', json_string: '{"a":1}' })
 
     expect(answer).toEqual({ success: true, key: 'run-1/session', status: 200 })
@@ -100,27 +98,6 @@ describe('FakeHostBridge', () => {
       status: 0,
       error: 'Failed to fetch',
     })
-  })
-
-  it('without acknowledges (the fallback) resolves once posted and only logs a failure', async () => {
-    const error = jest.spyOn(console, 'error').mockImplementation(() => {})
-    let respond: (response: Response) => void = () => {}
-    const fetch = jest.fn(() => new Promise<Response>((resolve) => (respond = resolve)))
-    const bridge = new FakeHostBridge({ acknowledges: false, fetch })
-
-    await expect(bridge.send(donate)).resolves.toBeUndefined()
-    expect(fetch).toHaveBeenCalledTimes(1)
-
-    respond(new Response('{}', { status: 500 }))
-    await waitFor(() =>
-      expect(error).toHaveBeenCalledWith('[FakeHostBridge] donation failed', {
-        success: false,
-        key: 'k',
-        status: 500,
-        error: 'HTTP 500',
-      }),
-    )
-    error.mockRestore()
   })
 
   it('posts nothing for an exit', async () => {
