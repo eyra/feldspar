@@ -39,8 +39,8 @@ function fromHost (event: MessageEvent, win: HostWindow): boolean {
 
 // Connects to the host. Inside an iframe it listens for 'live-init', then announces the app
 // with 'app-loaded' (Next sets up the channel only after that message) and reports its height.
-// It resolves once the host hands over the MessageChannel, after telling the host on it that
-// the app is initialized (Next shows the app only then). A later 'live-init' moves the bridge
+// It resolves once the host hands over the MessageChannel; the app sends 'initialized' itself
+// when it is ready (Next shows the app only then). A later 'live-init' moves the bridge
 // to the new channel. Rejects when no 'live-init' comes within liveInitTimeoutMs. Outside an
 // iframe (the dev server) it uses the FakeHostBridge. Rejects at once for an invalid
 // liveInitTimeoutMs, so a configuration error shows at start-up.
@@ -78,7 +78,6 @@ export async function connectBridge ({
       clearTimeout(timer)
       console.info(`${LOG} live-init accepted: connected to the host`)
       bridge = new LiveHostBridge(port, { acknowledges, locale: typeof locale === 'string' ? locale : undefined })
-      port.postMessage({ __type__: 'CommandSystemEvent', name: 'initialized' })
       resolve(bridge)
     }
 

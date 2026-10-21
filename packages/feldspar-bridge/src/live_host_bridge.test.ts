@@ -270,11 +270,9 @@ describe('connectBridge', () => {
     expect(bridge.acknowledges).toBe(false)
   })
 
-  it('announces the app, resolves with a LiveHostBridge on live-init and tells the host it is initialized', async () => {
+  it('announces the app, resolves with a LiveHostBridge on live-init, and sends nothing on the port itself', async () => {
     const { win, posted, hostSends } = iframeWindow()
     const { port1: host, port2 } = channel()
-    const initialized = nextMessage(host)
-
     let connected = false
     const connecting = connectBridge({ window: win }).then((bridge) => {
       connected = true
@@ -290,8 +288,7 @@ describe('connectBridge', () => {
     expect(bridge).toBeInstanceOf(LiveHostBridge)
     expect(bridge.acknowledges).toBe(true)
     expect((bridge as LiveHostBridge).locale).toBe('nl')
-    // Next shows the app only after this event.
-    expect(await initialized).toEqual({ __type__: 'CommandSystemEvent', name: 'initialized' })
+    // The app sends 'initialized' itself; the first message on the port is the donation.
     const sent = nextMessage(host)
     void bridge.send({ __type__: 'CommandSystemDonate', key: 'k', json_string: '{}' })
     expect(await sent).toMatchObject({ __type__: 'CommandSystemDonate', key: 'k' })
@@ -370,7 +367,6 @@ describe('connectBridge', () => {
     const connecting = connectBridge({ window: win })
     hostSends({ action: 'live-init', locale: 'nl' }, [first.port2])
     const bridge = await connecting
-    expect(await nextMessage(first.port1)).toMatchObject({ name: 'initialized' })
 
     hostSends({ action: 'live-init', locale: 'nl' }, [second.port2], {})
 

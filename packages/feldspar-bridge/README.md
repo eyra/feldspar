@@ -33,7 +33,7 @@ Inside an iframe `connectBridge()`:
 
 1. posts `{ action: 'app-loaded' }` to the parent window, and `{ action: 'resize', height }` now and whenever the body changes size;
 2. waits for `live-init` with a `MessagePort`, from the parent window only, for up to `liveInitTimeoutMs` (default 10 000 ms), and rejects after that;
-3. sends the event `initialized` on the port (Next shows the app only after it) and resolves with a `LiveHostBridge`.
+3. resolves with a `LiveHostBridge`; the app sends `initialized` itself when it is ready (Next shows the app only after it).
 
 A later `live-init` moves the bridge to the new port; donations still waiting for an answer are sent again on it. Outside an iframe `connectBridge()` resolves with a `FakeHostBridge`.
 
