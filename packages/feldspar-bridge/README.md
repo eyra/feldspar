@@ -35,7 +35,7 @@ Inside an iframe `connectBridge()`:
 2. waits for `live-init` with a `MessagePort`, from the parent window only, for up to `liveInitTimeoutMs` (default 10 000 ms), and rejects after that;
 3. resolves with a `LiveHostBridge`; the app sends `initialized` itself when it is ready (Next shows the app only after it).
 
-A later `live-init` moves the bridge to the new port; donations still waiting for an answer are sent again on it. Outside an iframe `connectBridge()` resolves with a `FakeHostBridge`.
+A later `live-init` is ignored and logged. Outside an iframe `connectBridge()` resolves with a `FakeHostBridge`.
 
 `send` resolves a donation with `{ success, key, status, error? }` from `DonateSuccess` or `DonateError` (`status` 0 is a network error). It never rejects and has no time-out of its own: the app decides how long to wait and whether to retry with the same key. A late answer for a key settles every send still waiting for that key; a `DonateError` does so only once no other send for the key is unanswered, so a retry is not ended by the error of the attempt before it. Other commands resolve with `undefined` once posted.
 
@@ -78,7 +78,7 @@ if (import.meta.env.PROD) {
 | `LogEntry`, `LogLevel` | Types used by `Bridge.sendLogs`. |
 | `connectBridge(options?)` | Since 0.2.0. The handshake with the host; resolves with a `HostBridge`. Options: `acknowledges` (default `true`), `liveInitTimeoutMs` (default `LIVE_INIT_TIMEOUT_MS`, 10 000), `window`. |
 | `HostBridge`, `HostBridgeOptions`, `ConnectOptions`, `HostWindow` | Since 0.2.0. `HostBridge`: `acknowledges` and `send(command)`, which resolves with the answer to a donation. |
-| `LiveHostBridge` | Since 0.2.0. A `HostBridge` on a `MessagePort`, with the `locale` from `live-init` and `replacePort(port)`. Usually created by `connectBridge`. |
+| `LiveHostBridge` | Since 0.2.0. A `HostBridge` on a `MessagePort`, with the `locale` from `live-init`. Usually created by `connectBridge`. |
 | `FakeHostBridge`, `KEEPALIVE_MAX_BYTES` | Since 0.2.0. Local development: posts donations as `{ key, data }` to `/data-submission` (option `url`) and answers like Next: success for HTTP 2xx, an error with the status otherwise, 0 for a network error. Uses `keepalive` while the requests in flight stay within 64 KiB. |
 | `DonateSuccess`, `DonateError`, `ResponseSystemDonate`, `isDonateAnswer` | Since 0.2.0. The host's answers to a donation and what `HostBridge.send` resolves with. |
 | `reportSize(window)` | Since 0.2.0. Posts the app's height to the host, now and on each resize; returns a function that stops it. `connectBridge` calls it. |

@@ -74,25 +74,6 @@ describe('LiveHostBridge', () => {
     await expect(answer).resolves.toEqual({ success: true, key: 'a', status: 201 })
   })
 
-  it('sends donations waiting on a replaced channel again on the new one, and new ones there too', async () => {
-    const first = channel()
-    const second = channel()
-    const bridge = new LiveHostBridge(first.port2)
-    const waiting = bridge.send({ __type__: 'CommandSystemDonate', key: 'old', json_string: '{"a":1}' })
-
-    const resent = nextMessage(second.port1)
-    bridge.replacePort(second.port2)
-    expect(await resent).toEqual({ __type__: 'CommandSystemDonate', key: 'old', json_string: '{"a":1}' })
-    second.port1.postMessage({ __type__: 'DonateSuccess', key: 'old', status: 201 })
-    await expect(waiting).resolves.toEqual({ success: true, key: 'old', status: 201 })
-
-    const sent = nextMessage(second.port1)
-    const answer = bridge.send({ __type__: 'CommandSystemDonate', key: 'new', json_string: '{}' })
-    expect(await sent).toMatchObject({ key: 'new' })
-    second.port1.postMessage({ __type__: 'DonateSuccess', key: 'new', status: 201 })
-    await expect(answer).resolves.toEqual({ success: true, key: 'new', status: 201 })
-  })
-
   it('gives the answer for a key to the latest send with that key (a retry)', async () => {
     const { port1: host, port2 } = channel()
     const bridge = new LiveHostBridge(port2)
@@ -294,20 +275,27 @@ describe('connectBridge', () => {
     expect(await sent).toMatchObject({ __type__: 'CommandSystemDonate', key: 'k' })
   })
 
-  it('moves to the new channel when the host sends live-init again', async () => {
+  it('ignores a later live-init and keeps the first channel', async () => {
     const { win, hostSends } = iframeWindow()
     const first = channel()
     const second = channel()
     const connecting = connectBridge({ window: win })
     hostSends({ action: 'live-init', locale: 'nl' }, [first.port2])
     const bridge = await connecting
+    const received: unknown[] = []
+    second.port1.onmessage = (event) => { received.push(event.data) }
+    const before = bridge.send({ __type__: 'CommandSystemDonate', key: 'before', json_string: '{}' })
 
     hostSends({ action: 'live-init', locale: 'nl' }, [second.port2])
 
-    // The first message on the new channel is the donation: initialized is not sent again.
-    const sent = nextMessage(second.port1)
-    void bridge.send({ __type__: 'CommandSystemDonate', key: 'k', json_string: '{}' })
-    expect(await sent).toMatchObject({ key: 'k' })
+    const sentBefore = nextMessage(first.port1)
+    expect(await sentBefore).toMatchObject({ key: 'before' })
+    const sentAfter = nextMessage(first.port1)
+    void bridge.send({ __type__: 'CommandSystemDonate', key: 'after', json_string: '{}' })
+    expect(await sentAfter).toMatchObject({ key: 'after' })
+    first.port1.postMessage({ __type__: 'DonateSuccess', key: 'before', status: 201 })
+    await expect(before).resolves.toEqual({ success: true, key: 'before', status: 201 })
+    expect(received).toEqual([])
   })
 
   it('reports the height after app-loaded, so the host is already being listened to', async () => {
@@ -435,14 +423,15 @@ describe('connectBridge', () => {
       expect(error).not.toHaveBeenCalled()
     })
 
-    it('logs a replaced port', async () => {
+    it('warns about a later live-init once connected', async () => {
       const { win, hostSends } = iframeWindow()
       const connecting = connectBridge({ window: win })
       hostSends({ action: 'live-init', locale: 'nl' }, [channel().port2])
       await connecting
       hostSends({ action: 'live-init', locale: 'nl' }, [channel().port2])
 
-      expect(logged(info, /replac/i)).toHaveLength(1)
+      expect(logged(warn, /ignor.*already connected/i)).toHaveLength(1)
+      expect(logged(info, /replac/i)).toHaveLength(0)
     })
 
     it('warns about a live-init from another source and one without a port', async () => {

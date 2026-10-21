@@ -1,13 +1,12 @@
 import { isDonateAnswer, type DonateError, type DonateSuccess, type ResponseSystemDonate } from './answers.js'
 import type { HostBridge, HostBridgeOptions } from './bridge.js'
-import type { CommandSystem, CommandSystemDonate } from './commands.js'
+import type { CommandSystem } from './commands.js'
 
 // The sends for one key that wait for the host's answer: their resolvers, how many of them the
-// host has not answered yet, and the command to send again on a new channel.
+// host has not answered yet.
 interface Waiting {
   readonly resolvers: Array<(answer: ResponseSystemDonate) => void>
   outstanding: number
-  command: CommandSystemDonate
 }
 
 export interface LiveHostBridgeOptions extends HostBridgeOptions {
@@ -23,7 +22,7 @@ export interface LiveHostBridgeOptions extends HostBridgeOptions {
 export class LiveHostBridge implements HostBridge {
   readonly acknowledges: boolean
   readonly locale: string | undefined
-  #port: MessagePort
+  readonly #port: MessagePort
   readonly #waiting = new Map<string, Waiting>()
 
   constructor (port: MessagePort, { acknowledges = true, locale }: LiveHostBridgeOptions = {}) {
@@ -31,19 +30,6 @@ export class LiveHostBridge implements HostBridge {
     this.locale = locale
     this.#port = port
     this.#listen()
-  }
-
-  // The host can hand over a new channel (live-init again). The old channel will not answer, so
-  // each donation still waiting is sent again on the new one, once per key, and keeps waiting.
-  // Failing it instead would lose a donation that may already be on its retry.
-  replacePort (port: MessagePort): void {
-    this.#port.onmessage = null
-    this.#port = port
-    this.#listen()
-    for (const waiting of this.#waiting.values()) {
-      waiting.outstanding = 1
-      this.#port.postMessage(waiting.command)
-    }
   }
 
   async send (command: CommandSystem): Promise<ResponseSystemDonate | undefined> {
@@ -54,10 +40,9 @@ export class LiveHostBridge implements HostBridge {
     return await new Promise((resolve) => {
       // A retry sends the same data under the same key while the earlier send may still be
       // answered late, so both wait on the key together (see #answer).
-      const waiting = this.#waiting.get(command.key) ?? { resolvers: [], outstanding: 0, command }
+      const waiting = this.#waiting.get(command.key) ?? { resolvers: [], outstanding: 0 }
       waiting.resolvers.push(resolve)
       waiting.outstanding += 1
-      waiting.command = command
       this.#waiting.set(command.key, waiting)
       this.#port.postMessage(command)
     })
