@@ -11,6 +11,7 @@ export interface Bridge {
 // it is for the apps that use LiveBridge.create.
 export interface HostBridge {
   // Resolves a donation with the host's answer (DonateSuccess or DonateError), and any other
-  // command with undefined once sent.
+  // command with undefined once sent. Rejects when a donation for the same key is still waiting
+  // for the host's answer.
   send: (command: CommandSystem) => Promise<ResponseSystemDonate | undefined>
 }

@@ -37,7 +37,7 @@ Inside an iframe `connectBridge()`:
 
 A later `live-init` is ignored and logged. Outside an iframe `connectBridge()` resolves with a `FakeHostBridge`.
 
-`send` resolves a donation with `{ success, key, status, error? }` from `DonateSuccess` or `DonateError` (`status` 0 is a network error). `send` rejects when a donation for the same key is still waiting for the host's answer: one donation per key at a time. A retry with the same key is possible once the answer has come. The bridge has no timeout of its own: if the host never answers, that key stays blocked. Other commands resolve with `undefined` once posted.
+`send` resolves a donation with `{ success, key, status, error? }` from `DonateSuccess` or `DonateError` (`status` 0 is a network error). `send` rejects when a donation for the same key is still waiting for the host's answer: one donation per key at a time. A retry with the same key is possible once the answer has come. The bridge has no time-out of its own: if the host never answers, that key stays blocked. Other commands resolve with `undefined` once posted.
 
 The bridge logs the steps of the handshake (prefix `[connectBridge]`), malformed answers and failed donations it cannot return, but not each donation it sends, nor messages of other sources.
 
