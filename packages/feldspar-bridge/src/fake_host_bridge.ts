@@ -28,6 +28,8 @@ export class FakeHostBridge implements HostBridge {
   readonly #fetch: Fetch
   // Bytes of the keepalive requests still in flight.
   #keepaliveBytes = 0
+  // The keys of the donations in flight: one per key at a time.
+  readonly #pending = new Set<string>()
 
   constructor ({ url = '/data-submission', fetch: fetcher = globalFetch }: FakeHostBridgeOptions = {}) {
     this.#url = url
@@ -37,7 +39,15 @@ export class FakeHostBridge implements HostBridge {
   async send (command: CommandSystem): Promise<ResponseSystemDonate | undefined> {
     if (command.__type__ === 'CommandSystemExit') console.log(`[FakeHostBridge] exit ${command.code}: ${command.info}`)
     if (command.__type__ !== 'CommandSystemDonate') return undefined
-    return await this.#post(command)
+    if (this.#pending.has(command.key)) {
+      throw new Error(`FakeHostBridge: a donation for key ${command.key} is still waiting for the host's answer`)
+    }
+    this.#pending.add(command.key)
+    try {
+      return await this.#post(command)
+    } finally {
+      this.#pending.delete(command.key)
+    }
   }
 
   async #post ({ key, json_string: data }: CommandSystemDonate): Promise<ResponseSystemDonate> {

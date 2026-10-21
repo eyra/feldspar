@@ -46,25 +46,42 @@ describe('FakeHostBridge', () => {
       () => new Promise((resolve, reject) => void pending.push((outcome) => (outcome instanceof Error ? reject(outcome) : resolve(outcome)))),
     )
     const bridge = new FakeHostBridge({ fetch })
-    const large = { __type__: 'CommandSystemDonate', key: 'k', json_string: 'x'.repeat(40 * 1024) } as const
+    const large = (key: string) => ({ __type__: 'CommandSystemDonate', key, json_string: 'x'.repeat(40 * 1024) }) as const
     const keepalive = () => fetch.mock.calls.map(([, init]) => init.keepalive)
 
-    const first = bridge.send(large)
-    const second = bridge.send(large)
+    const first = bridge.send(large('k1'))
+    const second = bridge.send(large('k2'))
     expect(keepalive()).toEqual([true, false])
 
     pending[0]!(new Response('{}', { status: 200 }))
     await first
-    const third = bridge.send(large)
+    const third = bridge.send(large('k3'))
     expect(keepalive()).toEqual([true, false, true])
 
     // A request that fails frees its share as well.
     pending[2]!(new TypeError('Failed to fetch'))
     await third
-    void bridge.send(large)
+    void bridge.send(large('k4'))
     expect(keepalive()).toEqual([true, false, true, true])
     pending[1]!(new Response('{}', { status: 200 }))
     await second
+  })
+
+  it('rejects a second send for a key while the first is in flight, without posting it', async () => {
+    let answer: (response: Response) => void = () => {}
+    const fetch = jest.fn<Promise<Response>, [string, RequestInit]>(() => new Promise((resolve) => { answer = resolve }))
+    const bridge = new FakeHostBridge({ fetch })
+    const first = bridge.send(donate)
+    const second = bridge.send(donate)
+
+    await expect(second).rejects.toThrow(/FakeHostBridge: a donation for key k is still waiting/)
+    expect(fetch).toHaveBeenCalledTimes(1)
+    answer(new Response('{}', { status: 200 }))
+    await expect(first).resolves.toMatchObject({ success: true })
+    // Answered: the key can be sent again.
+    const again = bridge.send(donate)
+    answer(new Response('{}', { status: 200 }))
+    await expect(again).resolves.toMatchObject({ success: true })
   })
 
   it('calls the global fetch the way a browser accepts it', async () => {

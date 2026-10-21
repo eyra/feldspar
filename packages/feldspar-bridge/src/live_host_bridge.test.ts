@@ -73,60 +73,34 @@ describe('LiveHostBridge', () => {
     await expect(answer).resolves.toEqual({ success: true, key: 'a', status: 201 })
   })
 
-  it('gives the answer for a key to the latest send with that key (a retry)', async () => {
+  it('rejects a second send for a key while the first is unanswered, without posting it', async () => {
     const { port1: host, port2 } = channel()
     const bridge = new LiveHostBridge(port2)
-    void bridge.send({ __type__: 'CommandSystemDonate', key: 'k', json_string: '{}' })
-    const retry = bridge.send({ __type__: 'CommandSystemDonate', key: 'k', json_string: '{}' })
+    const received: unknown[] = []
+    host.onmessage = (event) => { received.push(event.data) }
+    const first = bridge.send({ __type__: 'CommandSystemDonate', key: 'k', json_string: '{}' })
+    const second = bridge.send({ __type__: 'CommandSystemDonate', key: 'k', json_string: '{}' })
 
+    await expect(second).rejects.toThrow(/LiveHostBridge: a donation for key k is still waiting/)
+    // The port delivers in order: once this answer settles the first send, a post of the second would have arrived too.
     host.postMessage({ __type__: 'DonateSuccess', key: 'k', status: 201 })
-
-    await expect(retry).resolves.toEqual({ success: true, key: 'k', status: 201 })
+    await expect(first).resolves.toMatchObject({ success: true })
+    expect(received).toHaveLength(1)
   })
 
-  // Whether a promise has settled, after the messages already posted have been delivered.
-  const settledYet = async (promise: Promise<unknown>) => {
-    let settled = false
-    void promise.then(() => (settled = true))
-    await new Promise((resolve) => setTimeout(resolve, 10))
-    return settled
-  }
-
-  it('keeps a retry waiting when a late DonateError for the earlier send arrives, and settles it with its own answer', async () => {
-    const { port1: host, port2 } = channel()
-    const bridge = new LiveHostBridge(port2)
-    void bridge.send({ __type__: 'CommandSystemDonate', key: 'k', json_string: '{}' })
-    const retry = bridge.send({ __type__: 'CommandSystemDonate', key: 'k', json_string: '{}' })
-
-    host.postMessage({ __type__: 'DonateError', key: 'k', status: 500, error: 'late' })
-    expect(await settledYet(retry)).toBe(false)
-
-    host.postMessage({ __type__: 'DonateSuccess', key: 'k', status: 201 })
-    await expect(retry).resolves.toEqual({ success: true, key: 'k', status: 201 })
-  })
-
-  it('settles a retry with a late DonateSuccess for the earlier send: the same key holds the same data', async () => {
+  it('accepts a send for the key again once the host has answered (a retry after DonateError)', async () => {
     const { port1: host, port2 } = channel()
     const bridge = new LiveHostBridge(port2)
     const first = bridge.send({ __type__: 'CommandSystemDonate', key: 'k', json_string: '{}' })
-    const retry = bridge.send({ __type__: 'CommandSystemDonate', key: 'k', json_string: '{}' })
 
+    host.postMessage({ __type__: 'DonateError', key: 'k', status: 500, error: 'storage failed' })
+    await expect(first).resolves.toEqual({ success: false, key: 'k', status: 500, error: 'storage failed' })
+
+    const sent = nextMessage(host)
+    const retry = bridge.send({ __type__: 'CommandSystemDonate', key: 'k', json_string: '{}' })
+    expect(await sent).toMatchObject({ __type__: 'CommandSystemDonate', key: 'k' })
     host.postMessage({ __type__: 'DonateSuccess', key: 'k', status: 201 })
-
     await expect(retry).resolves.toEqual({ success: true, key: 'k', status: 201 })
-    await expect(first).resolves.toEqual({ success: true, key: 'k', status: 201 })
-  })
-
-  it('settles a retry with the second DonateError once no send for the key is waiting for an answer', async () => {
-    const { port1: host, port2 } = channel()
-    const bridge = new LiveHostBridge(port2)
-    void bridge.send({ __type__: 'CommandSystemDonate', key: 'k', json_string: '{}' })
-    const retry = bridge.send({ __type__: 'CommandSystemDonate', key: 'k', json_string: '{}' })
-
-    host.postMessage({ __type__: 'DonateError', key: 'k', status: 500, error: 'first' })
-    host.postMessage({ __type__: 'DonateError', key: 'k', status: 503, error: 'second' })
-
-    await expect(retry).resolves.toEqual({ success: false, key: 'k', status: 503, error: 'second' })
   })
 
   it('logs a DonateError for a key nothing waits on', async () => {
@@ -146,6 +120,7 @@ describe('LiveHostBridge', () => {
       status: 500,
       error: 'storage failed',
     })
+    expect(error).toHaveBeenCalledTimes(1)
     error.mockRestore()
   })
 
