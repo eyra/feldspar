@@ -8,8 +8,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    # A green run takes 5-7 minutes (up to 15 with a slow install); fail a stuck run instead of blocking merges.
-    timeout-minutes: 25
+    # A green run takes 5-7 minutes, up to 15 when the Python or browser install is slow.
+    # Fail a stuck run instead of letting it block merges.
+    timeout-minutes: 30
 
     steps:
       - uses: actions/checkout@v7
