@@ -65,9 +65,16 @@ jobs:
       - name: Check package contents
         run: node scripts/check-bridge-package.mjs
 
+      # npm refuses a dry run over a version that is already published, and outside a release
+      # that is the usual case; packing checks the same contents.
       - name: Publish dry run
         working-directory: packages/feldspar-bridge
-        run: npm publish --dry-run --access public
+        run: |
+          if [ "${GITHUB_REF_TYPE}" != tag ] && npm view "$(node -p "require('./package.json').name + '@' + require('./package.json').version")" version > /dev/null 2>&1; then
+            npm pack --dry-run
+          else
+            npm publish --dry-run --access public
+          fi
 
   publish:
     name: publish
