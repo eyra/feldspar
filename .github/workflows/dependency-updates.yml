@@ -8,6 +8,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    # A green run takes 5-7 minutes, up to 15 when the Python or browser install is slow.
+    # Fail a stuck run instead of letting it block merges.
+    timeout-minutes: 30
 
     steps:
       - uses: actions/checkout@v7
@@ -48,6 +51,8 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run E2E tests
+        # The suite takes about a minute; 9 tests that each wait for their full time-out take over 30.
+        timeout-minutes: 10
         run: pnpm test:e2e
 
       - name: Build

@@ -44,9 +44,12 @@ export default defineConfig({
     }
   ],
 
-  /* Run your local dev server before starting the tests */
+  /* Run your local dev server before starting the tests.
+     start:e2e builds feldspar once and serves it without the watchers of `start`. Those rebuild
+     dist at startup, while the first test runs, and Vite can cache the half-written
+     dist/index.esm.js as an empty module; every later page load then fails to render. */
   webServer: {
-    command: 'pnpm run start',
+    command: 'pnpm run start:e2e',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,

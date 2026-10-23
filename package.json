@@ -16,7 +16,9 @@
     "start:py": "nodemon --ext py --exec \"pnpm run build:py\"",
     "dev:feldspar": "./check-deps.sh && pnpm run --filter @eyra/feldspar dev",
     "dev:demo": "./check-deps.sh && pnpm run --filter @eyra/data-collector dev",
-    "start": "./check-deps.sh && pnpm run build:py && pnpm run --filter ./packages/feldspar-bridge build && pnpm run --filter @eyra/feldspar build && concurrently \"pnpm run start:py\" \"pnpm run dev:feldspar\" \"pnpm run dev:demo\"",
+    "build:demo-deps": "pnpm run build:py && pnpm run --filter ./packages/feldspar-bridge build && pnpm run --filter @eyra/feldspar build",
+    "start": "./check-deps.sh && pnpm run build:demo-deps && concurrently \"pnpm run start:py\" \"pnpm run dev:feldspar\" \"pnpm run dev:demo\"",
+    "start:e2e": "./check-deps.sh && pnpm run build:demo-deps && pnpm run --filter @eyra/data-collector dev",
     "clean": "pnpm run --recursive clean && rm -rf node_modules",
     "release": "./release.sh"
   },
