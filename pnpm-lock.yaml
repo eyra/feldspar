@@ -851,8 +851,8 @@ packages:
       rollup:
         optional: true
 
-  '@rollup/pluginutils@5.4.0':
-    resolution: {integrity: sha512-MfPp06CjRLfXQ3wY0R8vJDYBy/MvVcc9OulEfR0B8Iv9ko+GCNaRZ+EpJYFl27LhKsZK0o420sYCRHCjfCgeUg==}
+  '@rollup/pluginutils@5.5.1':
+    resolution: {integrity: sha512-P9ZvnfouRu4MSC+ilERaw6FmZs8zqKhpHxEs4aGDGWQAMzQGXnhvCSvoNwokfNvdt7t3Y5Y4p6gStQgezeIqug==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
@@ -3712,7 +3712,7 @@ snapshots:
 
   '@rollup/plugin-commonjs@29.0.3(rollup@4.65.0)':
     dependencies:
-      '@rollup/pluginutils': 5.4.0(rollup@4.65.0)
+      '@rollup/pluginutils': 5.5.1(rollup@4.65.0)
       commondir: 1.0.1
       estree-walker: 2.0.2
       fdir: 6.5.0(picomatch@4.0.7)
@@ -3724,13 +3724,13 @@ snapshots:
 
   '@rollup/plugin-json@6.1.0(rollup@4.65.0)':
     dependencies:
-      '@rollup/pluginutils': 5.4.0(rollup@4.65.0)
+      '@rollup/pluginutils': 5.5.1(rollup@4.65.0)
     optionalDependencies:
       rollup: 4.65.0
 
   '@rollup/plugin-node-resolve@16.0.3(rollup@4.65.0)':
     dependencies:
-      '@rollup/pluginutils': 5.4.0(rollup@4.65.0)
+      '@rollup/pluginutils': 5.5.1(rollup@4.65.0)
       '@types/resolve': 1.20.2
       deepmerge: 4.3.1
       is-module: 1.0.0
@@ -3748,7 +3748,7 @@ snapshots:
 
   '@rollup/plugin-typescript@12.3.1(rollup@4.65.0)(tslib@2.8.1)(typescript@6.0.3)':
     dependencies:
-      '@rollup/pluginutils': 5.4.0(rollup@4.65.0)
+      '@rollup/pluginutils': 5.5.1(rollup@4.65.0)
       resolve: 1.22.13
       typescript: 6.0.3
     optionalDependencies:
@@ -3757,13 +3757,13 @@ snapshots:
 
   '@rollup/plugin-url@8.0.2(rollup@4.65.0)':
     dependencies:
-      '@rollup/pluginutils': 5.4.0(rollup@4.65.0)
+      '@rollup/pluginutils': 5.5.1(rollup@4.65.0)
       make-dir: 3.1.0
       mime: 3.0.0
     optionalDependencies:
       rollup: 4.65.0
 
-  '@rollup/pluginutils@5.4.0(rollup@4.65.0)':
+  '@rollup/pluginutils@5.5.1(rollup@4.65.0)':
     dependencies:
       '@types/estree': 1.0.9
       estree-walker: 2.0.2
