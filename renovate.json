@@ -1,14 +1,22 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
+    "config:recommended",
+    "schedule:weekly"
   ],
   "minimumReleaseAge": "1 day",
   "packageRules": [
     {
-      "description": "Automerge non-major updates",
-      "matchUpdateTypes": ["major", "minor", "patch"],
+      "description": "Group all patch and minor updates into one weekly PR that auto-merges when CI is green",
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "all non-major dependencies",
+      "groupSlug": "all-minor-patch",
       "automerge": true
+    },
+    {
+      "description": "Major updates come as separate PRs and are checked before merging",
+      "matchUpdateTypes": ["major"],
+      "automerge": false
     }
   ]
 }
