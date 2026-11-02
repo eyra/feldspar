@@ -1,4 +1,4 @@
-FROM node:24-bookworm AS builder
+FROM node:26-bookworm AS builder
 
 RUN npx -y playwright install --with-deps
 
