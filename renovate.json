@@ -17,6 +17,12 @@
       "description": "Major updates come as separate PRs and are checked before merging",
       "matchUpdateTypes": ["major"],
       "automerge": false
+    },
+    {
+      "description": "TypeScript 7 has no JS compiler API; ts-jest and @rollup/plugin-typescript need it. Hold majors until they support it.",
+      "matchPackageNames": ["typescript"],
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true
     }
   ]
 }
