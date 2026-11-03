@@ -16,6 +16,7 @@
         "build": "pnpm run build:css && pnpm run build:ts",
         "dev": "concurrently \"rollup -c -w\" \"tailwindcss build -i ./src/framework/styles.css -o ./dist/styles.css --watch\"",
         "test": "jest",
+        "typecheck": "tsc -p tsconfig.json --noEmit",
         "clean": "rm -rf dist node_modules"
     },
     "peerDependencies": {
