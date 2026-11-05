@@ -34,7 +34,7 @@ export const TablePage = ({ head, rows, id, edit, selected, locale, onChange }: 
     const headSelected = selected.length > 0 && selected.length === rows.length
     return (
       <td key='check-head' className='pl-4 w-10'>
-        <CheckBox id='-1' selected={headSelected} onSelect={() => handleSelectHead()} />
+        <CheckBox ariaLabel={Translator.translate(selectAll, locale)} id='-1' selected={headSelected} onSelect={() => handleSelectHead()} />
       </td>
     )
   }
@@ -43,7 +43,7 @@ export const TablePage = ({ head, rows, id, edit, selected, locale, onChange }: 
     const width = widths?.[index]
     return (
       <th key={`${index}`} className='h-12 px-4 text-left' style={width === undefined ? undefined : { width }}>
-        <div className='font-table-header text-table text-grey1 [overflow-wrap:anywhere]'>{props.text}</div>
+        <div className='font-tablehead text-tablerow text-grey1 [overflow-wrap:anywhere]'>{props.text}</div>
       </th>
     )
   }
@@ -65,7 +65,7 @@ export const TablePage = ({ head, rows, id, edit, selected, locale, onChange }: 
     const rowSelected = selected.includes(rowId)
     return (
       <td key={`check-${rowId}`} className='pl-4'>
-        <CheckBox id={rowId} selected={rowSelected} onSelect={() => handleSelectRow(rowId)} />
+        <CheckBox ariaLabel={`${Translator.translate(selectRow, locale)} ${rowId}`} id={rowId} selected={rowSelected} onSelect={() => handleSelectRow(rowId)} />
       </td>
     )
   }
@@ -85,7 +85,7 @@ export const TablePage = ({ head, rows, id, edit, selected, locale, onChange }: 
 
   function renderRowLink (href: string): JSX.Element {
     return (
-      <div className='font-table-row text-table text-primary underline'>
+      <div className='font-tablerow text-tablerow text-primary underline'>
         <a href={href} target='_blank' rel='noreferrer' title={href}>{copy.link}</a>
       </div>
     )
@@ -161,3 +161,6 @@ const link = new TextBundle()
   .add("nl", "Bezoek URL")
   .add("ro", "Vizitați URL-ul")
   .add("lt", "Aplankyti URL");
+
+const selectAll = new TextBundle().add('en', 'Select all rows').add('nl', 'Selecteer alle rijen').add('de', 'Alle Zeilen auswählen').add('it', 'Seleziona tutte le righe').add('es', 'Seleccionar todas las filas').add('ro', 'Selectează toate rândurile').add('lt', 'Pasirinkti visas eilutes')
+const selectRow = new TextBundle().add('en', 'Select row').add('nl', 'Selecteer rij').add('de', 'Zeile auswählen').add('it', 'Seleziona riga').add('es', 'Seleccionar fila').add('ro', 'Selectează rândul').add('lt', 'Pasirinkti eilutę')

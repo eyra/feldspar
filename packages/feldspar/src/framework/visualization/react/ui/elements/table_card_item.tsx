@@ -21,7 +21,7 @@ export const TableCardItem = ({ title, description, locale }: Props): JSX.Elemen
 
   function renderCardItemLink (href: string): JSX.Element {
     return (
-      <div className='font-table-row text-table text-primary underline'>
+      <div className='font-tablerow text-tablerow text-primary underline'>
         <a href={href} target='_blank' rel='noreferrer' title={href}>
           {copy.link}
         </a>
@@ -47,8 +47,8 @@ export const TableCardItem = ({ title, description, locale }: Props): JSX.Elemen
 
   return (
     <div className='w-full min-w-0 flex flex-col items-left gap-2'>
-      <div className='font-card text-left text-card-key [overflow-wrap:anywhere]'>{title.text}</div>
-      <div className='min-w-0 font-card text-left text-card-value'>{body}</div>
+      <div className='font-bold text-left text-caption [overflow-wrap:anywhere]'>{title.text}</div>
+      <div className='min-w-0 font-tablerow text-left text-caption'>{body}</div>
     </div>
   )
 }

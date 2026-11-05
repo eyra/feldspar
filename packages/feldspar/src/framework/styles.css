@@ -1,5 +1,6 @@
-@import './fonts.css' layer(base);
 @import 'tailwindcss';
+@import '@novasoftwarefoundation/prism/css/base.css' layer(base);
+@import '@novasoftwarefoundation/prism/css/components.css' layer(components);
 
 @config "../../tailwind.config.js";
 

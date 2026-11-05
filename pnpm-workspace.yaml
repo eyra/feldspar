@@ -5,3 +5,7 @@ allowBuilds:
   esbuild: true
   unrs-resolver: true
   '@parcel/watcher': false
+
+minimumReleaseAgeExclude:
+  - '@novasoftwarefoundation/prism-react@0.2.1'
+  - '@novasoftwarefoundation/prism@0.2.1'

@@ -1,4 +1,5 @@
 import React from "react"
+import { Button } from "@novasoftwarefoundation/prism-react"
 import { JSX } from "react"
 
 interface PropsUIPageIcon {
@@ -17,12 +18,9 @@ export const PageIcon = ({ index, selected, onClick }: Props): JSX.Element => {
   }
 
   return (
-    <div className={`rounded ${width()} h-8 cursor-pointer shrink-0 overflow-hidden ${selected ? 'bg-primary' : 'bg-grey5 '}`} onClick={onClick}>
-      <div className='flex flex-row items-center justify-center w-full h-full'>
-        <div className={`text-label font-label ${selected ? 'text-white' : 'text-grey2'}`}>
-          {`${index}`}
-        </div>
-      </div>
-    </div>
+    <Button type="button" variant="soft" tone={selected ? 'accent' : 'neutral'}
+      className={`${width()} h-8 shrink-0 ${selected ? 'bg-primary text-white' : 'bg-grey5 text-grey2'}`} aria-current={selected ? 'page' : undefined} onClick={onClick}>
+      {index}
+    </Button>
   )
 }

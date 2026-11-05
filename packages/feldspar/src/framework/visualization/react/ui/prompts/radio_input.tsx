@@ -1,4 +1,5 @@
 import * as React from "react";
+import { RadioGroup } from "@novasoftwarefoundation/prism-react";
 import { Weak } from "../../../../helpers";
 import { PropsUIRadioItem, Translatable } from "../../../../types/elements";
 import TextBundle from "../../../../text_bundle";
@@ -26,6 +27,7 @@ function prepareCopy({ title, description, locale }: Props): Copy {
 }
 
 export const RadioInput = (props: Props): JSX.Element => {
+  const groupName = React.useId();
   const [selectedId, setSelectedId] = React.useState<number>(-1);
   const [waiting, setWaiting] = React.useState<boolean>(false);
   const [checked, setChecked] = React.useState<boolean>(false);
@@ -54,6 +56,7 @@ export const RadioInput = (props: Props): JSX.Element => {
         key={index}
         onSelect={() => handleSelect(index)}
         id={index}
+        name={groupName}
         value={item.value}
         selected={selectedId === index}
       />
@@ -67,18 +70,18 @@ export const RadioInput = (props: Props): JSX.Element => {
       </div>
       <div className="mt-8" />
       <div id="select-panel">
-        <div className="flex-wrap text-bodylarge font-body text-grey1 text-left">
+        <div className="flex-wrap text-bodylarge font-bodylarge text-grey1 text-left">
           {description}
         </div>
         <div className="mt-4" />
         <div>
-          <div id="radio-group" className="flex flex-col gap-3">
+          <RadioGroup id="radio-group" aria-label={title}>
             {renderItems(items)}
-          </div>
+          </RadioGroup>
         </div>
       </div>
       <div className="mt-8" />
-      <div className={`flex flex-row gap-4 ${checked ? "" : "opacity-30"}`}>
+      <div className="flex flex-row gap-4">
         <PrimaryButton
           label={continueButton}
           onClick={handleConfirm}

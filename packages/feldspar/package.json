@@ -11,13 +11,14 @@
         "dist/styles.css"
     ],
     "scripts": {
-        "build:css": "NODE_ENV=production postcss ./src/framework/styles.css -o ./dist/styles.css",
+        "build:css": "NODE_ENV=production postcss ./src/framework/styles.css -o ./dist/styles.css && node scripts/prepare-prism-fonts.mjs",
         "build:ts": "rollup -c",
         "build": "pnpm run build:css && pnpm run build:ts",
-        "dev": "concurrently \"rollup -c -w\" \"tailwindcss build -i ./src/framework/styles.css -o ./dist/styles.css --watch\"",
-        "test": "jest",
+        "dev": "concurrently \"rollup -c -w\" \"nodemon --watch src --watch tailwind.config.js --ext ts,tsx,css,js --exec 'pnpm run build:css'\"",
+        "test": "jest && pnpm run test:controls",
         "typecheck": "tsc -p tsconfig.json --noEmit",
-        "clean": "rm -rf dist node_modules"
+        "clean": "rm -rf dist node_modules",
+        "test:controls": "node --import tsx --import ./test/setup.mjs --test test/*.test.tsx"
     },
     "peerDependencies": {
         "react": "19.3.1",
@@ -27,6 +28,8 @@
     },
     "dependencies": {
         "@novasoftwarefoundation/feldspar-bridge": "workspace:*",
+        "@novasoftwarefoundation/prism": "0.2.1",
+        "@novasoftwarefoundation/prism-react": "0.2.1",
         "@types/lodash": "4.17.27",
         "lodash": "4.18.1"
     },
@@ -47,11 +50,13 @@
         "@rollup/plugin-typescript": "12.3.1",
         "@rollup/plugin-url": "8.0.2",
         "@types/jest": "30.0.0",
+        "@types/jsdom": "30.0.0",
         "@types/react": "19.3.0",
         "@types/react-dom": "19.3.0",
         "autoprefixer": "^10.6.1",
         "fdir": "6.5.0",
         "jest": "30.5.2",
+        "jsdom": "30.1.3",
         "postcss": "^8.5.26",
         "postcss-cli": "^12.0.0",
         "postcss-import": "^17.0.0",
@@ -62,6 +67,7 @@
         "tailwindcss": "^4.3.3",
         "ts-jest": "29.4.15",
         "tslib": "2.9.1",
+        "tsx": "4.23.15",
         "typescript": "6.0.3"
     }
 }

@@ -243,7 +243,7 @@ export const Table = ({ id, head, body, readOnly = false, locale, onChange }: Pr
               <>
                 {/* Desktop pagination */}
                 <div>
-                  <Pagination pageCount={state.desktopPageCount} page={state.desktopPage} pageWindowLegSize={3} onChange={handleDesktopPageChange} />
+                  <Pagination locale={locale} pageCount={state.desktopPageCount} page={state.desktopPage} pageWindowLegSize={3} onChange={handleDesktopPageChange} />
                 </div>
                 <div className='grow' />
 
@@ -304,7 +304,7 @@ export const Table = ({ id, head, body, readOnly = false, locale, onChange }: Pr
         <div className='hidden sm:block'>
           <div className={`flex flex-row items-center gap-6 mt-2 h-8 ${body.rows.length === 0 ? 'hidden' : ''} `}>
             <div className='flex flex-row gap-4 items-center'>
-              <CheckBox id='edit' selected={state.edit} onSelect={handleEditToggle} />
+              <CheckBox ariaLabel={copy.edit} id='edit' selected={state.edit} onSelect={handleEditToggle} />
               <Label text={copy.edit} margin='mt-1px' />
             </div>
 
@@ -339,7 +339,7 @@ export const Table = ({ id, head, body, readOnly = false, locale, onChange }: Pr
             <div className='flex flex-col gap-4 items-center'>
               {/* Mobile pagination */}
               <div className={`${body.rows.length <= mobilePageSize ? 'hidden' : ''} `}>
-                <Pagination pageCount={state.mobilePageCount} page={state.mobilePage} pageWindowLegSize={2} onChange={handleMobilePageChange} />
+                <Pagination locale={locale} pageCount={state.mobilePageCount} page={state.mobilePage} pageWindowLegSize={2} onChange={handleMobilePageChange} />
               </div>
               {/* Number of pages */}
               <Caption text={copy.mobilePages} color='text-grey2' margin='' />

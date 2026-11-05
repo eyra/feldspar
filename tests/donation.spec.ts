@@ -216,3 +216,42 @@ test('can cancel submission', async ({ page }) => {
   // The submitted data should contain the cancellation message
   expect(submittedData).toEqual(expect.stringContaining("data_submission declined"));
 });
+
+test('Prism controls support keyboard upload and package fonts load', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'Data donation flow example' })).toBeVisible({ timeout: 90000 });
+  const continueButton = page.getByRole('button', { name: 'Continue', exact: true });
+  await expect(continueButton).toBeDisabled();
+  const choose = page.getByRole('button', { name: 'Choose file' });
+  await expect(choose).toHaveClass(/prism-button--highlight/);
+  await expect(choose).toHaveCSS('background-color', 'rgb(255, 207, 96)');
+  await choose.focus();
+  const chooser = page.waitForEvent('filechooser');
+  await page.keyboard.press('Enter');
+  await (await chooser).setFiles(path.join(__dirname, 'test.zip'));
+  await expect(continueButton).toBeEnabled();
+  await continueButton.focus();
+  await page.keyboard.press('Enter');
+  await expect(page.getByTestId('table-file_inventory')).toBeVisible();
+  const adjust = page.getByRole('checkbox', { name: 'Adjust', exact: true }).first();
+  await adjust.focus();
+  await page.keyboard.press('Space');
+  await expect(adjust).toBeChecked();
+  await expect(page.getByRole('searchbox').first()).toHaveClass(/prism-text-field/);
+  const fonts = await page.evaluate(async () => {
+    await document.fonts.load('700 18px "Nunito Sans"');
+    return [...document.fonts].filter(font => font.family.includes('Nunito Sans')).map(font => font.status);
+  });
+  expect(fonts).toContain('loaded');
+  if (process.env.FELDSPAR_SCREENSHOT_DIR) await page.screenshot({ path: path.join(process.env.FELDSPAR_SCREENSHOT_DIR, 'desktop-consent.png'), fullPage: true });
+});
+
+test('Prism mobile consent keeps cancellation behavior', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await setupTestWithFileUpload(page);
+  await expect(page.getByRole('button', { name: 'Delete row' }).first()).toBeVisible();
+  if (process.env.FELDSPAR_SCREENSHOT_DIR) await page.screenshot({ path: path.join(process.env.FELDSPAR_SCREENSHOT_DIR, 'mobile-consent.png'), fullPage: true });
+  const result = setupRouteForDataSubmission(page);
+  await page.getByRole('button', { name: 'No', exact: true }).click();
+  expect(await result).toContain('data_submission declined');
+});
