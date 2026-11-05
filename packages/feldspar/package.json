@@ -15,10 +15,11 @@
         "build:ts": "rollup -c",
         "build": "pnpm run build:css && pnpm run build:ts",
         "dev": "concurrently \"rollup -c -w\" \"nodemon --watch src --watch tailwind.config.js --ext ts,tsx,css,js --exec 'pnpm run build:css'\"",
-        "test": "jest && pnpm run test:controls",
+        "test": "jest && pnpm run test:controls && pnpm run test:types",
         "typecheck": "tsc -p tsconfig.json --noEmit",
         "clean": "rm -rf dist node_modules",
-        "test:controls": "node --import tsx --import ./test/setup.mjs --test test/*.test.tsx"
+        "test:controls": "node --import tsx --import ./test/setup.mjs --test test/*.test.tsx",
+        "test:types": "tsc -p test/tsconfig.json --noEmit"
     },
     "peerDependencies": {
         "react": "19.3.1",

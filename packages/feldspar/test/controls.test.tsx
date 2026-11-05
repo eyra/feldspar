@@ -93,3 +93,27 @@ test('packaged font URLs work without the source checkout or node_modules', asyn
   assert.equal(rebasePrismFonts('url(./fonts/local.woff2)'), 'url(./fonts/local.woff2)')
   assert.throws(() => rebasePrismFonts('url(../../node_modules/unknown/font.woff2)'))
 })
+
+test('button adapters pass semantic Prism tones without color-class overrides', async () => {
+  const { SecondaryButton, IconLabelButton, LabelButton } = await import('../src/framework/visualization/react/ui/elements/button')
+  for (const [node, tone] of [
+    [<PrimaryButton label="Donate" tone="success" onClick={() => {}} />, 'success'],
+    [<SecondaryButton label="Warn" tone="warning" onClick={() => {}} />, 'warning'],
+    [<IconLabelButton label="Delete" icon="delete.svg" tone="danger" onClick={() => {}} />, 'danger'],
+    [<LabelButton label="Undo" tone="accent" onClick={() => {}} />, 'accent'],
+  ] as const) {
+    await render(node)
+    const button = host.querySelector('button')!
+    assert.ok(button.classList.contains('prism-button'))
+    assert.equal(button.classList.contains(`prism-button--${tone}`), tone !== 'accent')
+    assert.equal(button.className.includes('bg-'), false)
+    assert.equal(button.className.includes('text-'), false)
+  }
+})
+
+test('button guards accept defaults without requiring an optional tone', async () => {
+  const { isPropsUIButtonPrimary, isPropsUIButtonSecundary, isPropsUIButtonIconLabel } = await import('../src/framework/types/elements')
+  assert.equal(isPropsUIButtonPrimary({ __type__: 'PropsUIButtonPrimary', label: 'Continue', onClick() {} }), true)
+  assert.equal(isPropsUIButtonSecundary({ __type__: 'PropsUIButtonSecundary', label: 'Cancel', tone: 'neutral', onClick() {} }), true)
+  assert.equal(isPropsUIButtonIconLabel({ __type__: 'PropsUIButtonIconLabel', label: 'Undo', icon: 'undo.svg', onClick() {} }), true)
+})

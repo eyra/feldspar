@@ -310,14 +310,14 @@ export const Table = ({ id, head, body, readOnly = false, locale, onChange }: Pr
 
             {/* Delete selected */}
             <div className={`${display('delete')} mt-1px`}>
-              <IconLabelButton label={copy.delete} color='text-delete' icon={DeleteSvg} onClick={handleDeleteSelected} />
+              <IconLabelButton label={copy.delete} tone='danger' icon={DeleteSvg} onClick={handleDeleteSelected} />
             </div>
             <div className='grow' />
             {/* Number of deleted rows */}
             <Label text={copy.deleted} />
             {/* Undo button */}
             <div className={`${display('undo')}`}>
-              <IconLabelButton label={copy.undo} color='text-primary' icon={UndoSvg} onClick={handleUndo} />
+              <IconLabelButton label={copy.undo} tone='accent' icon={UndoSvg} onClick={handleUndo} />
             </div>
           </div>
         </div>
@@ -332,7 +332,7 @@ export const Table = ({ id, head, body, readOnly = false, locale, onChange }: Pr
                 <div className='grow' />
                 {/* Undo button */}
                 <div className={`${display('undo')}`}>
-                  <IconLabelButton label={copy.undo} color='text-primary' icon={UndoSvg} onClick={handleUndo} />
+                  <IconLabelButton label={copy.undo} tone='accent' icon={UndoSvg} onClick={handleUndo} />
                 </div>
               </div>}
 

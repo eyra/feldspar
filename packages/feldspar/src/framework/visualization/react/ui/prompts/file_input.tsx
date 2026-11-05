@@ -53,7 +53,7 @@ export const FileInput = (props: Props): JSX.Element => {
             <div className='grow' />
             <div className='flex-wrap'>
               <div className='flex flex-row'>
-                <PrimaryButton onClick={handleClick} label={selectButton} color='bg-tertiary text-grey1' />
+                <PrimaryButton onClick={handleClick} label={selectButton} tone='highlight' />
               </div>
             </div>
           </div>

@@ -344,8 +344,11 @@ extension and shared design values in Prism.
 `pnpm --filter @eyra/feldspar build:css` includes Prism base/components styles,
 rebases font URLs and copies the published fonts/license to `dist/fonts`.
 Distribute the complete `dist` directory. The CSS watcher runs the same pipeline
-when source files change. Styles use Tailwind's component layer so existing
-Python-supplied utility color classes can still override the defaults.
+when source files change. Styles use Tailwind's component layer for layout utility composition.
+Buttons take Prism's typed `tone` (`accent`, `success`, `warning`, `danger`,
+`neutral`, `highlight`) instead of raw Tailwind `color` strings. React prompt
+components choose the tone; Python supplies prompt content and data, without
+color fields.
 
 `pnpm test` includes DOM tests for control state, search timing, radio payloads
 and packaged font URLs. `pnpm test:e2e` covers donation/retry/editing plus keyboard

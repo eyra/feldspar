@@ -1,3 +1,4 @@
+import type { ButtonTone } from '@novasoftwarefoundation/prism-react'
 import { isInstanceOf, isLike } from '../helpers'
 import { } from './commands'
 import { isPropsUIPage, PropsUIPage } from './pages'
@@ -198,23 +199,23 @@ export function isPropsUIButton (arg: any): arg is PropsUIButton {
 export interface PropsUIButtonPrimary {
   __type__: 'PropsUIButtonPrimary'
   label: string
-  color?: string
+  tone?: ButtonTone
   enabled?: boolean
   spinning?: boolean
   onClick: () => void
 }
 export function isPropsUIButtonPrimary (arg: any): arg is PropsUIButtonPrimary {
-  return isInstanceOf<PropsUIButtonPrimary>(arg, 'PropsUIButtonPrimary', ['label', 'color', 'onClick'])
+  return isInstanceOf<PropsUIButtonPrimary>(arg, 'PropsUIButtonPrimary', ['label', 'onClick'])
 }
 
 export interface PropsUIButtonSecundary {
   __type__: 'PropsUIButtonSecundary'
   label: string
-  color?: string
+  tone?: ButtonTone
   onClick: () => void
 }
 export function isPropsUIButtonSecundary (arg: any): arg is PropsUIButtonSecundary {
-  return isInstanceOf<PropsUIButtonSecundary>(arg, 'PropsUIButtonSecundary', ['label', 'color', 'onClick'])
+  return isInstanceOf<PropsUIButtonSecundary>(arg, 'PropsUIButtonSecundary', ['label', 'onClick'])
 }
 
 export interface PropsUIButtonBack {
@@ -264,18 +265,18 @@ export interface PropsUIButtonIconLabel {
   __type__: 'PropsUIButtonIconLabel'
   icon: string
   label: string
-  color?: string
+  tone?: ButtonTone
   alignment?: string
   onClick: () => void
 }
 export function isPropsUIButtonIconLabel (arg: any): arg is PropsUIButtonIconLabel {
-  return isInstanceOf<PropsUIButtonIconLabel>(arg, 'PropsUIButtonIconLabel', ['icon', 'label', 'color', 'alignment', 'onClick'])
+  return isInstanceOf<PropsUIButtonIconLabel>(arg, 'PropsUIButtonIconLabel', ['icon', 'label', 'onClick'])
 }
 
 export interface PropsUIButtonLabel {
   __type__: 'PropsUIButtonLabel'
   label: string
-  color?: string
+  tone?: ButtonTone
   onClick: () => void
 }
 export function isPropsUIButtonLabel (arg: any): arg is PropsUIButtonLabel {

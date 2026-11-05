@@ -37,13 +37,13 @@ export const DonateButtons = ({ onDonate, onCancel, locale, donateQuestion, dona
             locale
           )}
           onClick={handleDonate}
-          color="bg-success text-white"
+          tone="success"
           spinning={waiting}
         />
         <LabelButton
           label={Translator.translate(cancelButtonLabel, locale)}
           onClick={onCancel}
-          color="text-grey1"
+          tone="neutral"
         />
       </div>
     </div>
