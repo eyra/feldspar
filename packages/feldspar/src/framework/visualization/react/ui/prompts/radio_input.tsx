@@ -75,7 +75,7 @@ export const RadioInput = (props: Props): JSX.Element => {
         </div>
         <div className="mt-4" />
         <div>
-          <RadioGroup id="radio-group" aria-label={title}>
+          <RadioGroup id="radio-group" aria-label={title} className="flex-col gap-3">
             {renderItems(items)}
           </RadioGroup>
         </div>

@@ -46,31 +46,59 @@ test('selection adapters expose native controls and deliver one selection callba
   assert.equal(calls, 2)
 })
 
-test('search uses the requested debounce and latest callback, cancelling work on unmount', async () => {
+test('search uses the requested debounce and latest callback, cancelling work on unmount', async ({ mock }) => {
+  mock.timers.enable({ apis: ['setTimeout', 'Date'] })
   const first: string[][] = [], latest: string[][] = []
   await render(<SearchBar placeholder="Search" debounce={10} onSearch={v => first.push(v)} />)
-  await render(<SearchBar placeholder="Search" debounce={10} onSearch={v => latest.push(v)} />)
   const input = host.querySelector('input')!
   const change = async (value: string) => act(async () => {
     Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')!.set!.call(input, value)
     input.dispatchEvent(new Event('input', { bubbles: true }))
   })
   await change('two words')
-  await new Promise(resolve => setTimeout(resolve, 40))
+  await act(async () => mock.timers.tick(5))
+  await render(<SearchBar placeholder="Search" debounce={10} onSearch={v => latest.push(v)} />)
+  await act(async () => mock.timers.tick(5))
   assert.deepEqual(first, [])
   assert.deepEqual(latest, [['two', 'words']])
+  await act(async () => mock.timers.tick(40))
+  assert.equal(latest.length, 1)
   await change('cancelled')
   await act(async () => root.unmount()); root = undefined!
-  await new Promise(resolve => setTimeout(resolve, 40))
+  await act(async () => mock.timers.tick(40))
   assert.equal(latest.length, 1)
 })
 
-test('radio prompt preserves the selected Python payload and resolves once', async () => {
+test('search cancels pending work when delay changes and uses the new delay', async ({ mock }) => {
+  mock.timers.enable({ apis: ['setTimeout', 'Date'] })
+  const calls: string[][] = []
+  const onSearch = (value: string[]) => calls.push(value)
+  await render(<SearchBar placeholder="Search" debounce={100} onSearch={onSearch} />)
+  const input = host.querySelector('input')!
+  const change = async (value: string) => act(async () => {
+    Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')!.set!.call(input, value)
+    input.dispatchEvent(new Event('input', { bubbles: true }))
+  })
+  await change('old')
+  await render(<SearchBar placeholder="Search" debounce={20} onSearch={onSearch} />)
+  await act(async () => mock.timers.tick(100))
+  assert.deepEqual(calls, [])
+  await change('new delay')
+  await act(async () => mock.timers.tick(19))
+  assert.deepEqual(calls, [])
+  await act(async () => mock.timers.tick(1))
+  assert.deepEqual(calls, [['new', 'delay']])
+})
+
+test('radio prompt stacks options, preserves the selected Python payload and resolves once', async () => {
   const { RadioInput } = await import('../src/framework/visualization/react/ui/prompts/radio_input')
   const payloads: unknown[] = []
   await render(<RadioInput locale="en" title="Choose" description="Pick one"
     items={[{ id: 0, value: 'first', selected: false, onSelect() {} }, { id: 1, value: 'second', selected: false, onSelect() {} }]}
     resolve={payload => payloads.push(payload)} />)
+  const group = host.querySelector('[role="radiogroup"]')!
+  assert.ok(group.classList.contains('flex-col'), 'radio options must stack')
+  assert.ok(group.classList.contains('gap-3'), 'radio options retain prompt spacing')
   const confirm = host.querySelector('button')!
   assert.equal(confirm.disabled, true)
   const radios = host.querySelectorAll('input[type="radio"]')

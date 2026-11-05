@@ -1,11 +1,13 @@
-import React, { JSX, useEffect, useMemo } from 'react'
+import React, { JSX, useEffect, useMemo, useRef } from 'react'
 import { TextField } from '@novasoftwarefoundation/prism-react'
 import { Weak } from '../../../../helpers'
 import { PropsUISearchBar } from '../../../../types/elements'
 import _ from 'lodash'
 
 export const SearchBar = ({ placeholder, debounce = 1000, onSearch }: Weak<PropsUISearchBar>): JSX.Element => {
-  const search = useMemo(() => _.debounce((value: string) => onSearch(value.split(/\s+/)), debounce), [debounce, onSearch])
+  const latest = useRef(onSearch)
+  latest.current = onSearch
+  const search = useMemo(() => _.debounce((value: string) => latest.current(value.split(/\s+/)), debounce), [debounce])
   useEffect(() => () => search.cancel(), [search])
   return (
     <form onSubmit={event => event.preventDefault()}>
