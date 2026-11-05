@@ -53,11 +53,11 @@ jobs:
       - name: Test bridge
         run: pnpm --filter ./packages/feldspar-bridge run test
 
-      - name: Test feldspar (uses the bridge)
-        run: pnpm --filter @eyra/feldspar run test
-
       - name: Build bridge
         run: pnpm --filter ./packages/feldspar-bridge run build
+
+      - name: Test feldspar (uses the bridge)
+        run: pnpm --filter @eyra/feldspar run test
 
       # After the bridge build: feldspar resolves the bridge's types from its dist.
       - name: Typecheck feldspar (uses the bridge)
