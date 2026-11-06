@@ -15,12 +15,12 @@ export const Translator = (function () {
 
   function resolve (translatable: Translatable, locale: string): string {
     const text = translatable.translations[locale]
-    if (text !== null) {
+    if (text != null) {
       return text
     }
 
     const defaultText = translatable.translations[defaultLocale]
-    if (defaultText !== null) {
+    if (defaultText != null) {
       return defaultText
     }
 
