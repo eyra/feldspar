@@ -1,5 +1,6 @@
 import React, { JSX, useId, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { Button } from '@novasoftwarefoundation/prism-react'
 import TextBundle from '../../../../text_bundle'
 import { Translator } from '../../../../translator'
 
@@ -50,18 +51,19 @@ export const TableCellText = ({ text, field, locale }: Props): JSX.Element => {
   }, [text])
 
   return (
-    <div className='min-w-0 font-table-row text-table text-grey1'>
+    <div className='min-w-0 font-tablerow text-tablerow text-grey1'>
       <div ref={previewRef} className='table-text-preview'>{text}</div>
       {clipped && (
-        <button
-          ref={triggerRef}
+        <Button
+          ref={element => { triggerRef.current = element as HTMLButtonElement | null }}
+          variant='link'
           type='button'
           className='table-text-action text-primary underline text-left'
           aria-haspopup='dialog'
           onClick={() => setOpen(true)}
         >
           {Translator.translate(readFullText, locale)}
-        </button>
+        </Button>
       )}
       {open && (
         <FullTextDialog
@@ -110,14 +112,16 @@ const FullTextDialog = ({ text, field, locale, onClose }: Props & { onClose: () 
             </>
           )}
         </h2>
-        <button
+        <Button
           type='button'
+          variant='text'
+          padded={false}
           autoFocus
           className='table-text-action shrink-0 text-primary font-button text-buttonsmall'
           onClick={() => dialogRef.current?.close()}
         >
           {Translator.translate(close, locale)}
-        </button>
+        </Button>
       </header>
       <div className='table-text-dialog-body font-body text-bodysmall' tabIndex={0}>{text}</div>
     </dialog>,

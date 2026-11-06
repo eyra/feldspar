@@ -3,15 +3,18 @@ import React, { JSX } from 'react'
 import { Weak } from '../../../../helpers'
 import { PropsUIPagination } from '../../../../types/elements'
 import { BackIconButton, ForwardIconButton } from './button'
+import TextBundle from '../../../../text_bundle'
+import { Translator } from '../../../../translator'
 import { PageIcon } from './page_icon'
 
 type Props = Weak<PropsUIPagination> & PaginationContext
 
 export interface PaginationContext {
+  locale?: string
   onChange: (page: number) => void
 }
 
-export const Pagination = ({ pageCount, page, pageWindowLegSize, onChange }: Props): JSX.Element => {
+export const Pagination = ({ pageCount, page, pageWindowLegSize, locale = 'en', onChange }: Props): JSX.Element => {
   const pageWindow = updatePageWindow(pageCount, page)
 
   function renderPageIcons (): JSX.Element {
@@ -81,10 +84,13 @@ export const Pagination = ({ pageCount, page, pageWindowLegSize, onChange }: Pro
   return (
     <div className='flex flex-row items-center gap-2 mt-2'>
       <div className='grow' />
-      <BackIconButton onClick={handlePrevious} />
+      <BackIconButton ariaLabel={Translator.translate(previousPage, locale)} onClick={handlePrevious} />
       <div>{renderPageIcons()}</div>
-      <ForwardIconButton onClick={handleNext} />
+      <ForwardIconButton ariaLabel={Translator.translate(nextPage, locale)} onClick={handleNext} />
       <div className='grow' />
     </div>
   )
 }
+
+const previousPage = new TextBundle().add('en', 'Previous page').add('nl', 'Vorige pagina').add('de', 'Vorherige Seite').add('it', 'Pagina precedente').add('es', 'Página anterior').add('ro', 'Pagina anterioară').add('lt', 'Ankstesnis puslapis')
+const nextPage = new TextBundle().add('en', 'Next page').add('nl', 'Volgende pagina').add('de', 'Nächste Seite').add('it', 'Pagina successiva').add('es', 'Página siguiente').add('ro', 'Pagina următoare').add('lt', 'Kitas puslapis')

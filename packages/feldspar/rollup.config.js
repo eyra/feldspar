@@ -15,7 +15,6 @@ export default async function() {
   const dts = (await import("rollup-plugin-dts")).default;
   const url = (await import("@rollup/plugin-url")).default;
   const json = (await import("@rollup/plugin-json")).default;
-  const copy = (await import("rollup-plugin-copy")).default;
 
   return [
     {
@@ -53,14 +52,6 @@ export default async function() {
           resolveJsonModule: true
         }),
         terser(),
-        copy({
-          targets: [
-            {
-              src: 'src/framework/fonts/*',
-              dest: 'dist/fonts'
-            }
-          ]
-        })
       ],
       external: ['react', 'react-dom', ...Object.keys(packageJson.dependencies || {})],
     },

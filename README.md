@@ -325,3 +325,32 @@ Feldspar is part of the Port program for data donation and has been funded by th
 We welcome contributions to make Feldspar better. Please read our [contributing guidelines](https://github.com/eyra/feldspar/blob/master/CONTRIBUTING.md) for details on how to submit issues, feature requests, and pull requests.
 
 <!-- Original detailed API examples and technical specifications can be included here -->
+
+## Participant UI and Prism
+
+Feldspar uses matching stable versions of `@novasoftwarefoundation/prism` and
+`@novasoftwarefoundation/prism-react` (currently 0.2.1). The web preset supplies
+colors, spacing and typography; React components supply buttons, checkbox/radio
+inputs, search fields and spinners. Existing Feldspar adapters preserve Python
+prompt and response shapes. Native controls support keyboard activation and
+honor disabled/loading states.
+
+Table/card layout, row selection, filtering, pagination logic, the full-text
+dialog, linear progress and instruction number markers remain Feldspar-owned.
+They use Prism tokens and shared controls; instruction markers are not workflow
+step indicators. Keep application layout dimensions in Feldspar's Tailwind
+extension and shared design values in Prism.
+
+`pnpm --filter @eyra/feldspar build:css` includes Prism base/components styles,
+rebases font URLs and copies the published fonts/license to `dist/fonts`.
+Distribute the complete `dist` directory. The CSS watcher runs the same pipeline
+when source files change. Styles use Tailwind's component layer for layout utility composition.
+Buttons take Prism's typed `tone` (`accent`, `success`, `warning`, `danger`,
+`neutral`, `highlight`) instead of raw Tailwind `color` strings. React prompt
+components choose the tone; Python supplies prompt content and data, without
+color fields.
+
+`pnpm test` includes DOM tests for control state, search timing, radio payloads
+and packaged font URLs. `pnpm test:e2e` covers donation/retry/editing plus keyboard
+upload and mobile consent. Set `FELDSPAR_SCREENSHOT_DIR` to an output directory
+to retain desktop/mobile consent screenshots from the browser tests.

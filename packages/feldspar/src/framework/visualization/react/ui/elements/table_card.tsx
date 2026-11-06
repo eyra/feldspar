@@ -2,6 +2,8 @@ import React, { JSX } from 'react'
 import { PropsUITableCard } from '../../../../types/elements'
 import { Weak } from '../../../../helpers'
 import { IconButton } from './button'
+import TextBundle from '../../../../text_bundle'
+import { Translator } from '../../../../translator'
 import DeleteSvg from '../../../../../assets/images/delete.svg'
 import { TableCardItem } from './table_card_item'
 
@@ -22,8 +24,10 @@ export const TableCard = ({ row, headCells, locale, onDelete }: Props): JSX.Elem
       </div>
       <div className='grow' />
       <div className='shrink-0'>
-        <IconButton icon={DeleteSvg} onClick={() => onDelete(row.id)} />
+        <IconButton ariaLabel={Translator.translate(deleteRow, locale)} icon={DeleteSvg} onClick={() => onDelete(row.id)} />
       </div>
     </div>
   )
 }
+
+const deleteRow = new TextBundle().add('en', 'Delete row').add('nl', 'Verwijder rij').add('de', 'Zeile löschen').add('it', 'Elimina riga').add('es', 'Eliminar fila').add('ro', 'Șterge rândul').add('lt', 'Ištrinti eilutę')

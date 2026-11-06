@@ -42,7 +42,7 @@ export const FileInput = (props: Props): JSX.Element => {
   return (
     <>
       <div id='select-panel'>
-        <div className='flex-wrap text-bodylarge font-body text-grey1 text-left'>
+        <div className='flex-wrap text-bodylarge font-bodylarge text-grey1 text-left'>
           {description}
         </div>
         <div className='mt-8' />
@@ -53,13 +53,13 @@ export const FileInput = (props: Props): JSX.Element => {
             <div className='grow' />
             <div className='flex-wrap'>
               <div className='flex flex-row'>
-                <PrimaryButton onClick={handleClick} label={selectButton} color='bg-tertiary text-grey1' />
+                <PrimaryButton onClick={handleClick} label={selectButton} tone='highlight' />
               </div>
             </div>
           </div>
         </div>
         <div className='mt-4' />
-        <div className={`${selectedFile === undefined ? 'opacity-30' : 'opacity-100'}`}>
+        <div>
           <BodySmall text={note} margin='' />
           <div className='mt-8' />
           <div className='flex flex-row gap-4'>

@@ -5,7 +5,7 @@ import React from 'react'
 
 export const BodyLarge = ({ text, color = 'text-grey1', margin = 'mb-6 md:mb-8 lg:mb-10' }: Weak<PropsUITextBodyLarge>): JSX.Element => {
   return (
-    <div className={`text-bodylarge font-body ${color} ${margin}`}>
+    <div className={`text-bodylarge font-bodylarge ${color} ${margin}`}>
       {text}
     </div>
   )

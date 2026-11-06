@@ -1,34 +1,7 @@
-import { PropsUICheckBox } from "../../../../types/elements";
-import CheckSvg from "../../../../../assets/images/check.svg";
-import CheckActiveSvg from "../../../../../assets/images/check_active.svg";
-import { JSX } from "react";
-import React from "react";
+import React, { JSX } from 'react'
+import { Checkbox } from '@novasoftwarefoundation/prism-react'
+import { PropsUICheckBox } from '../../../../types/elements'
 
-export const CheckBox = ({
-  id,
-  selected,
-  onSelect,
-}: PropsUICheckBox): JSX.Element => {
-  return (
-    <div
-      id={id}
-      className="radio-item flex flex-row gap-3 items-center cursor-pointer"
-      onClick={onSelect}
-      role="checkbox"
-      aria-checked={selected ? "true" : "false"}
-    >
-      <div className="shrink-0">
-        <img
-          src={CheckSvg}
-          id={`${id}-off`}
-          className={selected ? "hidden" : ""}
-        />
-        <img
-          src={CheckActiveSvg}
-          id={`${id}-on`}
-          className={selected ? "" : "hidden"}
-        />
-      </div>
-    </div>
-  );
-};
+export const CheckBox = ({ id, selected, onSelect, ariaLabel }: PropsUICheckBox & { ariaLabel?: string }): JSX.Element => (
+  <Checkbox id={id} checked={selected} onChange={onSelect} aria-label={ariaLabel} />
+)
