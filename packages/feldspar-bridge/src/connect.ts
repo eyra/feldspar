@@ -26,10 +26,14 @@ export interface ConnectOptions {
 // browser console. Other messages the window receives are normal and not logged.
 const LOG = '[connectBridge]'
 
-// A message from the host that hands over the channel: { action: 'live-init', locale, ... }.
-function isLiveInit (data: unknown): data is { action: 'live-init', locale?: unknown } {
+// A message from the host that hands over the channel:
+// { action: 'live-init', locale, participant_task, ... }.
+interface LiveInit { action: 'live-init', locale?: unknown, participant_task?: unknown }
+function isLiveInit (data: unknown): data is LiveInit {
   return typeof data === 'object' && data !== null && (data as { action?: unknown }).action === 'live-init'
 }
+
+const stringOrUndefined = (value: unknown): string | undefined => typeof value === 'string' ? value : undefined
 
 // Only the host (our parent) may hand over the channel. No origin check: the app does not
 // know the host's origin.
@@ -68,11 +72,15 @@ export async function connectBridge ({
     const timer = setTimeout(onTimeout, liveInitTimeoutMs)
 
     // The first live-init connects; a later one is ignored.
-    const handleLiveInit = (port: MessagePort, locale: unknown): void => {
+    const handleLiveInit = (port: MessagePort, { locale, participant_task: participantTask }: LiveInit): void => {
       if (bridge !== undefined) return console.warn(`${LOG} Ignoring live-init: already connected`)
       clearTimeout(timer)
       console.info(`${LOG} live-init accepted: connected to the host`)
-      bridge = new LiveHostBridge(port, { locale: typeof locale === 'string' ? locale : undefined })
+      bridge = new LiveHostBridge(port, {
+        locale: stringOrUndefined(locale),
+        // An empty value would be one key for every participant: treat it as missing.
+        participantTask: stringOrUndefined(participantTask) || undefined
+      })
       resolve(bridge)
     }
 
@@ -82,7 +90,7 @@ export async function connectBridge ({
       if (!fromHost(event, win)) return console.warn(`${LOG} Ignoring live-init: not from the parent window`)
       const port = event.ports[0]
       if (port === undefined) return console.warn(`${LOG} Ignoring live-init: it carries no port`)
-      handleLiveInit(port, event.data.locale)
+      handleLiveInit(port, event.data)
     }
 
     win.addEventListener('message', onMessage)

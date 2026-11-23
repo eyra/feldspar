@@ -37,6 +37,30 @@ Inside an iframe `connectBridge()`:
 
 A later `live-init` is ignored and logged. Outside an iframe `connectBridge()` resolves with a `FakeHostBridge`.
 
+### The participant's task (since 0.3.0)
+
+`bridge.participantTask` is the `participant_task` the host sent with `live-init`, for example `"81234"`: Next's id for this participant in this task. It is the same for one participant in one task across reloads and new tabs, and differs for another participant, another task and another assignment. It is opaque: compare it, don't parse it.
+
+It is optional. An older Next, or another host, leaves it out, and then `participantTask` is `undefined`; so is it when the value is empty or not a string.
+
+Use it to keep saved state apart when participants share a browser:
+
+```ts
+const bridge = await connectBridge()
+const task = bridge.participantTask
+const saved = task === undefined ? undefined : localStorage.getItem(`probe-progress:${location.pathname}:${task}`)
+```
+
+A Tool that keys saved state with this value should not resume when it is missing: start a new run instead of falling back to a key without it, which could pick up another participant's run.
+
+Outside an iframe (the dev server) `connectBridge()` resolves with a plain `FakeHostBridge()`, whose `participantTask` is `undefined`. To try a Tool's saved state in development, build the fake bridge yourself:
+
+```ts
+const bridge = window.parent === window
+  ? new FakeHostBridge({ participantTask: 'dev-participant' })
+  : await connectBridge()
+```
+
 `send` resolves a donation with `{ success, key, status, error? }` from `DonateSuccess` or `DonateError` (`status` 0 is a network error). `send` rejects when a donation for the same key is still waiting for the host's answer: one donation per key at a time. A retry with the same key is possible once the answer has come. The bridge has no time-out of its own: if the host never answers, that key stays blocked. Other commands resolve with `undefined` once posted.
 
 The bridge logs the steps of the handshake (prefix `[connectBridge]`), malformed answers and failed donations it cannot return, but not each donation it sends, nor messages of other sources.
@@ -75,9 +99,9 @@ if (import.meta.env.PROD) {
 | `FakeBridge` | Local development: logs commands and posts donations as `{ key, data }` to `/data-submission`. |
 | `LogEntry`, `LogLevel` | Types used by `Bridge.sendLogs`. |
 | `connectBridge(options?)` | Since 0.2.0. The handshake with the host; resolves with a `HostBridge`. Options: `liveInitTimeoutMs` (default `LIVE_INIT_TIMEOUT_MS`, 10 000), `window`. |
-| `HostBridge`, `ConnectOptions`, `HostWindow` | Since 0.2.0. `HostBridge`: `send(command)`, which resolves with the answer to a donation. |
-| `LiveHostBridge` | Since 0.2.0. A `HostBridge` on a `MessagePort`, with the `locale` from `live-init`. Usually created by `connectBridge`. |
-| `FakeHostBridge`, `KEEPALIVE_MAX_BYTES` | Since 0.2.0. Local development: posts donations as `{ key, data }` to `/data-submission` (option `url`) and answers like Next: success for HTTP 2xx, an error with the status otherwise, 0 for a network error. Uses `keepalive` while the requests in flight stay within 64 KiB. |
+| `HostBridge`, `ConnectOptions`, `HostWindow` | Since 0.2.0. `HostBridge`: `send(command)`, which resolves with the answer to a donation, and (since 0.3.0) the optional `participantTask`. |
+| `LiveHostBridge` | Since 0.2.0. A `HostBridge` on a `MessagePort`, with the `locale` and (since 0.3.0) the `participantTask` from `live-init`. Usually created by `connectBridge`. |
+| `FakeHostBridge`, `KEEPALIVE_MAX_BYTES` | Since 0.2.0. Local development: posts donations as `{ key, data }` to `/data-submission` (option `url`) and answers like Next: success for HTTP 2xx, an error with the status otherwise, 0 for a network error. Uses `keepalive` while the requests in flight stay within 64 KiB. Since 0.3.0 option `participantTask` sets the value it reports. |
 | `DonateSuccess`, `DonateError`, `ResponseSystemDonate`, `isDonateAnswer` | Since 0.2.0. The host's answers to a donation and what `HostBridge.send` resolves with. |
 | `reportSize(window)` | Since 0.2.0. Posts the app's height to the host, now and on each resize; returns a function that stops it. `connectBridge` calls it. |
 
