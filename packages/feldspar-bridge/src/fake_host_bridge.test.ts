@@ -5,6 +5,11 @@ const donate = { __type__: 'CommandSystemDonate', key: 'k', json_string: '{}' } 
 describe('FakeHostBridge', () => {
   const respondWith = (status: number) => jest.fn(async () => new Response('{}', { status }))
 
+  it('reports the participantTask it was given, and none by default', () => {
+    expect(new FakeHostBridge({ participantTask: '81234' }).participantTask).toBe('81234')
+    expect(new FakeHostBridge().participantTask).toBeUndefined()
+  })
+
   it('posts a donation as { key, data } to the data-submission endpoint', async () => {
     const fetch = respondWith(200)
     const bridge = new FakeHostBridge({ fetch })

@@ -1,6 +1,6 @@
 {
     "name": "@novasoftwarefoundation/feldspar-bridge",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "description": "Bridge between a Feldspar app and its host: system commands (Donate, Event, Exit, Log), the handshake with the host and its answers to donations, LiveBridge and LiveHostBridge (MessageChannel), FakeBridge and FakeHostBridge (local development).",
     "license": "AGPL-3.0-only",
     "repository": {

@@ -5,6 +5,8 @@ import type { CommandSystem } from './commands.js'
 export interface LiveHostBridgeOptions {
   // The locale the host sent with live-init.
   readonly locale?: string
+  // The participant_task the host sent with live-init.
+  readonly participantTask?: string
 }
 
 // Talks to the host over the MessageChannel it hands over with 'live-init': commands go out
@@ -15,11 +17,13 @@ export interface LiveHostBridgeOptions {
 // Usually created by connectBridge.
 export class LiveHostBridge implements HostBridge {
   readonly locale: string | undefined
+  readonly participantTask: string | undefined
   readonly #port: MessagePort
   readonly #waiting = new Map<string, (answer: ResponseSystemDonate) => void>()
 
-  constructor (port: MessagePort, { locale }: LiveHostBridgeOptions = {}) {
+  constructor (port: MessagePort, { locale, participantTask }: LiveHostBridgeOptions = {}) {
     this.locale = locale
+    this.participantTask = participantTask
     this.#port = port
     this.#listen()
   }

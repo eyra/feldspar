@@ -14,4 +14,7 @@ export interface HostBridge {
   // command with undefined once sent. Rejects when a donation for the same key is still waiting
   // for the host's answer.
   send: (command: CommandSystem) => Promise<ResponseSystemDonate | undefined>
+  // The host's id for this participant in this task ('participant_task' in live-init), or
+  // undefined when the host sent none. Opaque: compare it, don't parse it.
+  readonly participantTask?: string
 }

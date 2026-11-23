@@ -246,6 +246,35 @@ describe('connectBridge', () => {
     expect(await sent).toMatchObject({ __type__: 'CommandSystemDonate', key: 'k' })
   })
 
+  it('passes on the participant_task of live-init', async () => {
+    const { win, hostSends } = iframeWindow()
+    const connecting = connectBridge({ window: win })
+    hostSends({ action: 'live-init', locale: 'nl', participant_task: '81234' }, [channel().port2])
+
+    const bridge = await connecting
+    expect(bridge.participantTask).toBe('81234')
+    expect((bridge as LiveHostBridge).locale).toBe('nl')
+  })
+
+  it('leaves participantTask undefined when live-init has none, as from an older host', async () => {
+    const { win, hostSends } = iframeWindow()
+    const connecting = connectBridge({ window: win })
+    hostSends({ action: 'live-init', locale: 'nl' }, [channel().port2])
+
+    const bridge = await connecting
+    expect(bridge.participantTask).toBeUndefined()
+  })
+
+  it.each([81234, null, {}, ['81234']])('leaves participantTask undefined for a participant_task that is not a string: %p', async (value) => {
+    const { win, hostSends } = iframeWindow()
+    const connecting = connectBridge({ window: win })
+    hostSends({ action: 'live-init', locale: 'nl', participant_task: value }, [channel().port2])
+
+    const bridge = await connecting
+    expect(bridge.participantTask).toBeUndefined()
+    expect((bridge as LiveHostBridge).locale).toBe('nl')
+  })
+
   it('ignores a later live-init and keeps the first channel', async () => {
     const { win, hostSends } = iframeWindow()
     const first = channel()

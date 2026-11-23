@@ -8,6 +8,8 @@ export interface FakeHostBridgeOptions {
   // Where donations are posted. Default '/data-submission', the stub of the dev server.
   readonly url?: string
   readonly fetch?: Fetch
+  // The participantTask to report, as if the host sent it with live-init. Default undefined.
+  readonly participantTask?: string
 }
 
 // Calls the global fetch as a plain function: browsers refuse fetch called as a method of
@@ -24,6 +26,7 @@ export const KEEPALIVE_MAX_BYTES = 64 * 1024
 // does: success for HTTP 2xx, an error with the status otherwise (0 for a network error).
 // Other commands are not sent anywhere; only an exit is logged.
 export class FakeHostBridge implements HostBridge {
+  readonly participantTask: string | undefined
   readonly #url: string
   readonly #fetch: Fetch
   // Bytes of the keepalive requests still in flight.
@@ -31,7 +34,8 @@ export class FakeHostBridge implements HostBridge {
   // The keys of the donations in flight: one per key at a time.
   readonly #pending = new Set<string>()
 
-  constructor ({ url = '/data-submission', fetch: fetcher = globalFetch }: FakeHostBridgeOptions = {}) {
+  constructor ({ url = '/data-submission', fetch: fetcher = globalFetch, participantTask }: FakeHostBridgeOptions = {}) {
+    this.participantTask = participantTask
     this.#url = url
     this.#fetch = fetcher
   }
