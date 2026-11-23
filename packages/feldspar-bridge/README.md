@@ -41,7 +41,7 @@ A later `live-init` is ignored and logged. Outside an iframe `connectBridge()` r
 
 `bridge.participantTask` is the `participant_task` the host sent with `live-init`, for example `"81234"`: Next's id for this participant in this task. It is the same for one participant in one task across reloads and new tabs, and differs for another participant, another task and another assignment. It is opaque: compare it, don't parse it.
 
-It is optional. An older Next, or another host, leaves it out, and then `participantTask` is `undefined`; so is it when the value is not a string.
+It is optional. An older Next, or another host, leaves it out, and then `participantTask` is `undefined`; so is it when the value is empty or not a string.
 
 Use it to keep saved state apart when participants share a browser:
 
@@ -51,7 +51,15 @@ const task = bridge.participantTask
 const saved = task === undefined ? undefined : localStorage.getItem(`probe-progress:${location.pathname}:${task}`)
 ```
 
-A Tool that keys saved state with this value should not resume when it is missing: start a new run instead of falling back to a key without it, which could pick up another participant's run. In development, set it with `new FakeHostBridge({ participantTask: '…' })`.
+A Tool that keys saved state with this value should not resume when it is missing: start a new run instead of falling back to a key without it, which could pick up another participant's run.
+
+Outside an iframe (the dev server) `connectBridge()` resolves with a plain `FakeHostBridge()`, whose `participantTask` is `undefined`. To try a Tool's saved state in development, build the fake bridge yourself:
+
+```ts
+const bridge = window.parent === window
+  ? new FakeHostBridge({ participantTask: 'dev-participant' })
+  : await connectBridge()
+```
 
 `send` resolves a donation with `{ success, key, status, error? }` from `DonateSuccess` or `DonateError` (`status` 0 is a network error). `send` rejects when a donation for the same key is still waiting for the host's answer: one donation per key at a time. A retry with the same key is possible once the answer has come. The bridge has no time-out of its own: if the host never answers, that key stays blocked. Other commands resolve with `undefined` once posted.
 

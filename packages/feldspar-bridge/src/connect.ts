@@ -78,7 +78,8 @@ export async function connectBridge ({
       console.info(`${LOG} live-init accepted: connected to the host`)
       bridge = new LiveHostBridge(port, {
         locale: stringOrUndefined(locale),
-        participantTask: stringOrUndefined(participantTask)
+        // An empty value would be one key for every participant: treat it as missing.
+        participantTask: stringOrUndefined(participantTask) || undefined
       })
       resolve(bridge)
     }

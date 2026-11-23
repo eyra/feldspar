@@ -9,7 +9,7 @@ export interface FakeHostBridgeOptions {
   readonly url?: string
   readonly fetch?: Fetch
   // The participantTask to report, as if the host sent it with live-init. Default undefined.
-  readonly participantTask?: string
+  readonly participantTask?: string | undefined
 }
 
 // Calls the global fetch as a plain function: browsers refuse fetch called as a method of

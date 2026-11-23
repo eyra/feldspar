@@ -5,6 +5,7 @@
     "moduleResolution": "NodeNext",
     "lib": ["ES2022", "DOM"],
     "strict": true,
+    "exactOptionalPropertyTypes": true,
     "declaration": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,

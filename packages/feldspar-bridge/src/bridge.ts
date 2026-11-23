@@ -16,5 +16,5 @@ export interface HostBridge {
   send: (command: CommandSystem) => Promise<ResponseSystemDonate | undefined>
   // The host's id for this participant in this task ('participant_task' in live-init), or
   // undefined when the host sent none. Opaque: compare it, don't parse it.
-  readonly participantTask?: string
+  readonly participantTask?: string | undefined
 }

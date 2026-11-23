@@ -4,9 +4,9 @@ import type { CommandSystem } from './commands.js'
 
 export interface LiveHostBridgeOptions {
   // The locale the host sent with live-init.
-  readonly locale?: string
+  readonly locale?: string | undefined
   // The participant_task the host sent with live-init.
-  readonly participantTask?: string
+  readonly participantTask?: string | undefined
 }
 
 // Talks to the host over the MessageChannel it hands over with 'live-init': commands go out

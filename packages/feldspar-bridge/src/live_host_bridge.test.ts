@@ -265,7 +265,8 @@ describe('connectBridge', () => {
     expect(bridge.participantTask).toBeUndefined()
   })
 
-  it.each([81234, null, {}, ['81234']])('leaves participantTask undefined for a participant_task that is not a string: %p', async (value) => {
+  // An empty string would give every participant the same key.
+  it.each(['', 81234, null, {}, ['81234']])('leaves participantTask undefined for a participant_task that is empty or not a string: %p', async (value) => {
     const { win, hostSends } = iframeWindow()
     const connecting = connectBridge({ window: win })
     hostSends({ action: 'live-init', locale: 'nl', participant_task: value }, [channel().port2])
