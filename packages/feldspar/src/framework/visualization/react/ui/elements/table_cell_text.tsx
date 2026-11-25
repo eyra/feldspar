@@ -23,20 +23,15 @@ export const TableCellText = ({ text, field, locale }: Props): JSX.Element => {
     let active = true
     const measure = (): void => {
       if (!active) return
+      // Only read layout here: this also runs as a ResizeObserver callback, and changing layout
+      // there (such as lifting the clamp to measure) makes the browser report a ResizeObserver loop.
+      // Glyph overflow can increase scrollHeight by a few pixels without hiding any lines (at most
+      // 2px measured); a hidden line adds a full line height. Glyphs sticking out by half a line
+      // or more would also show the reader.
+      const overflow = preview.scrollHeight - preview.clientHeight
       // Desktop and mobile tables are both mounted; measure only visible cells.
-      if (preview.clientWidth === 0 || preview.scrollHeight <= preview.clientHeight) {
-        setClipped(false)
-        return
-      }
-
-      // Glyph overflow can increase scrollHeight without hiding any lines.
-      // Only offer the reader when removing the clamp reveals more text height.
-      const clampedHeight = preview.getBoundingClientRect().height
-      const lineClamp = preview.style.webkitLineClamp
-      preview.style.webkitLineClamp = 'unset'
-      const fullHeight = preview.getBoundingClientRect().height
-      preview.style.webkitLineClamp = lineClamp
-      setClipped(fullHeight > clampedHeight)
+      const visible = preview.clientWidth > 0
+      setClipped(visible && overflow > 0 && overflow >= lineHeight(preview) / 2)
     }
 
     measure()
@@ -78,6 +73,11 @@ export const TableCellText = ({ text, field, locale }: Props): JSX.Element => {
       )}
     </div>
   )
+}
+
+function lineHeight (element: HTMLElement): number {
+  const style = getComputedStyle(element)
+  return parseFloat(style.lineHeight) || parseFloat(style.fontSize) * 1.2 || 0
 }
 
 const FullTextDialog = ({ text, field, locale, onClose }: Props & { onClose: () => void }): JSX.Element => {
