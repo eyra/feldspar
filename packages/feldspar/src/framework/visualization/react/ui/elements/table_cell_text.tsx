@@ -25,11 +25,13 @@ export const TableCellText = ({ text, field, locale }: Props): JSX.Element => {
       if (!active) return
       // Only read layout here: this also runs as a ResizeObserver callback, and changing layout
       // there (such as lifting the clamp to measure) makes the browser report a ResizeObserver loop.
-      // Desktop and mobile tables are both mounted; measure only visible cells.
-      // Glyph overflow can increase scrollHeight by a few pixels without hiding any lines;
-      // a hidden line adds a full line height.
+      // Glyph overflow can increase scrollHeight by a few pixels without hiding any lines (at most
+      // 2px measured); a hidden line adds a full line height. Glyphs sticking out by half a line
+      // or more would also show the reader.
       const overflow = preview.scrollHeight - preview.clientHeight
-      setClipped(preview.clientWidth > 0 && overflow > 0 && overflow >= lineHeight(preview) / 2)
+      // Desktop and mobile tables are both mounted; measure only visible cells.
+      const visible = preview.clientWidth > 0
+      setClipped(visible && overflow > 0 && overflow >= lineHeight(preview) / 2)
     }
 
     measure()

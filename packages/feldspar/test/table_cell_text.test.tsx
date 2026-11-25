@@ -4,8 +4,13 @@ import React, { act } from 'react'
 import { createRoot } from 'react-dom/client'
 import { TableCellText } from '../src/framework/visualization/react/ui/elements/table_cell_text'
 
-test('a cell decides on "Read full text" from its ResizeObserver without changing layout', async () => {
+test('a cell decides on "Read full text" from its ResizeObserver without changing layout', async (t) => {
   const callbacks: ResizeObserverCallback[] = []
+  const globals = { ResizeObserver: (globalThis as any).ResizeObserver, getComputedStyle: (globalThis as any).getComputedStyle }
+  t.after(() => {
+    Object.assign(globalThis, globals)
+    delete (document as any).fonts
+  })
   Object.assign(globalThis, {
     ResizeObserver: class { constructor (callback: ResizeObserverCallback) { callbacks.push(callback) } observe () {} disconnect () {} },
     getComputedStyle: window.getComputedStyle.bind(window),
@@ -33,6 +38,11 @@ test('a cell decides on "Read full text" from its ResizeObserver without changin
   assert.equal(await observe({ clientWidth: 300, scrollHeight: 50 }), false, 'glyph overflow hides no line')
   assert.equal(await observe({ clientWidth: 300, scrollHeight: 64 }), true, 'one hidden line')
   assert.equal(await observe({ clientWidth: 0, scrollHeight: 64 }), false, 'hidden responsive table')
+  // line-height: normal falls back to 1.2 times the font size.
+  preview.style.lineHeight = 'normal'
+  preview.style.fontSize = '16px'
+  assert.equal(await observe({ clientWidth: 300, scrollHeight: 50 }), false, 'glyph overflow, line-height normal')
+  assert.equal(await observe({ clientWidth: 300, scrollHeight: 68 }), true, 'one hidden line, line-height normal')
 
   await act(async () => root.unmount())
   host.remove()
